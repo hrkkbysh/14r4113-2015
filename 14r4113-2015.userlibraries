@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eclipse-userlibraries>
+  <library name="lib">
+    <archive path="C:/Users/Haruki/IdeaProjects/14r4113-2015/lib/jfoenix.jar" />
+    <archive path="C:/Users/Haruki/IdeaProjects/14r4113-2015/lib/ScenicView.jar" />
+    <archive path="C:/Users/Haruki/IdeaProjects/14r4113-2015/lib/fxsampler-1.0.8.jar" />
+    <archive path="C:/Users/Haruki/IdeaProjects/14r4113-2015/lib/controlsfx-8.20.8.jar" />
+    <archive path="C:/Users/Haruki/IdeaProjects/14r4113-2015/lib/jfxtras-fxml-8.0-r4.jar" />
+    <archive path="C:/Users/Haruki/IdeaProjects/14r4113-2015/lib/jfxtras-labs-8.0-r4.jar" />
+    <archive path="C:/Users/Haruki/IdeaProjects/14r4113-2015/lib/jfxtras-menu-8.0-r4.jar" />
+    <archive path="C:/Users/Haruki/IdeaProjects/14r4113-2015/lib/jfxtras-agenda-8.0-r4.jar" />
+    <archive path="C:/Users/Haruki/IdeaProjects/14r4113-2015/lib/jfxtras-common-8.0-r4.jar" />
+    <archive path="C:/Users/Haruki/IdeaProjects/14r4113-2015/lib/jfxtras-window-8.0-r4.jar" />
+    <archive path="C:/Users/Haruki/IdeaProjects/14r4113-2015/lib/openjfx-dialogs-1.0.2.jar" />
+    <archive path="C:/Users/Haruki/IdeaProjects/14r4113-2015/lib/richtextfx-fat-0.6.10.jar" />
+    <archive path="C:/Users/Haruki/IdeaProjects/14r4113-2015/lib/jfxtras-controls-8.0-r4.jar" />
+    <archive path="C:/Users/Haruki/IdeaProjects/14r4113-2015/lib/controlsfx-samples-8.20.8.jar" />
+    <archive path="C:/Users/Haruki/IdeaProjects/14r4113-2015/lib/jfxtras-fxml-8.0-r4-javadoc.jar" />
+    <archive path="C:/Users/Haruki/IdeaProjects/14r4113-2015/lib/jfxtras-labs-8.0-r4-javadoc.jar" />
+    <archive path="C:/Users/Haruki/IdeaProjects/14r4113-2015/lib/jfxtras-menu-8.0-r4-javadoc.jar" />
+    <archive path="C:/Users/Haruki/IdeaProjects/14r4113-2015/lib/jfxtras-agenda-8.0-r4-javadoc.jar" />
+    <archive path="C:/Users/Haruki/IdeaProjects/14r4113-2015/lib/jfxtras-common-8.0-r4-javadoc.jar" />
+    <archive path="C:/Users/Haruki/IdeaProjects/14r4113-2015/lib/jfxtras-window-8.0-r4-javadoc.jar" />
+  </library>
+  <library name="openjfx-dialogs-1.0.2">
+    <archive path="C:/Users/Haruki/IdeaProjects/14r4113-2015/lib/openjfx-dialogs-1.0.2.jar" />
+  </library>
+  <library name="richtextfx-fat-0.6.10">
+    <archive path="C:/Users/Haruki/IdeaProjects/14r4113-2015/lib/richtextfx-fat-0.6.10.jar" />
+  </library>
+  <library name="ScenicView">
+    <archive path="C:/Users/Haruki/IdeaProjects/14r4113-2015/lib/ScenicView.jar" />
+  </library>
+  <library name="Gradle: junit:junit:4.11">
+    <archive path="C:/Users/Haruki/.gradle/caches/modules-2/files-2.1/junit/junit/4.11/4e031bb61df09069aeb2bffb4019e7a5034a4ee0/junit-4.11.jar" />
+  </library>
+  <library name="Gradle: org.hamcrest:hamcrest-core:1.3">
+    <archive path="C:/Users/Haruki/.gradle/caches/modules-2/files-2.1/org.hamcrest/hamcrest-core/1.3/42a25dc3219429f0e5d060061f71acb49bf010a0/hamcrest-core-1.3.jar" />
+  </library>
+</eclipse-userlibraries>
+

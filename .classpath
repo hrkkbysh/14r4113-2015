@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="src" path="src/test/java"/>
+	<classpathentry kind="src" path="src/main/resources"/>
+	<classpathentry kind="src" path="src/test/resources"/>
+	<classpathentry exported="true" kind="lib" path="/14r4113-2015/libs/jfoenix.jar"/>
+	<classpathentry exported="true" kind="lib" path="/14r4113-2015/libs/controlsfx-8.20.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="/14r4113-2015/libs/controlsfx-samples-8.20.8.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ScenicView"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/richtextfx-fat-0.6.10"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/openjfx-dialogs-1.0.2"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/lib"/>
+	<classpathentry kind="output" path="build/classes/main"/>
+</classpath>

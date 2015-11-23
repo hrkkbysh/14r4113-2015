@@ -1,0 +1,31 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="14r4113-2015:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/14r4113_2015_jar</output-path>
+    <root id="archive" name="14r4113-2015.jar">
+      <element id="module-output" name="14r4113-2015" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jfoenix.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/ScenicView.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/fxsampler-1.0.8.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/controlsfx-8.20.8.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jfxtras-fxml-8.0-r4.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jfxtras-labs-8.0-r4.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jfxtras-menu-8.0-r4.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jfxtras-agenda-8.0-r4.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jfxtras-common-8.0-r4.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jfxtras-window-8.0-r4.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/openjfx-dialogs-1.0.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/richtextfx-fat-0.6.10.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jfxtras-controls-8.0-r4.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/controlsfx-samples-8.20.8.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jfxtras-fxml-8.0-r4-javadoc.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jfxtras-labs-8.0-r4-javadoc.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jfxtras-menu-8.0-r4-javadoc.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jfxtras-agenda-8.0-r4-javadoc.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jfxtras-common-8.0-r4-javadoc.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jfxtras-window-8.0-r4-javadoc.jar" path-in-jar="/" />
+      <element id="library" level="module" name="Gradle: C__Users_Haruki_IdeaProjects_14r4113_2015_libs_jfoenix_jar" module-name="14r4113-2015" />
+      <element id="library" level="module" name="Gradle: C__Users_Haruki_IdeaProjects_14r4113_2015_libs_controlsfx_8_20_8_jar" module-name="14r4113-2015" />
+      <element id="library" level="module" name="Gradle: C__Users_Haruki_IdeaProjects_14r4113_2015_libs_controlsfx_samples_8_20_8_jar" module-name="14r4113-2015" />
+    </root>
+  </artifact>
+</component>

@@ -1,0 +1,42 @@
+INSTRUCTION:
+    MACHINE{
+	ADDA(),
+	ADDL,
+	AND,
+	CALL,
+	CPA,
+	CPL,
+	JMI,
+	JNZ,
+	JOV,
+	JPL,
+	JUMP,
+	JZE,
+	LAD,
+	LD,
+	NOP,
+	OR,
+	POP,
+	PUSH,
+	RET,
+	SLA,
+	SLL,
+	SRA,
+	SRL,
+	ST,
+	SUBA,
+	SUBL,
+	SVC,
+	XOR}
+MACRO{
+RPOP,
+RPUSH,
+IN,
+OUT}
+
+ASSEMBLER{
+START,
+END,
+DC,
+DS,
+}
