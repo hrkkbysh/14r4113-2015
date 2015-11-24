@@ -3,22 +3,15 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 
+version = '1.8' // -target
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    compile files('libs/jfoenix.jar')
-    compile files('libs/controlsfx-8.20.8.jar')
-    compile files('libs/controlsfx-samples-8.20.8.jar')
-    compile files('libs/richtextfx-fat-0.6.10.jar')
-    compile files('libs/openjfx-dialogs-1.0.2.jar')
-    compile files('libs/jfxtras-menu-8.0-r4.jar')
-    compile files('libs/jfxtras-common-8.0-r4.jar')
-    compile files('libs/jfxtras-controls-8.0-r4.jar')
-    compile files('libs/jfxtras-fxml-8.0-r4.jar')
-    compile files('libs/jfxtras-labs-8.0-r4.jar')
-    compile files('libs/jfxtras-window-8.0-r4.jar')
-
+    // lib フォルダ直下の jar を全て指定
+    compile fileTree(dir: 'lib', include: '*.jar')
     testCompile group: 'junit', name: 'junit', version: '4.11'
+
 }
