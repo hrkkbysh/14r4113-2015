@@ -1,4 +1,7 @@
 package assembler;
 
-/*マーカーインタフェース*/
-public interface Symbol {}
+/**
+ * Created by Haruki on 2015/11/29.
+ */
+public interface Symbol {
+}

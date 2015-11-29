@@ -2,6 +2,6 @@ package assembler;
 
 public interface Parser {
 
-	void program();
+	void enter();
 
 }

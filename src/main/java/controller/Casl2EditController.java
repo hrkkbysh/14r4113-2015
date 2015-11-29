@@ -8,6 +8,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
@@ -291,7 +292,7 @@ public class Casl2EditController extends BorderPane implements Initializable,Con
 
 			activeEditor.setPath(file.getPath());
 
-			Files.write(Paths.get(activeEditor.getPath()), bytes);
+			Files.write(Paths.get(activeEditor.getPath()), bytes, StandardOpenOption.CREATE_NEW);
 			activeEditor.getUndoManager().mark();
 
 		} catch (IOException ex) {
@@ -381,10 +382,19 @@ public class Casl2EditController extends BorderPane implements Initializable,Con
 	void assembleAction(ActionEvent event) {
 	String code = activeEditor.getCodeArea().getText();
 		System.out.println(code);
-		Lexer lexer = new Casl2Lexer(code);
+		Casl2Lexer lexer = new Casl2Lexer(code);
 		BinaryGenerator bg = new Comet2BG(new Comet2InstructionTable(),new LabelTable());
+		bg.setPath(activeEditor.getPath());
 		Casl2Parser parser = new Casl2Parser(lexer,bg);
-		parser.program();
+		parser.enter();
+
+		/*StringBuilder buf = new StringBuilder();
+		for(Token token = lexer.nextToken();token.getSymbol()!= Casl2Symbol.EOF;token = lexer.nextToken(),buf = new StringBuilder()){
+			buf.append("[ ");buf.append(token.getToken());
+			buf.append(": ");buf.append(token.getSymbol().toString());
+			buf.append(" ]");
+			System.out.print(buf.toString());
+		}*/
 	}
 
 	@FXML

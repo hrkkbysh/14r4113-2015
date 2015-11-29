@@ -6,18 +6,21 @@ import java.util.List;
 public class LabelSymbol {
 	private String name;
 	private int defineLocation;
-	private List<Integer> refineLocation;
+	private List<Integer> refineLocations;
+	private List<Integer> proRefLocs;
 	
-	public LabelSymbol(String name, int defineLocation, int refineLocation) {
+	public LabelSymbol(String name, int defineLocation, int refineLocations) {
 		this.name = name;
 		this.defineLocation = defineLocation;
-		this.refineLocation = new ArrayList<>();
-		this.refineLocation.add(refineLocation);
+		this.refineLocations = new ArrayList<>();
+		this.proRefLocs = new ArrayList<>();
+		this.refineLocations.add(refineLocations);
 	}
 	public LabelSymbol(String name, int defineLocation) {
 		this.name = name;
 		this.defineLocation = defineLocation;
-		this.refineLocation = new ArrayList<>();
+		this.refineLocations = new ArrayList<>();
+		this.proRefLocs = new ArrayList<>();
 	}
 
 	public String getName() {
@@ -28,8 +31,11 @@ public class LabelSymbol {
 		return defineLocation;
 	}
 
-	public List<Integer> getRefineLocation() {
-		return refineLocation;
+	public List<Integer> getRefineLocations() {
+		return refineLocations;
+	}
+	public List<Integer> getProRefLocs() {
+		return proRefLocs;
 	}
 
 	public void setName(String name) {
@@ -40,8 +46,9 @@ public class LabelSymbol {
 		this.defineLocation = defineLocation;
 	}
 
-	public void addRefineLocation(int refineLocation) {
-		this.refineLocation.add(refineLocation);
+	public void addRefineLocations(int refineLocation,int proRefLoc) {
+		this.proRefLocs.add(proRefLoc);
+		this.refineLocations.add(refineLocation);
 	}
 	
 }

@@ -1,40 +1,29 @@
 package casl2;
 
 import assembler.BinaryGenerator;
-import assembler.Lexer;
 import assembler.Parser;
-import assembler.Token;
-
 import static casl2.Casl2Symbol.*;
 
-import java.net.URISyntaxException;
-import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Casl2Parser implements Parser {
-	private Lexer lexer;
+	private Casl2Lexer lexer;
 	private BinaryGenerator bg;
 	private ErrorTable errorTable;
-	private boolean hasError=false;
-	private AtomicInteger asmlc;
-	{
-		try {
-			errorTable = new ErrorTable(Casl2Parser.class.getResource("ErrorDictionary.txt"));
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
-	}
+	private AtomicInteger asmLC;
+	private Casl2Token token;
 
-
-	public Casl2Parser(Lexer lexer, BinaryGenerator bg) {
+	public Casl2Parser(Casl2Lexer lexer, BinaryGenerator bg) {
 		this.lexer = lexer;
 		this.bg = bg;
-		asmlc = new AtomicInteger(0);
+		asmLC = new AtomicInteger(0);
+		errorTable = ErrorTable.getInstance();
 	}
 
 	@Override
-	public void program(){
-		for(Token token = lexer.nextToken();token.getSymbol()!=EOF;token = lexer.nextToken()){
+	public void enter(){
+		errorTable.clear();
+		for(token = lexer.nextToken();token.getSymbol()!=EOF;token = lexer.nextToken()){
 			if(token.getSymbol()==LABEL){
 				bg.setProgramName(token.getToken());
 				token = lexer.nextToken();
@@ -45,26 +34,44 @@ public class Casl2Parser implements Parser {
 						if(token.getSymbol()==LABEL){
 							bg.setStartAdr(token.getToken());
 							token = lexer.nextToken();
-						}else{
-							bg.setStartAdr();
 						}
-						if(token.getSymbol()==Casl2Symbol.EOL){
+						if(token.getSymbol()== Casl2Symbol.EOL){
+							asmLC.getAndIncrement();
+							bg.setStartAdr();
 							content();
-							if(!hasError) {
-								bg.genFile();
-							}
+							bg.genFile();
+							continue;
+						}else{
+							errorTable.writeTemp(asmLC.get(),token,"START命令のシンタックスエラー");
 						}
 					}
+				}else{
+					errorTable.writeTemp(asmLC.get(),token,"最初にSTART命令を記述してください");
+				}
+			}else{
+				token = lexer.nextToken();
+				if(token.getSymbol()==ASSEMBLERINST) {
+					Casl2Instruction cai = Casl2Instruction.valueOf(token.getToken());
+					if (cai == Casl2Instruction.START) {
+						errorTable.writeTemp(asmLC.get(), token, "START命令のシンタックスエラー(最初のラベルがない)");
+					}
+				}else{
+					errorTable.writeTemp(asmLC.get(), token, "最初の命令はSTART命令を記述する必要があります。");
 				}
 			}
+			asmLC.getAndIncrement();
+			setNextLine(token);
+			content();
 		}
 	}
 
 
 	private void content() {
-		for(Token token = lexer.nextToken();token.getSymbol()==EOF;token = lexer.nextToken()){
+		for(token = lexer.nextToken();token.getSymbol()!=EOF;token = lexer.nextToken()){
 			if(token.getSymbol() == LABEL){
-				bg.defineLabel(token.getToken());
+				if(!bg.defineLabel(token.getToken())){
+					errorTable.writeTemp(asmLC.get(), token, "二重定義");
+				}
 				token = lexer.nextToken();
 			}
 
@@ -74,24 +81,34 @@ public class Casl2Parser implements Parser {
 					switch(cai){
 						case DC:
 							token = lexer.nextToken();
-							label:if(checkConstant(token)){
-								bg.genAdrCode(token, Comet2BG.Immediate.NO);
-								if(lexer.nextToken().getSymbol()==COMMA){
-									token = lexer.nextToken();
-									break label;
+							if(checkConstant(token.getSymbol())){
+								bg.genAdrCode(token, asmLC.get());
+								for(token = lexer.nextToken();token.getSymbol()==COMMA;token = lexer.nextToken()){
+									if(checkConstant(token.getSymbol())) {
+										bg.genAdrCode(token, asmLC.get());
+									}else{
+										errorTable.writeTemp(asmLC.get(),token,"DC シンタックスエラー");
+									}
 								}
+							}else{
+								errorTable.writeTemp(asmLC.get(),token,"DC シンタックスエラー");
 							}
 							break;
 						case DS:
 							token = lexer.nextToken();
-							if(token.getSymbol()==Casl2Symbol.NUM_CONST){
+							if(token.getSymbol()== Casl2Symbol.NUM_CONST){
 								bg.genDSArea(Integer.parseInt(token.getToken()));
+							}else{
+								errorTable.writeTemp(asmLC.get(),token,"DS シンタックスエラー");
 							}
 							break;
 						case START:
-							//errorTable.write(token);
+							errorTable.writeTemp(asmLC.get(),token,"START命令の位置が不適切です。");
+							break;
 						case END:
 							bg.setEndAdr();
+							token = lexer.nextToken();
+							checkEOL();
 							return;
 					}
 					break;
@@ -106,13 +123,16 @@ public class Casl2Parser implements Parser {
 									token = lexer.nextToken();
 									if(token.getSymbol()==REGISTER){
 										Comet2Register r2 = Comet2Register.valueOf(token.getToken());
-										if(lexer.nextToken().getSymbol()==EOL){
-											bg.genSingleWordCode(coi, r1, r2, Comet2BG.AddressingMode.REGISTER);
-										}
-									}else if(token.getSymbol()==LABEL){
-										adr_x(coi, r1, token);
+										bg.genSingleWordCode(coi, r1, r2, Comet2BG.AddressingMode.REGISTER);
+										token = lexer.nextToken();
+									}else{
+										adr_x(coi, r1);
 									}
+								}else{
+									errorTable.writeTemp(asmLC.get(),token,"カンマが不足しています");
 								}
+							}else{
+								errorTable.writeTemp(asmLC.get(),token,"第一オペランドがレジスタではありません。");
 							}
 							break;
 						case 3:
@@ -121,27 +141,31 @@ public class Casl2Parser implements Parser {
 								Comet2Register r = Comet2Register.valueOf(token.getToken());
 								if(lexer.nextToken().getSymbol()==COMMA){
 									token = lexer.nextToken();
-									adr_x(coi, r, token);
+									adr_x(coi, r);
+								}else{
+									errorTable.writeTemp(asmLC.get(),token,"カンマが不足しています");
 								}
+							}else{
+								errorTable.writeTemp(asmLC.get(),token,"第一オペランドがレジスタではありません。");
 							}
 							break;
 						case 2:
 							token = lexer.nextToken();
-							adr_x(coi, Comet2Register.GR0,token);
+							adr_x(coi, Comet2Register.GR0);
 							break;
 						case 1:
 							token = lexer.nextToken();
 							if(token.getSymbol()==REGISTER){
 								Comet2Register r = Comet2Register.valueOf(token.getToken());
-								if(lexer.nextToken().getSymbol()==EOL){
-									bg.genRegStackCode(coi, r);
-								}
+								bg.genRegStackCode(coi, r);
+								token = lexer.nextToken();
+							}else{
+								errorTable.writeTemp(asmLC.get(),token,"第一オペランドがレジスタではありません。");
 							}
 							break;
 						case 0:
-							if(lexer.nextToken().getSymbol()==EOL){
-								bg.genNoOpCode(coi);
-							}
+							bg.genNoOpCode(coi);
+							token =lexer.nextToken();
 							break;
 					}
 					break;
@@ -150,9 +174,8 @@ public class Casl2Parser implements Parser {
 					switch(mai){
 						case RPOP:
 						case RPUSH:
-							if(lexer.nextToken().getSymbol()==EOL){
-								bg.genMacroBlock(mai);
-							}
+							bg.genMacroBlock(mai);
+							token = lexer.nextToken();
 							break;
 						case IN:
 						case OUT:
@@ -163,14 +186,18 @@ public class Casl2Parser implements Parser {
 									token = lexer.nextToken();
 									if(token.getSymbol()==LABEL){
 										String lenLabel =token.getToken();
-										if(lexer.nextToken().getSymbol()==EOL){
-											bg.genMacroBlock(mai,bufLabel,lenLabel);
-										}
+										bg.genMacroBlock(mai, bufLabel, lenLabel, asmLC.get());
+										token = lexer.nextToken();
+									}else{
+										errorTable.writeTemp(asmLC.get(),token,"第二オペランドにラベルを記述する必要があります。");
 									}
+								}else{
+									errorTable.writeTemp(asmLC.get(),token,"カンマが不足しています");
 								}
+							}else{
+								errorTable.writeTemp(asmLC.get(),token,"第一オペランドにラベルを記述する必要があります。");
 							}
 							break;
-						default: break;
 					}
 					break;
 				case LABEL:
@@ -192,71 +219,88 @@ public class Casl2Parser implements Parser {
 				case ERROR:
 					break;
 				default:
-					//	errorTable.write(token);
 			}
-
+			checkEOL();
 		}
 	}
 
-	private void adr_x(Comet2Instruction coi, Comet2Register r1,Token token) {
-		Token adr = Casl2Token.newInstance(token);
+	private void checkEOL() {
+		if(!(token.getSymbol()==EOL)){
+			errorTable.writeTemp(asmLC.get(),token,"not EOL");
+			setNextLine(token);
+		}
+		asmLC.incrementAndGet();
+	}
+	private void setNextLine(Casl2Token token){
+		while (token.getSymbol()!=EOL) {
+			token = lexer.nextToken();
+		}
+	}
+
+	private void adr_x(Comet2Instruction coi, Comet2Register r1) {
+		Casl2Token adr = new Casl2Token(token.getSymbol(),token.getToken());
 		if(checkAddress(token.getSymbol())){
-			if(lexer.nextToken().getSymbol()==COMMA){
+			token = lexer.nextToken();
+			if(token.getSymbol()==COMMA){
 				token=lexer.nextToken();
 				if(token.getSymbol() == REGISTER){
 					Comet2Register x = Comet2Register.valueOf(token.getToken());
 					if(x.getCode()!=0){
-						if(lexer.nextToken().getSymbol()==EOL){
-							bg.genSingleWordCode(coi, r1, x, Comet2BG.AddressingMode.INDEX);
-							bg.genAdrCode(adr, Comet2BG.Immediate.NO);
-						}
+						bg.genSingleWordCode(coi, r1, x, Comet2BG.AddressingMode.INDEX);
+						bg.genAdrCode(adr, asmLC.get());
+						token = lexer.nextToken();
+					}else{
+						errorTable.writeTemp(asmLC.get(),token,"GR0はインデックスレジスタとして使えません。");
 					}
+				}else{
+					errorTable.writeTemp(asmLC.get(),token,"不適切なオペランドです。第三オペランドはインデックスレジスタを指定してください。");
 				}
 			}else{
-				if(lexer.nextToken().getSymbol()==EOL){
-					bg.genSingleWordCode(coi, r1, Comet2Register.GR0, Comet2BG.AddressingMode.INDEX);
-					bg.genAdrCode(adr, Comet2BG.Immediate.NO);
-				}
+				bg.genSingleWordCode(coi, r1, Comet2Register.GR0, Comet2BG.AddressingMode.INDEX);
+				bg.genAdrCode(adr, asmLC.get());
 			}
+		}else if(token.getSymbol()==EQUAL){
+			token = lexer.nextToken();
+			if(checkLit(token.getSymbol())) {
+				adr = new Casl2Token(token.getSymbol(), token.getToken());
+				token = lexer.nextToken();
+				if (token.getSymbol() == COMMA) {
+					token = lexer.nextToken();
+					if (token.getSymbol() == REGISTER) {
+						Comet2Register x = Comet2Register.valueOf(token.getToken());
+						if (x.getCode() != 0) {
+							bg.genSingleWordCode(coi, r1, x, Comet2BG.AddressingMode.INDEX);
+							bg.genImmediateCode(adr, asmLC.get());
+							token = lexer.nextToken();
+						} else {
+							errorTable.writeTemp(asmLC.get(), token, "GR0はインデックスレジスタとして使えません。");
+						}
+					} else {
+						errorTable.writeTemp(asmLC.get(), token, "不適切なオペランドです。第三オペランドはインデックスレジスタを指定してください。");
+					}
+				} else {
+					bg.genSingleWordCode(coi, r1, Comet2Register.GR0, Comet2BG.AddressingMode.INDEX);
+					bg.genImmediateCode(adr, asmLC.get());
+				}
+			}else{
+				errorTable.writeTemp(asmLC.get(),token,"リテラルの記述が間違っています。");
+			}
+		}else{
+			errorTable.writeTemp(asmLC.get(),token,"アドレスの記述が間違っています。");
 
-		}else if(checkLit(token)){
-			adr = Casl2Token.newInstance(token);
-			if(lexer.nextToken().getSymbol()==COMMA){
-				token=lexer.nextToken();
-				if(token.getSymbol() == REGISTER){
-					Comet2Register x = Comet2Register.valueOf(token.getToken());
-					if(x.getCode()!=0){
-						if(lexer.nextToken().getSymbol()==EOL){
-							bg.genSingleWordCode(coi, r1, x, Comet2BG.AddressingMode.INDEX);
-							bg.genAdrCode(adr, Comet2BG.Immediate.YES);
-						}
-					}
-				}
-			}else{
-				if(lexer.nextToken().getSymbol()==EOL){
-					bg.genSingleWordCode(coi, r1, Comet2Register.GR0, Comet2BG.AddressingMode.INDEX);
-					bg.genAdrCode(adr, Comet2BG.Immediate.YES);
-				}
-			}
 		}
 	}
+
 
 	private boolean checkAddress(Casl2Symbol symbol){
 		return symbol==LABEL|| symbol==NUM_CONST || symbol == STR_CONST;
 	}
 
-	private boolean checkConstant(Token token) {
-		Casl2Symbol symbol = token.getSymbol();
+	private boolean checkConstant(Casl2Symbol symbol) {
 		return symbol == NUM_CONST || symbol == STR_CONST || symbol == LABEL;
 	}
 
-	private boolean checkLit(Token token){
-		if(token.getSymbol()==EQUAL){
-			token = lexer.nextToken();
-			Casl2Symbol constCand = token.getSymbol();
-			if(constCand==NUM_CONST||constCand==STR_CONST)
-				return true;
-		}
-		return false;
+	private boolean checkLit(Casl2Symbol symbol){
+		return (symbol==NUM_CONST||symbol==STR_CONST);
 	}
 }

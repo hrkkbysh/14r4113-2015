@@ -11,6 +11,6 @@ public interface Lexer {
 	void advance();
 
 	/** Ensure x is next character on the input stream */
-	void match(char x);
+	boolean match(char x);
 
 }

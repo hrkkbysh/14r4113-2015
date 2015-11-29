@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class SymbolTable {
 
-	private static final Map<String,Casl2Symbol> symbolMap = new HashMap<>();
+	private static final Map<String, Casl2Symbol> symbolMap = new HashMap<>();
 	static {
 		for (Comet2Instruction coi : Comet2Instruction.values())
 			symbolMap.put(coi.toString(), Casl2Symbol.MACHINEINST);

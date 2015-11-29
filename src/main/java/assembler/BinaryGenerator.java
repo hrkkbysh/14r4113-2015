@@ -1,9 +1,6 @@
 package assembler;
 
-import casl2.Comet2BG;
-import casl2.Comet2Instruction;
-import casl2.Comet2Register;
-import casl2.MacroInstruction;
+import casl2.*;
 
 import java.util.Collection;
 
@@ -37,10 +34,13 @@ public interface BinaryGenerator {
 	void genNoOpCode(Comet2Instruction mnemonic);
 
 	/*  */
-	void genAdrCode(Token adr, Comet2BG.Immediate mode);
+	void genAdrCode(Casl2Token adr,int proLC);
+
+	/*  */
+	void genImmediateCode(Casl2Token adr,int proLC);
 
 	/* */
-	void genMacroBlock(MacroInstruction macro, String bufLabel, String lenLabel);
+	void genMacroBlock(MacroInstruction macro, String bufLabel, String lenLabel,int proLC);
 
 	/* */
 	void genMacroBlock(MacroInstruction macro);
@@ -50,7 +50,7 @@ public interface BinaryGenerator {
 
 	/*
          *  */
-	void defineLabel(String symbolName);
+	boolean defineLabel(String symbolName);
 
 	void setProgramName(String proName);
 }

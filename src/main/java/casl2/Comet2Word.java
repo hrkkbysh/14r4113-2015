@@ -10,9 +10,9 @@ public class Comet2Word implements QuasiWord {
 	public Comet2Word(int content) {
 		super();
 		if(areaCheck(content)){
-			this.content = new SimpleIntegerProperty(content);
 			this.setWordType(true);
 		}
+		this.content = new SimpleIntegerProperty(content);
 		this.setWordType(false);
 	}
 	public Comet2Word() {
