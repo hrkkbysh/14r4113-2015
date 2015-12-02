@@ -114,5 +114,15 @@ public class ErrorTable {
 		errorMessages.clear();
 		errorCount=0;
 		warningCount=0;
-	};
+	}
+
+	public void writeError(int line,int errorType,String sval){}
+    public void writeError(int line,int errorType,int nval){}
+    public void writeError(int line,int errorType,char cval){}
+    public void writeError(int line,int errorType){}
+
+    public void writeWarning(int line,int errorType,String sval){}
+    public void writeWarning(int line,int errorType,int nval){}
+    public void writeWarning(int line,int errorType,char cval){}
+    public void writeWarning(int line,int errorType){}
 }

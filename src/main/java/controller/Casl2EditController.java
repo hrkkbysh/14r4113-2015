@@ -1,10 +1,8 @@
 package controller;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 /**
  * Sample Skeleton for 'Casl2EditScene.fxml' Controller Class
  */
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -13,10 +11,9 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 
-import assembler.BinaryGenerator;
-import assembler.Lexer;
-import assembler.Token;
 import casl2.*;
+import casl2.casl2ex.Casl2LexerA;
+import casl2.casl2ex.Casl2SymbolA;
 import editor.BaseEditor;
 import editor.Casl2SyntaxPattern;
 import editor.CustomEditor;
@@ -292,7 +289,7 @@ public class Casl2EditController extends BorderPane implements Initializable,Con
 
 			activeEditor.setPath(file.getPath());
 
-			Files.write(Paths.get(activeEditor.getPath()), bytes, StandardOpenOption.CREATE_NEW);
+			Files.write(Paths.get(activeEditor.getPath()), bytes, StandardOpenOption.CREATE_NEW,StandardOpenOption.WRITE);
 			activeEditor.getUndoManager().mark();
 
 		} catch (IOException ex) {
@@ -380,13 +377,39 @@ public class Casl2EditController extends BorderPane implements Initializable,Con
 
 	@FXML
 	void assembleAction(ActionEvent event) {
-	String code = activeEditor.getCodeArea().getText();
+/*	String code = activeEditor.getCodeArea().getText();
 		System.out.println(code);
 		Casl2Lexer lexer = new Casl2Lexer(code);
 		BinaryGenerator bg = new Comet2BG(new Comet2InstructionTable(),new LabelTable());
 		bg.setPath(activeEditor.getPath());
 		Casl2Parser parser = new Casl2Parser(lexer,bg);
-		parser.enter();
+		parser.enter();*/
+        try {
+            InputStreamReader is = new InputStreamReader(new FileInputStream(activeEditor.getPath()));
+            Casl2LexerA lexerLexer = new Casl2LexerA(is);
+           /* try {
+                for(Casl2SymbolA symbol = lexerLexer.nextToken();symbol!=Casl2SymbolA.EOF;symbol = lexerLexer.nextToken() ){
+                   System.out.print("Symbol : " + symbol.toString());
+                   *//* if(symbol == Casl2Symbol.MACHINEINST || symbol == Casl2Symbol.ASSEMBLERINST  || symbol == Casl2Symbol.LABEL
+                            || symbol == Casl2Symbol.MACROINST || symbol == Casl2Symbol.REGISTER || symbol == Casl2Symbol.STR_CONST){
+                        System.out.print("{ sval : " + lexerLexer.getSval() + " } ");
+                    }else if(symbol == Casl2Symbol.NUM_CONST){
+                        System.out.print("{ nval : " + lexerLexer.getNval() +" } ");
+                    }*//*
+                }
+            } *//*catch (IOException e) {
+                e.printStackTrace();
+            }*/
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        System.out.println();
+        for(int i = 0; i<70; i++){
+            System.out.println("private Casl2Symbol state" +i+"()throws IOException{}");
+        }
+        for(int i = 0; i<7; i++){
+            System.out.println("private Casl2Symbol stateL" +i+"()throws IOException{}");
+        }
 
 		/*StringBuilder buf = new StringBuilder();
 		for(Token token = lexer.nextToken();token.getSymbol()!= Casl2Symbol.EOF;token = lexer.nextToken(),buf = new StringBuilder()){

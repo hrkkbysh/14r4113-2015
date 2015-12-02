@@ -6,8 +6,10 @@
       <w>imtoken</w>
       <w>machineinst</w>
       <w>macroinst</w>
+      <w>nval</w>
       <w>rpop</w>
       <w>rpush</w>
+      <w>sval</w>
     </words>
   </dictionary>
 </component>

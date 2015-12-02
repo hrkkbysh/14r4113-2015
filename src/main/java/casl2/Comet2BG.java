@@ -239,6 +239,9 @@ public class Comet2BG implements BinaryGenerator {
 	/* */
 	@Override
 	public void genDSArea(int dataSize) {
+		for(int i = 0;i<dataSize; i++){
+			machinecode.put(lc.getAndIncrement(),new ObjCode(new Comet2Word(-1),ObjType.DATA));
+		}
 		lc.addAndGet(dataSize);
 	}
 
