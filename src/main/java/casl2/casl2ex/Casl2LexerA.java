@@ -13,7 +13,7 @@ public class Casl2LexerA {
 
     private ErrorTable errorTable;
     private String sval;
-    private int nval;
+    private int nval;///////
     private int line = 1;
     private InputStreamReader input;
 
