@@ -1,7 +1,5 @@
 package casl2.casl2ex;
 
-import assembler.Token;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
@@ -26,7 +24,7 @@ public class ErrorTable {
 		errorCount =0;
 		warningCount = 0;
 		try {
-			byte[] bytes = Files.readAllBytes(Paths.get(System.getProperty("user.dir")+"/src/main/resources/ErrorDictionary.txt"));
+			byte[] bytes = Files.readAllBytes(Paths.get(System.getProperty("user.dir")+"/src/main/resources/MyErrorDictionary.txt"));
 
 			String code;
 			try {

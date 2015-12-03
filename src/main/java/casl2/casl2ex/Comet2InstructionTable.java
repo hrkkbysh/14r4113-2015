@@ -159,36 +159,36 @@ public class Comet2InstructionTable {
 	private static final int LEN = -1;
 	private static final Map<Casl2Symbol,Integer[]> macroInstMap = new EnumMap<>(Casl2Symbol.class);
 	static{
-		Integer[] INBLOCK={28673,0,
+		Integer[] IN_BLOCK={28673,0,
 				28674,0,
 				4609,BUF,
 				4610,LEN,
 				61440,1,
 				28960,28944,
-		},OUTBLOCK={28673,0,
+		},OUT_BLOCK={28673,0,
 				28674,0,
 				4609,BUF,
 				4610,LEN,
 				61440,2,
 				28960,28944
-		},RPOPBLOCK= {29040,
+		},RPOP_BLOCK= {29040,
 				29024,
 				29008,
 				28992,
 				28976,
 				28960,
 				28944
-		},RPUSHBLOCK={28673,0,
+		},RPUSH_BLOCK={28673,0,
 				28674,0,
 				28675,0,
 				28676,0,
 				28677,0,
 				28678,0,
-				28679,0},ERROR={-1};;
-		macroInstMap.put(IN, INBLOCK);
-		macroInstMap.put(OUT, OUTBLOCK);
-		macroInstMap.put(RPOP, RPOPBLOCK);
-		macroInstMap.put(RPUSH, RPUSHBLOCK);
+				28679,0};
+		macroInstMap.put(IN, IN_BLOCK);
+		macroInstMap.put(OUT, OUT_BLOCK);
+		macroInstMap.put(RPOP, RPOP_BLOCK);
+		macroInstMap.put(RPUSH, RPUSH_BLOCK);
 	}
 	public Integer[] findFromMacroInst(Casl2Symbol macro){
 		return macroInstMap.getOrDefault(macro, macroInstMap.get(Casl2Symbol.ERROR));

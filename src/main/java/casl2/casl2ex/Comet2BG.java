@@ -10,24 +10,22 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Comet2BG {
     private Comet2InstructionTable insttable;
-    private LabelTable labelTable;
+    private SymbolTable symbolTable;
     private ErrorTable errorTable;
     private List<ImmediateData> imDatas = new ArrayList<>();
-    private int startAdr;
+    private int startAdr = 0;
     private int endAdr;
     private String programName;
-    private String startLabel;
     private AtomicInteger lc;
 
     private String filepath;
-    private Map<Integer,ObjCode> machinecode= new HashMap<>();
+    private Map<Integer,ObjCode> machineCodes = new HashMap<>();
 
-    public Comet2BG(Comet2InstructionTable instTable, LabelTable labelTable) {
+    public Comet2BG(Comet2InstructionTable instTable,SymbolTable symbolTable) {
         this.insttable = instTable;
-        this.labelTable = labelTable;
+        this.symbolTable = symbolTable;
         init();
     }
-
 
     public void setPath(String filepath){
         this.filepath = filepath;
@@ -35,13 +33,13 @@ public class Comet2BG {
 
     public void init(){
         lc = new AtomicInteger(0);
-        machinecode.clear();
+        machineCodes.clear();
         errorTable = ErrorTable.getInstance();
     }
 
     /*  */
-    public void setStartAdr(String startLabel) {
-        this.startLabel = startLabel;
+    public void setStartAdr(int startAdr) {
+        this.startAdr = startAdr;
     }
     public void setStartAdr() {
         this.startAdr = lc.get();
@@ -67,7 +65,7 @@ public class Comet2BG {
                 buf.append("SIZE");
                 buf.append(this.endAdr);
                 buf.append(System.lineSeparator());
-                for (Map.Entry<Integer, ObjCode> code : machinecode.entrySet()) {
+                for (Map.Entry<Integer, ObjCode> code : machineCodes.entrySet()) {
                     buf.append(code.getKey());
                     buf.append(',');
                     buf.append(code.getValue().getCode().getContent());
@@ -91,31 +89,39 @@ public class Comet2BG {
     }
 
     private boolean step2() {
-        for(LabelSymbol ls: labelTable.getLabelTable()){
+        for(LabelSymbol ls: symbolTable.getLblTbl()){
             int defLoc = ls.getDefineLocation();
             if(defLoc!= -1){
                 for(int refLoc: ls.getRefineLocations()){
-                    machinecode.put(refLoc,new ObjCode(defLoc,ObjType.CODE));
+                    machineCodes.put(refLoc, new ObjCode(defLoc, ObjType.CODE));
                 }
             }else{
+                String unSolvedSymbol = SymbolTable.getLabel(ls.getID());
                 for(int proRefLoc: ls.getProRefLocs()){
-                    errorTable.writeError(proRefLoc,1,ls.getName());//,"�������̃��x��");
+                    errorTable.writeError(proRefLoc,19,unSolvedSymbol);
                 }
                 return false;
             }
         }
         for(ImmediateData imtoken: imDatas){
-            machinecode.put(imtoken.getRefineLocation(),new ObjCode(lc.getAndIncrement(),ObjType.ADDRESS));
-            
-        }
-        if(startLabel!=null){
-            for(LabelSymbol ls : labelTable.getLabelTable()){
-                if(ls.getName().equals(startLabel)){
-                    startAdr = ls.getDefineLocation();
-                    return true;
-                }
+            if(!imtoken.getImmediateValue()[0].isData()){
+                int id = imtoken.getImmediateValue()[0].getContent() >>16;
+                LabelSymbol ls = symbolTable.searchLabel(id);
+                machineCodes.put(imtoken.getRefineLocation(), new ObjCode(lc.getAndIncrement(), ObjType.CODE));
+                machineCodes.put(lc.get(), new ObjCode(ls.getDefineLocation(), ObjType.ADDRESS));
+                continue;
             }
-            return false;
+            for(Comet2Word word :imtoken.getImmediateValue()) {
+                machineCodes.put(imtoken.getRefineLocation(), new ObjCode(word.getContent(), ObjType.ADDRESS));
+            }
+        }
+        if(startAdr!=0){
+            LabelSymbol ls = symbolTable.searchLabel(startAdr);
+            if(ls != null) {
+                startAdr = ls.getDefineLocation();
+            }else {
+                return false;
+            }
         }
         return  true;
     }
@@ -140,16 +146,16 @@ public class Comet2BG {
         code += mode; code <<= 4;
         code += r1;   code <<= 4;
         code += r2;
-        machinecode.put(lc.getAndIncrement(),new ObjCode( code , ObjType.CODE ) );
+        machineCodes.put(lc.getAndIncrement(), new ObjCode(code, ObjType.CODE));
     }
 
     /* */
-    public void genMacroBlock(Casl2Symbol  macro, String bufLabel, String lenLabel,int proLC) {
+    public void genMacroBlock(Casl2Symbol  macro, int bufLabel, int lenLabel,int proLC) {
         Integer[] codeBlock = insttable.findFromMacroInst(macro);
-        labelTable.addRef(bufLabel,lc.get()+5,proLC);
-        labelTable.addRef(lenLabel,lc.get()+7,proLC);
+        symbolTable.addLblRefLoc(bufLabel, lc.get() + 5, proLC);
+        symbolTable.addLblRefLoc(lenLabel, lc.get() + 7, proLC);
         for (Integer aCodeBlock : codeBlock) {
-            machinecode.put(lc.getAndIncrement(), new ObjCode(aCodeBlock, ObjType.CODE));
+            machineCodes.put(lc.getAndIncrement(), new ObjCode(aCodeBlock, ObjType.CODE));
         }
     }
 
@@ -157,34 +163,34 @@ public class Comet2BG {
     public void genMacroBlock(Casl2Symbol  macro) {
         Integer[] codeBlock = insttable.findFromMacroInst(macro);
         for (Integer aCodeBlock : codeBlock) {
-            machinecode.put(lc.getAndIncrement(), new ObjCode(aCodeBlock, ObjType.CODE));
+            machineCodes.put(lc.getAndIncrement(), new ObjCode(aCodeBlock, ObjType.CODE));
         }
     }
 
     /* */
     public void genDSArea(int dataSize) {
         for(int i = 0;i<dataSize; i++){
-            machinecode.put(lc.getAndIncrement(),new ObjCode(-1,ObjType.DATA));
+            machineCodes.put(lc.getAndIncrement(), new ObjCode(-1, ObjType.DATA));
         }
         lc.addAndGet(dataSize);
     }
 
     /*
      *  */
-    public boolean defineLabel(String symbolName) {
-        return labelTable.addDef(symbolName, lc.get());
+    public boolean defineLabel(int symbolName) {
+        return symbolTable.addLblDefLoc(symbolName, lc.get());
     }
 
     public void genAdrCode(int nval) {
-        machinecode.put(lc.getAndIncrement(),new ObjCode(nval,ObjType.DATA));
+        machineCodes.put(lc.getAndIncrement(), new ObjCode(nval, ObjType.DATA));
     }
     public void genAdrCode(String sval) {
         for(int i = 0; i<sval.length();i++) {
-            machinecode.put(lc.getAndIncrement(), new ObjCode(sval.charAt(i), ObjType.DATA));
+            machineCodes.put(lc.getAndIncrement(), new ObjCode(sval.charAt(i), ObjType.DATA));
         }
     }
-    public void genAdrCode(String sval,int proLoc) {
-        labelTable.addRef(sval,lc.getAndIncrement(),proLoc);
+    public void genAdrCode(int nval,int proLoc) {
+        symbolTable.addLblRefLoc(nval, lc.getAndIncrement(), proLoc);
     }
 
     public void genImmCode(int nval) {
@@ -196,10 +202,8 @@ public class Comet2BG {
             imDatas.add(new ImmediateData(lc.getAndIncrement(),new Comet2Word(sval.charAt(i))));
         }
     }
-    public void genImmCode(String sval,int proLoc) {
-        for(int i = 0; i<sval.length();i++) {
-            imDatas.add(new ImmediateData(lc.getAndIncrement(),new Comet2Word(sval.charAt(i))));
-        }
+    public void genImmCode(int nval,int proLoc) {
+        symbolTable.addLblRefLoc(nval, lc.getAndIncrement(), proLoc);
     }
     /*以下，補助コード*/
     public class ObjCode {
@@ -229,17 +233,16 @@ public class Comet2BG {
     }
     private class ImmediateData{
         private final int refineLocation;
-        private final Comet2Word[] immediateValue;
+        private Comet2Word[] immediateValue;
         int getRefineLocation() {
             return refineLocation;
         }
         Comet2Word[] getImmediateValue() {
             return immediateValue;
         }
-        ImmediateData(int refineLocation, Comet2Word... immediateValue) {
+        ImmediateData(int refineLocation,Comet2Word... immediateValue) {
             this.refineLocation = refineLocation;
             this.immediateValue = Arrays.copyOf(immediateValue,immediateValue.length);
         }
     }
-
 }

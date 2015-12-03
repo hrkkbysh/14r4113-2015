@@ -1,8 +1,5 @@
 package casl2.casl2ex;
 
-/**
- * Created by Haruki on 2015/12/02.
- */
 public enum Casl2Symbol {
     ADDA,
     ADDL,

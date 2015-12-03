@@ -4,27 +4,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LabelSymbol {
-	private String name;
+	private int id;
 	private int defineLocation;
 	private List<Integer> refineLocations;
 	private List<Integer> proRefLocs;
 	
-	public LabelSymbol(String name, int defineLocation, int refineLocations) {
-		this.name = name;
+	public LabelSymbol(int id, int defineLocation, int refineLocations) {
+		this.id = id;
 		this.defineLocation = defineLocation;
 		this.refineLocations = new ArrayList<>();
 		this.proRefLocs = new ArrayList<>();
 		this.refineLocations.add(refineLocations);
 	}
-	public LabelSymbol(String name, int defineLocation) {
-		this.name = name;
+	public LabelSymbol(int id, int defineLocation) {
+		this.id = id;
 		this.defineLocation = defineLocation;
 		this.refineLocations = new ArrayList<>();
 		this.proRefLocs = new ArrayList<>();
 	}
 
-	public String getName() {
-		return name;
+	public int getID() {
+		return id;
 	}
 
 	public int getDefineLocation() {
@@ -36,10 +36,6 @@ public class LabelSymbol {
 	}
 	public List<Integer> getProRefLocs() {
 		return proRefLocs;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public void setDefineLocation(int defineLocation) {

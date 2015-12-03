@@ -150,7 +150,9 @@ public class Casl2Lexer {
             c = read();
         }while(true);
         sval = buf.toString();
-        return SymbolTable.searchSymbol(sval);
+        Casl2Symbol symbol = SymbolTable.searchSymbol(sval);
+        nval = symbol==LABEL ? SymbolTable.getLabelID():0 ;
+        return symbol;
     }
 
     public int getLine() {return line;}
