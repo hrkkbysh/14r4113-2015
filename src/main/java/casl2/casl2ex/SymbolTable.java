@@ -57,7 +57,7 @@ public class SymbolTable {
     public List<LabelSymbol> getLblTbl() {
         return lbltbl;
     }
-    public LabelSymbol searchLabel(int id){
+    public LabelSymbol searchLbltbl(int id){
         for(LabelSymbol ls: lbltbl){
             if(ls.getID()==id)
                 return ls;

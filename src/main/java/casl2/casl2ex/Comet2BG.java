@@ -104,10 +104,10 @@ public class Comet2BG {
             }
         }
         for(ImmediateData imtoken: imDatas){
+            machineCodes.put(imtoken.getRefineLocation(), new ObjCode(lc.getAndIncrement(), ObjType.CODE));
             if(!imtoken.getImmediateValue()[0].isData()){
                 int id = imtoken.getImmediateValue()[0].getContent() >>16;
-                LabelSymbol ls = symbolTable.searchLabel(id);
-                machineCodes.put(imtoken.getRefineLocation(), new ObjCode(lc.getAndIncrement(), ObjType.CODE));
+                LabelSymbol ls = symbolTable.searchLbltbl(id);
                 machineCodes.put(lc.get(), new ObjCode(ls.getDefineLocation(), ObjType.ADDRESS));
                 continue;
             }
@@ -116,16 +116,16 @@ public class Comet2BG {
             }
         }
         if(startAdr!=0){
-            LabelSymbol ls = symbolTable.searchLabel(startAdr);
+            LabelSymbol ls = symbolTable.searchLbltbl(startAdr);
             if(ls != null) {
                 startAdr = ls.getDefineLocation();
             }else {
+                errorTable.writeError(0,19,SymbolTable.getLabel(startAdr));
                 return false;
             }
         }
         return  true;
     }
-
 
     /*  */
     public void genSingleWordCode(Casl2Symbol mnemonic, Comet2Register r1, Comet2Register r2, AddressingMode mode){
@@ -170,7 +170,7 @@ public class Comet2BG {
     /* */
     public void genDSArea(int dataSize) {
         for(int i = 0;i<dataSize; i++){
-            machineCodes.put(lc.getAndIncrement(), new ObjCode(-1, ObjType.DATA));
+            machineCodes.put(lc.getAndIncrement(), new ObjCode(ObjType.DATA));
         }
         lc.addAndGet(dataSize);
     }
@@ -211,6 +211,10 @@ public class Comet2BG {
         ObjType type;
         public ObjCode(int value, ObjType type) {
             this.code = new Comet2Word(value);
+            this.type = type;
+        }
+        public ObjCode(ObjType type){
+            this.code = new Comet2Word();
             this.type = type;
         }
         public Comet2Word getCode() {
