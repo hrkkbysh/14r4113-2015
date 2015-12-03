@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 import static casl2.casl2ex.Casl2Symbol.*;
 
-public class Casl2LexerA {
+public class Casl2Lexer {
 
     private ErrorTable errorTable;
     private String sval;
@@ -19,7 +19,7 @@ public class Casl2LexerA {
 
         /*Unicode専用.
     * @param 入力ストリーム*/
-    public Casl2LexerA(InputStreamReader is){
+    public Casl2Lexer(InputStreamReader is){
         if(is == null){
             throw new NullPointerException();
         }
@@ -53,7 +53,7 @@ public class Casl2LexerA {
                 case 'O' : case 'P' : case 'Q' : case 'R' : case 'S' : case 'T' : case 'U' :
                 case 'V' : case 'W' : case 'X' : case 'Y' : case 'Z' : return KEYWORD(c);
                 default:
-                    errorTable.writeError(line, 0, (char) c);//"有効な識別子ではありません。"
+                    errorTable.writeError(line, 1, (char) c);//"有効な識別子ではありません。"
                     skipToEOL();
                     read();
                     return ERROR;
@@ -84,15 +84,12 @@ public class Casl2LexerA {
             else break;
             c = read();
         }
+        nval = v;
         if(0<=v && v<=65535) {
-            nval = v;
-            return NUM_CONST;
-        }else {
-            errorTable.writeError(line,1,v);//"16進定数hは 0000<=h<=FFFFの範囲で記述する必要があります。""
-            skipToEOL();
-            read();
-            return ERROR;
+            nval = v & 0x0000FFFF;
+            errorTable.writeWarning(line, 1,nval);//数値%nvalは1wordに収まらないため，16bit以降は切り捨てられました。
         }
+        return NUM_CONST;
     }
 
     private Casl2Symbol STR_CONST() throws IOException {
@@ -119,7 +116,7 @@ public class Casl2LexerA {
             sval = candidate;
             return STR_CONST;
         }else {
-            errorTable.writeError(line, 0,candidate);/// "有効な識別子ではありません。"
+            errorTable.writeError(line, 3,candidate);/// ",JIS X 0201に対応していない文字が含まれています。
             skipToEOL();
             read();
             return ERROR;
@@ -137,7 +134,7 @@ public class Casl2LexerA {
         nval = neg ? -v : v;
         if(!(-32768<=v && v<=65535)) {
             nval = v & 0x0000FFFF;
-            errorTable.writeWarning(line,0, nval);// "数値が16bitに切り捨てられました。"
+            errorTable.writeWarning(line,0, nval);// 数値%nvalは1wordに収まらないため，16bit以降は切り捨てられました。
         }else if(nval>=0) {
             return DS_CONST;
         }
@@ -164,6 +161,5 @@ public class Casl2LexerA {
         int c = read();
         while(c!='\n')
             c =read();
-
     }
 }

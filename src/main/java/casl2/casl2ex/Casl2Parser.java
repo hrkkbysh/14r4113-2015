@@ -8,15 +8,13 @@ import static casl2.casl2ex.Casl2Symbol.*;
 /**
  * Created by Haruki on 2015/12/02.
  */
-public class Casl2ParserA{
-    private Casl2LexerA lexer;
-    private Comet2BGA bg;
+public class Casl2Parser {
+    private Casl2Lexer lexer;
+    private Comet2BG bg;
     private ErrorTable errorTable;
-    private String sval;
-    private int nval;
 
 
-    public Casl2ParserA(Casl2LexerA lexer, Comet2BGA bg) {
+    public Casl2Parser(Casl2Lexer lexer, Comet2BG bg) {
         this.lexer = lexer;
         this.bg = bg;
         errorTable = ErrorTable.getInstance();
@@ -38,19 +36,18 @@ public class Casl2ParserA{
                         bg.setStartAdr();
                         content();
                         bg.genFile();
-                        continue;
                     } else {
-                        errorTable.writeError(lexer.getLine(), 1, lexer.getSval()); // "START命令のシンタックスエラー"
+                        errorTable.writeError(lexer.getLine(), 4, lexer.getSval()); // "START命令のシンタックスエラー"
                     }
                 } else {
-                    errorTable.writeError(lexer.getLine(), 1, lexer.getSval());//   "最初にSTART命令を記述してください"
+                    errorTable.writeError(lexer.getLine(), 5, lexer.getSval());//   "最初にSTART命令を記述してください"
                 }
             } else {
                 token = lexer.nextToken();
                 if (token == START) {
-                    errorTable.writeError(lexer.getLine(), 1, lexer.getSval());// "START命令のシンタックスエラー(最初のラベルがない)"
+                    errorTable.writeError(lexer.getLine(), 6, lexer.getSval());// "START命令のシンタックスエラー(最初のラベルがない)"
                 } else {
-                    errorTable.writeError(lexer.getLine(), 1, lexer.getSval());//"最初の命令はSTART命令を記述する必要があります。"
+                    errorTable.writeError(lexer.getLine(), 7, lexer.getSval());//"最初の命令はSTART命令を記述する必要があります。"
                 }
                 setNextLine();
                 content();
@@ -69,12 +66,14 @@ public class Casl2ParserA{
                     return;
                 case LABEL:
                     if (!bg.defineLabel(lexer.getSval())) {
-                        errorTable.writeError(lexer.getLine(), 1, lexer.getSval());//"二重定義"
+                        errorTable.writeError(lexer.getLine(), 8, lexer.getSval());//"二重定義"
                     }
                     token = lexer.nextToken();
             }
             Casl2Symbol mnemonic;
             boolean equal = false;
+            int nval;
+            String sval;
             switch(token){
                 case DC:
                     do {
@@ -91,7 +90,7 @@ public class Casl2ParserA{
                                 bg.genAdrCode(lexer.getSval(), lexer.getLine());
                                 break;
                             default:
-                                errorTable.writeError(lexer.getLine(), 1, token.toString());//no constant
+                                errorTable.writeError(lexer.getLine(), 9, token.toString());//no constant
                                 return;
                         }
                         token = lexer.nextToken();
@@ -102,11 +101,11 @@ public class Casl2ParserA{
                     if(token == DS_CONST){
                         bg.genDSArea(lexer.getNval());
                     }else{
-                        errorTable.writeError(lexer.getLine(), 1, token.toString());
+                        errorTable.writeError(lexer.getLine(), 10, token.toString());//DSシンタックスエラー．
                     }
                     break;
                 case START:
-                    errorTable.writeError(lexer.getLine(), 1);//START命令の位置が不適切です。
+                    errorTable.writeError(lexer.getLine(), 11);//START命令の位置が不適切です。
                     break;
                 case ADDA: case ADDL: case AND:
                 case CPA: case CPL: case LD:
@@ -119,11 +118,12 @@ public class Casl2ParserA{
                             switch(token) {
                                 case GR:
                                     Comet2Register r2 = Comet2Register.valueOf(lexer.getSval());
-                                    bg.genSingleWordCode(mnemonic, r1, r2, Comet2BGA.AddressingMode.REGISTER);
+                                    bg.genSingleWordCode(mnemonic, r1, r2, Comet2BG.AddressingMode.REGISTER);
                                     break;
                                 case EQUAL:
                                     equal = true;
                                     lexer.nextToken();
+                                default:  break;
                             }
                             switch(token){
                                 case LABEL:
@@ -132,7 +132,7 @@ public class Casl2ParserA{
                                         if(lexer.nextToken() == GR) {
                                             Comet2Register x = Comet2Register.valueOf(lexer.getSval());
                                             if (x.getCode() != 0) {
-                                                bg.genSingleWordCode(mnemonic, r1, x, Comet2BGA.AddressingMode.INDEX);
+                                                bg.genSingleWordCode(mnemonic, r1, x, Comet2BG.AddressingMode.INDEX);
                                                 if(equal) {
                                                     errorTable.writeWarning(lexer.getLine(), 2);//第二オペランドの値が不安定です。
                                                     bg.genImmCode(sval, lexer.getLine());
@@ -140,13 +140,13 @@ public class Casl2ParserA{
                                                     bg.genAdrCode(sval, lexer.getLine());
                                                 }
                                             } else {
-                                                errorTable.writeError(lexer.getLine(), 1, "カンマが不足しています");
+                                                errorTable.writeError(lexer.getLine(), 12);//インデックスレジスタのエラー
                                             }
                                         } else {
-                                            errorTable.writeError(lexer.getLine(), 1, "第一オペランドがレジスタではありません。");
+                                            errorTable.writeError(lexer.getLine(), 13,3);
                                         }
                                     } else {
-                                        bg.genSingleWordCode(mnemonic, r1, Comet2Register.GR0, Comet2BGA.AddressingMode.INDEX);
+                                        bg.genSingleWordCode(mnemonic, r1, Comet2Register.GR0, Comet2BG.AddressingMode.INDEX);
                                         if(equal) {
                                             errorTable.writeWarning(lexer.getLine(), 2);//第二オペランドの値が不安定です。
                                             bg.genAdrCode(sval, lexer.getLine());
@@ -154,6 +154,7 @@ public class Casl2ParserA{
                                             bg.genAdrCode(sval, lexer.getLine());
                                         }
                                     }
+                                    break;
                                 case NUM_CONST:
                                 case DS_CONST:
                                     nval = lexer.getNval();
@@ -161,58 +162,59 @@ public class Casl2ParserA{
                                         if (lexer.nextToken() == GR) {
                                             Comet2Register x = Comet2Register.valueOf(lexer.getSval());
                                             if (x.getCode() != 0) {
-                                                bg.genSingleWordCode(mnemonic, r1, x, Comet2BGA.AddressingMode.INDEX);
+                                                bg.genSingleWordCode(mnemonic, r1, x, Comet2BG.AddressingMode.INDEX);
                                                 if(equal) {
                                                     bg.genImmCode(nval);
-                                                }else {
+                                                }
+                                                else {
                                                     bg.genAdrCode(nval);
                                                 }
                                             } else {
-                                                errorTable.writeError(lexer.getLine(), 1, "GR0��?C���?f�?b�?N�?X���?W�?X�?^��?��??g����?����B");
+                                                errorTable.writeError(lexer.getLine(), 12);
                                             }
-                                        } else {
-                                            errorTable.writeError(lexer.getLine(), 1, "不適切なオペランドです。" +
-                                                    "第三オペランドはインデックスレジスタを指定してください。");
+                                        }else {
+                                            errorTable.writeError(lexer.getLine(), 13,3);
                                         }
                                     } else {
-                                        bg.genSingleWordCode(mnemonic, r1, Comet2Register.GR0, Comet2BGA.AddressingMode.INDEX);
+                                        bg.genSingleWordCode(mnemonic, r1, Comet2Register.GR0, Comet2BG.AddressingMode.INDEX);
                                         if(equal) {
                                             bg.genImmCode(nval);
                                         }else {
                                             bg.genAdrCode(nval);
                                         }
                                     }
+                                    break;
                                 case STR_CONST:
                                     sval = lexer.getSval();
                                     if (lexer.nextToken() == COMMA) {
                                         if (lexer.nextToken() == GR) {
                                             Comet2Register x = Comet2Register.valueOf(lexer.getSval());
                                             if (x.getCode() != 0) {
-                                                bg.genSingleWordCode(mnemonic, r1, x, Comet2BGA.AddressingMode.INDEX);
+                                                bg.genSingleWordCode(mnemonic, r1, x, Comet2BG.AddressingMode.INDEX);
                                                 bg.genAdrCode(sval);
                                             } else {
-                                                errorTable.writeError(lexer.getLine(), 1, "GR0��?C���?f�?b�?N�?X���?W�?X�?^��?��??g����?����B");
+                                                errorTable.writeError(lexer.getLine(), 12);
                                             }
                                         } else {
-                                            errorTable.writeError(lexer.getLine(), 1, "不適切なオペランドです。" +
-                                                    "第三オペランドはインデックスレジスタを指定してください。");
+                                            errorTable.writeError(lexer.getLine(),13,3);
                                         }
                                     } else {
-                                        bg.genSingleWordCode(mnemonic, r1, Comet2Register.GR0, Comet2BGA.AddressingMode.INDEX);
+                                        bg.genSingleWordCode(mnemonic, r1, Comet2Register.GR0, Comet2BG.AddressingMode.INDEX);
                                         if(equal) {
                                             bg.genImmCode(sval);
                                         }else {
                                             bg.genAdrCode(sval);
                                         }
                                     }
+                                    break;
                                 default:
-                                    errorTable.writeError(lexer.getLine(), 1);//illegal address;
+                                    errorTable.writeError(lexer.getLine(), 14,mnemonic.toString(),2,token.toString());//illegal address;
                             }
                         } else {
-                            errorTable.writeError(lexer.getLine(), 1, "カンマが不足しています");
+                            errorTable.writeError(lexer.getLine(), 15);//カンマが不足しています。
                         }
                     } else {
-                        errorTable.writeError(lexer.getLine(), 1, "第一オペランドがレジスタではありません。");
+                        errorTable.writeError(lexer.getLine(), 16,mnemonic.toString()); //第一オペランドがレジスタではありません。
                     }
                     break;
 
@@ -235,7 +237,7 @@ public class Casl2ParserA{
                                         if(lexer.nextToken() == GR) {
                                             Comet2Register x = Comet2Register.valueOf(lexer.getSval());
                                             if (x.getCode() != 0) {
-                                                bg.genSingleWordCode(mnemonic, r1, x, Comet2BGA.AddressingMode.INDEX);
+                                                bg.genSingleWordCode(mnemonic, r1, x, Comet2BG.AddressingMode.INDEX);
                                                 if(equal) {
                                                     errorTable.writeWarning(lexer.getLine(), 2);//第二オペランドの値が不安定です。
                                                     bg.genImmCode(sval, lexer.getLine());
@@ -243,14 +245,13 @@ public class Casl2ParserA{
                                                     bg.genAdrCode(sval, lexer.getLine());
                                                 }
                                             } else {
-                                                errorTable.writeError(lexer.getLine(), 1, "GR0はインデックスレジスタとして使えません。");
+                                                errorTable.writeError(lexer.getLine(), 12);
                                             }
                                         } else {
-                                            errorTable.writeError(lexer.getLine(), 1,"不適切なオペランドです。" +
-                                                    "第三オペランドはインデックスレジスタを指定してください。");
+                                            errorTable.writeError(lexer.getLine(), 13,3);
                                         }
                                     } else {
-                                        bg.genSingleWordCode(mnemonic, r1, Comet2Register.GR0, Comet2BGA.AddressingMode.INDEX);
+                                        bg.genSingleWordCode(mnemonic, r1, Comet2Register.GR0, Comet2BG.AddressingMode.INDEX);
                                         if(equal) {
                                             errorTable.writeWarning(lexer.getLine(), 2);//第二オペランドの値が不安定です。
                                             bg.genAdrCode(sval, lexer.getLine());
@@ -258,6 +259,7 @@ public class Casl2ParserA{
                                             bg.genAdrCode(sval, lexer.getLine());
                                         }
                                     }
+                                    break;
                                 case NUM_CONST:
                                 case DS_CONST:
                                     nval = lexer.getNval();
@@ -265,58 +267,58 @@ public class Casl2ParserA{
                                         if (lexer.nextToken() == GR) {
                                             Comet2Register x = Comet2Register.valueOf(lexer.getSval());
                                             if (x.getCode() != 0) {
-                                                bg.genSingleWordCode(mnemonic, r1, x, Comet2BGA.AddressingMode.INDEX);
+                                                bg.genSingleWordCode(mnemonic, r1, x, Comet2BG.AddressingMode.INDEX);
                                                 if(equal) {
                                                     bg.genImmCode(nval);
                                                 }else {
                                                     bg.genAdrCode(nval);
                                                 }
                                             } else {
-                                                errorTable.writeError(lexer.getLine(), 1,"GR0はインデックスレジスタとして使えません。");
+                                                errorTable.writeError(lexer.getLine(), 12);
                                             }
                                         } else {
-                                            errorTable.writeError(lexer.getLine(), 1, "不適切なオペランドです。" +
-                                                    "第三オペランドはインデックスレジスタを指定してください。");
+                                            errorTable.writeError(lexer.getLine(), 13,3);
                                         }
                                     } else {
-                                        bg.genSingleWordCode(mnemonic, r1, Comet2Register.GR0, Comet2BGA.AddressingMode.INDEX);
+                                        bg.genSingleWordCode(mnemonic, r1, Comet2Register.GR0, Comet2BG.AddressingMode.INDEX);
                                         if(equal) {
                                             bg.genImmCode(nval);
                                         }else {
                                             bg.genAdrCode(nval);
                                         }
                                     }
+                                    break;
                                 case STR_CONST:
                                     sval = lexer.getSval();
                                     if (lexer.nextToken() == COMMA) {
                                         if (lexer.nextToken() == GR) {
                                             Comet2Register x = Comet2Register.valueOf(lexer.getSval());
                                             if (x.getCode() != 0) {
-                                                bg.genSingleWordCode(mnemonic, r1, x, Comet2BGA.AddressingMode.INDEX);
+                                                bg.genSingleWordCode(mnemonic, r1, x, Comet2BG.AddressingMode.INDEX);
                                                 bg.genAdrCode(sval);
                                             } else {
-                                                errorTable.writeError(lexer.getLine(), 1, "GR0はインデックスレジスタとして使えません。");
+                                                errorTable.writeError(lexer.getLine(),12);
                                             }
                                         } else {
-                                            errorTable.writeError(lexer.getLine(), 1, "不適切なオペランドです。" +
-                                                    "第三オペランドはインデックスレジスタを指定してください。");
+                                            errorTable.writeError(lexer.getLine(),13,3);
                                         }
                                     } else {
-                                        bg.genSingleWordCode(mnemonic, r1, Comet2Register.GR0, Comet2BGA.AddressingMode.INDEX);
+                                        bg.genSingleWordCode(mnemonic, r1, Comet2Register.GR0, Comet2BG.AddressingMode.INDEX);
                                         if(equal) {
                                             bg.genImmCode(sval);
                                         }else {
                                             bg.genAdrCode(sval);
                                         }
                                     }
+                                    break;
                                 default:
-                                    errorTable.writeError(lexer.getLine(), 1);//illegal address;
+                                    errorTable.writeError(lexer.getLine(),  14,mnemonic.toString(),2,token.toString());//illegal address;
                             }
                         } else {
-                            errorTable.writeError(lexer.getLine(), 1, "カンマが不足しています");
+                            errorTable.writeError(lexer.getLine(), 15);
                         }
                     } else {
-                        errorTable.writeError(lexer.getLine(), 1, "第一オペランドがレジスタではありません。");
+                        errorTable.writeError(lexer.getLine(),16, mnemonic.toString());
                     }
                     break;
                 case CALL:case JMI:case JNZ:
@@ -324,6 +326,7 @@ public class Casl2ParserA{
                 case JZE: case PUSH:case SVC:
                     mnemonic = token;
                     Comet2Register r1 = Comet2Register.GR0;
+                    token = lexer.nextToken();
                     switch(token) {
                         case EQUAL:
                             equal = true;
@@ -336,7 +339,7 @@ public class Casl2ParserA{
                                 if(lexer.nextToken() == GR) {
                                     Comet2Register x = Comet2Register.valueOf(lexer.getSval());
                                     if (x.getCode() != 0) {
-                                        bg.genSingleWordCode(mnemonic, r1, x, Comet2BGA.AddressingMode.INDEX);
+                                        bg.genSingleWordCode(mnemonic, r1, x, Comet2BG.AddressingMode.INDEX);
                                         if(equal) {
                                             errorTable.writeWarning(lexer.getLine(), 2);//第二オペランドの値が不安定です。
                                             bg.genImmCode(sval, lexer.getLine());
@@ -344,14 +347,13 @@ public class Casl2ParserA{
                                             bg.genAdrCode(sval, lexer.getLine());
                                         }
                                     } else {
-                                        errorTable.writeError(lexer.getLine(), 1, "GR0はインデックスレジスタとして使えません。");
+                                        errorTable.writeError(lexer.getLine(), 12);
                                     }
                                 } else {
-                                    errorTable.writeError(lexer.getLine(), 1, "不適切なオペランドです。" +
-                                            "第三オペランドはインデックスレジスタを指定してください。");
+                                    errorTable.writeError(lexer.getLine(), 13,1);
                                 }
                             } else {
-                                bg.genSingleWordCode(mnemonic, r1, Comet2Register.GR0, Comet2BGA.AddressingMode.INDEX);
+                                bg.genSingleWordCode(mnemonic, r1, Comet2Register.GR0, Comet2BG.AddressingMode.INDEX);
                                 if(equal) {
                                     errorTable.writeWarning(lexer.getLine(), 2);//第二オペランドの値が不安定です。
                                     bg.genAdrCode(sval, lexer.getLine());
@@ -366,21 +368,20 @@ public class Casl2ParserA{
                                 if (lexer.nextToken() == GR) {
                                     Comet2Register x = Comet2Register.valueOf(lexer.getSval());
                                     if (x.getCode() != 0) {
-                                        bg.genSingleWordCode(mnemonic, r1, x, Comet2BGA.AddressingMode.INDEX);
+                                        bg.genSingleWordCode(mnemonic, r1, x, Comet2BG.AddressingMode.INDEX);
                                         if(equal) {
                                             bg.genImmCode(nval);
                                         }else {
                                             bg.genAdrCode(nval);
                                         }
                                     } else {
-                                        errorTable.writeError(lexer.getLine(), 1, "GR0はインデックスレジスタとして使えません。");
+                                        errorTable.writeError(lexer.getLine(), 12);
                                     }
                                 } else {
-                                    errorTable.writeError(lexer.getLine(), 1, "不適切なオペランドです。" +
-                                            "第三オペランドはインデックスレジスタを指定してください。");
+                                    errorTable.writeError(lexer.getLine(), 13,2);
                                 }
                             } else {
-                                bg.genSingleWordCode(mnemonic, r1, Comet2Register.GR0, Comet2BGA.AddressingMode.INDEX);
+                                bg.genSingleWordCode(mnemonic, r1, Comet2Register.GR0, Comet2BG.AddressingMode.INDEX);
                                 if(equal) {
                                     bg.genImmCode(nval);
                                 }else {
@@ -393,17 +394,16 @@ public class Casl2ParserA{
                                 if (lexer.nextToken() == GR) {
                                     Comet2Register x = Comet2Register.valueOf(lexer.getSval());
                                     if (x.getCode() != 0) {
-                                        bg.genSingleWordCode(mnemonic, r1, x, Comet2BGA.AddressingMode.INDEX);
+                                        bg.genSingleWordCode(mnemonic, r1, x, Comet2BG.AddressingMode.INDEX);
                                         bg.genAdrCode(sval);
                                     } else {
-                                        errorTable.writeError(lexer.getLine(), 1, "GR0はインデックスレジスタとして使えません。");
+                                        errorTable.writeError(lexer.getLine(), 12);
                                     }
                                 } else {
-                                    errorTable.writeError(lexer.getLine(), 1, "不適切なオペランドです。" +
-                                            "第三オペランドはインデックスレジスタを指定してください。");
+                                    errorTable.writeError(lexer.getLine(), 13,2);
                                 }
                             } else {
-                                bg.genSingleWordCode(mnemonic, r1, Comet2Register.GR0, Comet2BGA.AddressingMode.INDEX);
+                                bg.genSingleWordCode(mnemonic, r1, Comet2Register.GR0, Comet2BG.AddressingMode.INDEX);
                                 if(equal) {
                                     bg.genImmCode(sval);
                                 }else {
@@ -411,16 +411,16 @@ public class Casl2ParserA{
                                 }
                             }
                         default:
-                            errorTable.writeError(lexer.getLine(), 1);//illegal address;
+                            errorTable.writeError(lexer.getLine(), 14,mnemonic.toString(),1,token.toString());//illegal address;
                     }
-                break;
+                    break;
                 case POP:
                     token = lexer.nextToken();
                     if(token==GR){
                         Comet2Register r = Comet2Register.valueOf(lexer.getSval());
                         bg.genRegStackCode(POP, r);
                     }else{
-                        errorTable.writeError(lexer.getLine(), 1 ,"第一オペランドがレジスタではありません。");
+                        errorTable.writeError(lexer.getLine(), 12);
                     }
                     break;
                 case RET:case NOP:
@@ -442,13 +442,13 @@ public class Casl2ParserA{
                                 bg.genMacroBlock(token, bufLabel, lenLabel, lexer.getLine());
                                 token = lexer.nextToken();
                             }else{
-                                errorTable.writeError(lexer.getLine(), 1, "第二オペランドにラベルを記述する必要があります。");
+                                errorTable.writeError(lexer.getLine(), 17, 2);
                             }
                         }else{
-                            errorTable.writeError(lexer.getLine(), 1,"カンマが不足しています");
+                            errorTable.writeError(lexer.getLine(), 15);
                         }
                     }else{
-                        errorTable.writeError(lexer.getLine(), 1, "第一オペランドにラベルを記述する必要があります。");
+                        errorTable.writeError(lexer.getLine(), 17,1);
                     }
                     break;
             }
@@ -457,12 +457,15 @@ public class Casl2ParserA{
 
     private void checkEOL(Casl2Symbol token) {
         if(!(token==EOL)){
-            errorTable.writeError(lexer.getLine(), 1, "not EOL");
+            errorTable.writeError(lexer.getLine(), 18);
             setNextLine();
         }
     }
     private void setNextLine() {
-        while (lexer.nextToken()!=EOL){}
+        Casl2Symbol token= lexer.nextToken();
+        while (token!=EOL){
+            token = lexer.nextToken();
+        }
         lexer.nextToken();
     }
 }

@@ -10,7 +10,6 @@ public class SymbolTable {
         for (Casl2Symbol symbol: Casl2Symbol.values())
             symbolMap.put(symbol.toString(), symbol);
     }
-
     public static Casl2Symbol searchSymbol(String cand){
         return symbolMap.getOrDefault(cand, Casl2Symbol.LABEL);
     }

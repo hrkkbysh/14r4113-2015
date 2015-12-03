@@ -5,17 +5,16 @@ import java.util.Map;
 import static casl2.casl2ex.Casl2Symbol.*;
 
 public class Comet2InstructionTable {
-	private static final Map<Casl2Symbol, Comet2InstructionData> instructionMap =
+	private static final Map<Casl2Symbol, Integer> instructionMap =
 			new EnumMap<>(Casl2Symbol.class);
 	private int size=-1;
-	private final void initInstruction
+	private  void initInstruction
 	(Casl2Symbol mnemonic,int opcode){
-		Comet2InstructionData instruction = new Comet2InstructionData(mnemonic,opcode);
-		instructionMap.put(mnemonic, instruction);
+		instructionMap.put(mnemonic, opcode);
 		size++;
 	}
 	public Comet2InstructionTable(){
-		/*				mnemonic,group,opcode	*/
+		/*				mnemonic,opcode	*/
 		initInstruction( NOP , 0x00);
 		initInstruction( LD  , 0x10);
 		initInstruction( ST  , 0x11);
@@ -49,9 +48,6 @@ public class Comet2InstructionTable {
 	}
 
 	/*命令表のsize*/
-	/* (非 Javadoc)
-	 * @see hosei.wadalab.compiler.casl2.MachineInstructionTable#getSize()
-	 */
 	public int getSize(){
 		return size;
 	}
@@ -60,12 +56,8 @@ public class Comet2InstructionTable {
 	/*Mnemonic→instruction.
 	 *  getOrDefaultは平均してO(1)でinstructionを見つける。
 	 *  */
-	/* (非 Javadoc)
-	 * @see hosei.wadalab.compiler.casl2.MachineInstructionTable#findFromMachineInst(hosei.wadalab.compiler.casl2.Casl2Symbol)
-	 */
 	public int findFromMachineInst(Casl2Symbol mnemonic){
-		Comet2InstructionData instruction = instructionMap.getOrDefault(mnemonic, instructionMap.get(Casl2Symbol.ERROR));
-		return instruction.getOpCode();
+		return instructionMap.getOrDefault(mnemonic, -1);
 	}
 
 
@@ -74,96 +66,93 @@ public class Comet2InstructionTable {
 	 * getは平均してO(1)でinstructionを見つける。
 	 * 比較は高々2回行われる。
 	 * */
-	/* (非 Javadoc)
-	 * @see hosei.wadalab.compiler.casl2.MachineInstructionTable#findFromOpCode(int)
-	 */
-	public Comet2InstructionData findFromOpCode(int candidate){
+	public Casl2Symbol findFromOpCode(int candidate){
 		switch ((candidate & 0xF0)>>4) {
 			case 1:
 				switch (candidate & 0x0F) {
 					case 0:
-					case 4: return instructionMap.get(LD);
-					case 1: return instructionMap.get(ST);
-					case 2: return instructionMap.get(LAD);
+					case 4: return LD;
+					case 1: return ST;
+					case 2: return LAD;
 					default:
 						break;
 				}
 			case 2:
 				switch (candidate & 0x0F){
 					case 0:
-					case 4: return instructionMap.get(ADDA);
+					case 4: return ADDA;
 					case 1:
-					case 5: return instructionMap.get(SUBA);
+					case 5: return SUBA;
 					case 2:
-					case 6: return instructionMap.get(ADDL);
+					case 6: return ADDL;
 					case 3:
-					case 7: return instructionMap.get(SUBL);
+					case 7: return SUBL;
 					default:
 						break;
 				}
 			case 3:
 				switch (candidate & 0x0F){
 					case 0:
-					case 4: return instructionMap.get(AND);
+					case 4: return AND;
 					case 1:
-					case 5: return instructionMap.get(OR);
+					case 5: return OR;
 					case 2:
-					case 6: return instructionMap.get(XOR);
+					case 6: return XOR;
 					default:
 						break;
 				}
 			case 4:
 				switch (candidate & 0x0F){
 					case 0:
-					case 4: return instructionMap.get(CPA);
+					case 4: return CPA;
 					case 1:
-					case 5: return instructionMap.get(CPL);
+					case 5: return CPL;
 				}
 				break;
 			case 5:
 				switch (candidate & 0x0F) {
-					case 0: return instructionMap.get(SLA);
-					case 1: return instructionMap.get(SRA);
-					case 2: return instructionMap.get(SLL);
-					case 3: return instructionMap.get(SRL);
+					case 0: return SLA;
+					case 1: return SRA;
+					case 2: return SLL;
+					case 3: return SRL;
 					default:
 						break;
 				}
 			case 6:
 				switch (candidate & 0x0F) {
-					case 1: return instructionMap.get(JMI);
-					case 2: return instructionMap.get(JNZ);
-					case 3: return instructionMap.get(JZE);
-					case 4: return instructionMap.get(JUMP);
-					case 5: return instructionMap.get(JPL);
-					case 6: return instructionMap.get(JOV);
+					case 1: return JMI;
+					case 2: return JNZ;
+					case 3: return JZE;
+					case 4: return JUMP;
+					case 5: return JPL;
+					case 6: return JOV;
 					default:
 						break;
 				}
 			case 7:
 				switch (candidate & 0x0F) {
-					case 0: return instructionMap.get(PUSH);
-					case 1: return instructionMap.get(POP);
+					case 0: return PUSH;
+					case 1: return POP;
 					default:
 						break;
 				}
 			case 8:
 				switch (candidate & 0x0F) {
-					case 0: return instructionMap.get(CALL);
-					case 1: return instructionMap.get(RET);
+					case 0: return CALL;
+					case 1: return RET;
 					default:
 						break;
 				}
 			case 0:
-				if((candidate & 0x0F) == 0) return instructionMap.get(NOP);
+				if((candidate & 0x0F) == 0) return NOP;
 				break;
 			case 0xF:
-				if((candidate & 0x0F) == 0) return instructionMap.get(SVC);
+				if((candidate & 0x0F) == 0) return SVC;
 				break;
 			default:
 				break;
 		}
-		return instructionMap.get(Casl2Symbol.ERROR);
+		return Casl2Symbol.ERROR;
 	}
 
 	private static final int BUF = -1;
@@ -201,9 +190,6 @@ public class Comet2InstructionTable {
 		macroInstMap.put(RPOP, RPOPBLOCK);
 		macroInstMap.put(RPUSH, RPUSHBLOCK);
 	}
-	/* (非 Javadoc)
-	 * @see hosei.wadalab.compiler.casl2.MachineInstructionTable#findFromMacroInst(hosei.wadalab.compiler.casl2.Casl2Symbol)
-	 */
 	public Integer[] findFromMacroInst(Casl2Symbol macro){
 		return macroInstMap.getOrDefault(macro, macroInstMap.get(Casl2Symbol.ERROR));
 	}

@@ -11,8 +11,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 
-import casl2.*;
-import casl2.casl2ex.Casl2LexerA;
+import casl2.casl2ex.Casl2Lexer;
 import casl2.casl2ex.Casl2SymbolA;
 import editor.BaseEditor;
 import editor.Casl2SyntaxPattern;
@@ -386,7 +385,7 @@ public class Casl2EditController extends BorderPane implements Initializable,Con
 		parser.enter();*/
         try {
             InputStreamReader is = new InputStreamReader(new FileInputStream(activeEditor.getPath()));
-            Casl2LexerA lexerLexer = new Casl2LexerA(is);
+            Casl2Lexer lexerLexer = new Casl2Lexer(is);
            /* try {
                 for(Casl2SymbolA symbol = lexerLexer.nextToken();symbol!=Casl2SymbolA.EOF;symbol = lexerLexer.nextToken() ){
                    System.out.print("Symbol : " + symbol.toString());
