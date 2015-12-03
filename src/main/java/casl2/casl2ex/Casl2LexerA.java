@@ -17,8 +17,8 @@ public class Casl2LexerA {
     private int line = 1;
     private InputStreamReader input;
 
-    /*Unicodeê—p.
-    * @param “ü—ÍƒXƒgƒŠ[ƒ€*/
+        /*Unicodeå°‚ç”¨.
+    * @param å…¥åŠ›ã‚¹ãƒˆãƒªãƒ¼ãƒ */
     public Casl2LexerA(InputStreamReader is){
         if(is == null){
             throw new NullPointerException();
@@ -53,13 +53,13 @@ public class Casl2LexerA {
                 case 'O' : case 'P' : case 'Q' : case 'R' : case 'S' : case 'T' : case 'U' :
                 case 'V' : case 'W' : case 'X' : case 'Y' : case 'Z' : return KEYWORD(c);
                 default:
-                    errorTable.writeError(line, 0, (char) c);//"—LŒø‚È¯•Êq‚Å‚Í‚ ‚è‚Ü‚¹‚ñB"
+                    errorTable.writeError(line, 0, (char) c);//"æœ‰åŠ¹ãªè­˜åˆ¥å­ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚"
                     skipToEOL();
                     read();
                     return ERROR;
             }
         } catch (IOException e) {
-            errorTable.writeError(line,-1,"I/O EXCEPTION occurred.");//—áŠO
+            errorTable.writeError(line,-1,"I/O EXCEPTION occurred.");//ä¾‹å¤–
             return EOF;
         }
     }
@@ -88,7 +88,7 @@ public class Casl2LexerA {
             nval = v;
             return NUM_CONST;
         }else {
-            errorTable.writeError(line,1,v);//"16i’è”h‚Í 0000<=h<=FFFF‚Ì”ÍˆÍ‚Å‹Lq‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B""
+            errorTable.writeError(line,1,v);//"16é€²å®šæ•°hã¯ 0000<=h<=FFFFã®ç¯„å›²ã§è¨˜è¿°ã™ã‚‹å¿…è¦ãŒã‚ã‚Šã¾ã™ã€‚""
             skipToEOL();
             read();
             return ERROR;
@@ -119,7 +119,7 @@ public class Casl2LexerA {
             sval = candidate;
             return STR_CONST;
         }else {
-            errorTable.writeError(line, 0,candidate);// "—LŒø‚È¯•Êq‚Å‚Í‚ ‚è‚Ü‚¹‚ñB"
+            errorTable.writeError(line, 0,candidate);/// "æœ‰åŠ¹ãªè­˜åˆ¥å­ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚"
             skipToEOL();
             read();
             return ERROR;
@@ -137,7 +137,7 @@ public class Casl2LexerA {
         nval = neg ? -v : v;
         if(!(-32768<=v && v<=65535)) {
             nval = v & 0x0000FFFF;
-            errorTable.writeWarning(line,0, nval);// "”’l‚ª16bit‚ÉØ‚èÌ‚Ä‚ç‚ê‚Ü‚µ‚½B"
+            errorTable.writeWarning(line,0, nval);// "æ•°å€¤ãŒ16bitã«åˆ‡ã‚Šæ¨ã¦ã‚‰ã‚Œã¾ã—ãŸã€‚"
         }else if(nval>=0) {
             return DS_CONST;
         }
