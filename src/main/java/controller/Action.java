@@ -10,8 +10,8 @@ import java.nio.file.StandardOpenOption;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Stream;
 
+import editor.BaseEditor;
 import editor.Casl2SyntaxPattern;
-import editor.CustomEditor;
 import editor.ExtensionCasl2Pattern;
 import org.fxmisc.richtext.CodeArea;
 
@@ -64,8 +64,8 @@ public class Action {
 	}
 
 	public void readText(Tab tab, Charset charset) {
-		CustomEditor<Casl2SyntaxPattern, ExtensionCasl2Pattern> casl2Editor =
-				new CustomEditor<>(service, Casl2SyntaxPattern.class, ExtensionCasl2Pattern.class, "Casl2EditController.java",stage);
+		BaseEditor<Casl2SyntaxPattern, ExtensionCasl2Pattern> casl2Editor =
+				new BaseEditor<>(service, "/Casl2SyntaxHighlighting.css",stage, Casl2SyntaxPattern.class, ExtensionCasl2Pattern.class);
 
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Select File");

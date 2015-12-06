@@ -1,4 +1,4 @@
-package casl2;
+package editor;
 
 public enum MacroInstruction{
 	IN,

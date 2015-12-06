@@ -1,12 +1,10 @@
 package editor;
 
-import casl2.Comet2Instruction;
-
 import java.util.HashMap;
 import java.util.Map;
 
-import static casl2.MacroInstruction.*;
-import static casl2.Casl2Instruction.*;
+import static editor.MacroInstruction.*;
+import static editor.Casl2Instruction.*;
 
 public class InstructionEntry{
 	public static final Map<String, Integer> map = new HashMap<>();

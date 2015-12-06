@@ -3,19 +3,23 @@ package casl2;
 import java.io.InputStreamReader;
 import java.util.List;
 
-public class Casl2Parser {
-	private Casl2Lexer lexer;
-	private Comet2BG bg;
-	private ErrorTable errorTable;
-	private SymbolTable symbolTable;
+public class ExAssembler {
+	private ExCasl2Lexer lexer;
+	private ExComet2BG bg;
+	private ExErrorTable errorTable;
+	private ExSymbolTable symbolTable;
 	private Casl2Symbol token;
+	private MacroTable macroTable;
+	private ArgTbl argTbl;
 	boolean er;
 
-	public Casl2Parser(InputStreamReader is) {
-		symbolTable = new SymbolTable();
-		errorTable = new ErrorTable();
-		lexer = new Casl2Lexer(is,symbolTable,errorTable);
-		bg = new Comet2BG(new Comet2InstructionTable(),symbolTable,errorTable);
+	public ExAssembler(InputStreamReader is) {
+		symbolTable = new ExSymbolTable();
+		errorTable = new ExErrorTable();
+		argTbl = new ArgTbl();
+		macroTable = new MacroTable();
+		lexer = new ExCasl2Lexer(is,symbolTable,errorTable,argTbl);
+		bg = new ExComet2BG(new Comet2InstructionTable(),symbolTable,errorTable,new MacroTable());
 	}
 	public void init(InputStreamReader is){
 		errorTable.clear();
@@ -24,9 +28,13 @@ public class Casl2Parser {
 		lexer.init(is);
 	}
 
+	private void checkMacro(){
+
+	}
 
 	public void enter(String filepath) {
 		errorTable.clear();
+		checkMacro();
 		for (token = lexer.nextToken(); token != Casl2Symbol.EOF; setNextLine()) {
 			if (token == Casl2Symbol.LABEL) {
 				bg.setProgramName(lexer.getSval());

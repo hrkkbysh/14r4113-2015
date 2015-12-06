@@ -3,10 +3,13 @@
     <words>
       <w>assemblerinst</w>
       <w>casl</w>
+      <w>datas</w>
       <w>imtoken</w>
+      <w>lbltbl</w>
       <w>machineinst</w>
       <w>macroinst</w>
       <w>nval</w>
+      <w>peekc</w>
       <w>rpop</w>
       <w>rpush</w>
       <w>sval</w>

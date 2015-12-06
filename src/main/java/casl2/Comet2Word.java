@@ -1,6 +1,5 @@
 package casl2;
 
-import assembler.QuasiWord;
 import javafx.beans.property.SimpleIntegerProperty;
 
 public class Comet2Word implements QuasiWord {

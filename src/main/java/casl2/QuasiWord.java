@@ -1,4 +1,4 @@
-package assembler;
+package casl2;
 
 public interface QuasiWord{
 	int getContent();

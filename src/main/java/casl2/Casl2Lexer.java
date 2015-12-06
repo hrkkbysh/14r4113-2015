@@ -1,140 +1,203 @@
 package casl2;
 
-import assembler.Lexer;
-import static casl2.Casl2Symbol.*;
-
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Casl2Lexer implements Lexer{
+public class Casl2Lexer {
 
-	private String input; // input string
-	private int position = 0;    // index into input of current character
-	private char c;       // current character
-	private int line = 1;
-	public static final char EOF = (char)-1; //  represent end of file char
 	private ErrorTable errorTable;
+	private SymbolTable symbolTable;
+	private String sval;
+	private int nval;
+	private int line = 1;
+	private InputStreamReader input;
+	private int peekc;
 
-	/*ÉfÉtÉHÉãÉgÉGÉìÉRÅ[ÉfÉBÉìÉOÇÕégÇÌÇ»Ç¢Ç≈Ç≠ÇæÇ≥Ç¢ÅB
-	* @param ì¸óÕï∂éöóÒ*/
-	public Casl2Lexer(String input) {
-		this.input = input;
-		c = input.charAt(position); // prime lookahead
-		errorTable = ErrorTable.getInstance();
+	/*UnicodeÂ∞ÇÁî®.
+* @param ÂÖ•Âäõ„Çπ„Éà„É™„Éº„É†*/
+	public Casl2Lexer(InputStreamReader is,SymbolTable symbolTable,ErrorTable errorTable){
+		init(is);
+		this.symbolTable = symbolTable;
+		this.errorTable = errorTable;
 	}
-
-	@Override
-	public Casl2Token nextToken(){
-		while ( c!= EOF) {
-			switch ( c ) {
-				case ' ' : case '\t': case '\r': WS(); continue;
-				case ';' : skipToNextLine();
-				case '\n': consume() ; line++; return new Casl2Token(EOL,"");
-				case ',' : consume() ; return new Casl2Token(COMMA,"");
-				case '=' : consume() ; return new Casl2Token(EQUAL,"");
-				case '\'':			   return STR_CONST();
-				case '#' :			   return HEX();
-				default:
-					if ( isKEYWORD()) return KEYWORD();
-					if ( isNUMBER() ) return NUMBER();
-					Casl2Token token = new Casl2Token(ERROR,String.valueOf(c));
-					errorTable.writeTemp(line,token,"óLå¯Ç»éØï éqÇ≈ÇÕÇ†ÇËÇ‹ÇπÇÒÅB");
-					consume();
-					return new Casl2Token(ERROR,"");
-			}
+	public void reset(){
+		try {
+			input.reset();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		return new Casl2Token(Casl2Symbol.EOF,"");
 	}
-	/** Move to next line character */
-	public void skipToNextLine() {
-		while(c!='\n') advance();
+	public void init(InputStreamReader is){
+		if(is == null){
+			throw new NullPointerException();
+		}
+		this.input = is;
+		peekc = read();
 	}
-
-	/** Move to next non-whitespace character */
-	public void consume() { advance(); WS();}
 
 	/** Move one character; detect "end of file" */
-	public void advance() {
-		position++;
-		if ( position>= input.length() ) c = EOF;
-		else c = input.charAt(position);
+	int read(){
+		try {
+			return input.read();
+		} catch (IOException e) {
+			errorTable.writeError(line, -1, "I/O EXCEPTION occurred.");//‰æãÂ§ñ
+			return -1;
+		}
 	}
 
-	/** Ensure x is next character on the input stream */
-	public boolean match(char x) {
-		if ( c == x){ consume();return true;}
-		else {return false;}
+	public Casl2Symbol nextToken(){
+		boolean neg = false;
+		int c = peekc;
+		switch (c) {
+			case  -1 : return Casl2Symbol.EOF;
+			case ' ' : case '\t': case '\r': peekc = read();return nextToken();
+			case ';' : skipToEOL();
+			case '\n': peekc = read();line++; return Casl2Symbol.EOL;
+			case ',' : peekc = read();return Casl2Symbol.COMMA;
+			case '=' : peekc = read();return Casl2Symbol.EQUAL;
+			case '\'': return STR_CONST();
+			case '#' : return HEX();
+			case '-' : neg = true;  c = read(); if(!isNUMBER(c)) return Casl2Symbol.ERROR;
+			case '0' : case '1' : case '2' : case '3' : case '4' : case '5' :
+			case '6' : case '7' : case '8' : case '9' : return NUM(c,neg);
+			case 'A' : case 'B' : case 'C' : case 'D' : case 'E' : case 'F' : case 'G' :
+			case 'H' : case 'I' : case 'J' : case 'K' : case 'L' : case 'M' : case 'N' :
+			case 'O' : case 'P' : case 'Q' : case 'R' : case 'S' : case 'T' : case 'U' :
+			case 'V' : case 'W' : case 'X' : case 'Y' : case 'Z' : return KEYWORD(c);
+			default:
+
+				errorTable.writeError(line, 1, Character.getName(c));//"ÊúâÂäπ„Å™Ë≠òÂà•Â≠ê„Åß„ÅØ„ÅÇ„Çä„Åæ„Åõ„Çì„ÄÇ"
+				peekc = read();
+				skipToEOL();
+				return Casl2Symbol.ERROR;
+		}
 	}
 
-	/** WS : (' '|'\t'|'\r')* ; // ignore any whitespace */
-	private void WS() { while (isSPACE()) advance(); }
-
-	private boolean isNUMBER() {return '0'<=c && c<='9';}
-	private boolean isHEX(){return isNUMBER()||(c>='A' && c<='F');}
-	private boolean isKEYWORD(){return (c>='A'&&c<='Z');}
-	private boolean isSPACE(){return c==' ' || c=='\t' || c=='\r';}
-	private boolean isSTRING(String candidate){
-		Pattern pattern = Pattern.compile("[\\x00-\\x7F\\xA1-\\xDF]+");
+	boolean isNUMBER(int c) {return '0'<=c && c<='9';}
+	boolean isHEX(int c){return (c>='A' && c<='F');}
+	boolean isUPPER_CASE_LETTER(int c){return (c>='A'&&c<='Z');}
+	boolean isLOWER_CASE_LETTER(int c){return (c>='a'&&c<='z');}
+	boolean isSTRING(String candidate){
+		Pattern pattern = Pattern.compile("[\\x00-\\x7F\\xA1-\\xDF]{1,65535}");
 		Matcher matcher = pattern.matcher(candidate);
 		return matcher.matches();
 	}
-/*
-	private String readBuf(boolean condition){
-		StringBuilder buf = new StringBuilder();
 
-		do{buf.append(c);advance();} while(!condition);
-		return buf.toString();
-	}*/
-
-	private Casl2Token HEX() {
-		StringBuilder buf = new StringBuilder();
-		do{buf.append(c);advance();} while(isHEX());
-		String value = buf.toString();
-		consume();
-		Integer numerical = Integer.parseInt(value.substring(1,value.length()),16);
-		if(numerical<=65535)
-			return new Casl2Token(NUM_CONST , numerical.toString() );
-		Casl2Token token = new Casl2Token(ERROR,value);
-		errorTable.writeTemp(line,token,"óLå¯Ç»éØï éqÇ≈ÇÕÇ†ÇËÇ‹ÇπÇÒÅB");
-		return token;
-	}
-
-	private Casl2Token STR_CONST(){
-		advance();
-		StringBuilder buf = new StringBuilder();
-		while(c!=EOF){
-			while (c != '\'') {
-				if(c=='\n'){ return new Casl2Token(ERROR, buf.toString());}
-				buf.append(c);advance();
-			}
-			advance();
-			if (c != '\'') break;
-			else {buf.append(c);advance();}
+	Casl2Symbol HEX(){
+		int v = 0;
+		int c = read();
+		while(true){
+			if(isNUMBER(c))
+				v = v * 16 + (c - '0');
+			else if(isHEX(c))
+				v = v * 16 + (c - 'A' + 10);
+			else break;
+			c = read();
 		}
+		nval = v;
+		peekc = c;
+		if(0<=v && v<=65535) {
+			nval = v & 0x0000FFFF;
+			errorTable.writeWarning(line, 1,nval);//Êï∞ÂÄ§%nval„ÅØ1word„Å´Âèé„Åæ„Çâ„Å™„ÅÑ„Åü„ÇÅÔºå16bit‰ª•Èôç„ÅØÂàá„ÇäÊç®„Å¶„Çâ„Çå„Åæ„Åó„Åü„ÄÇ
+		}
+		return Casl2Symbol.NUM_CONST;
+	}
+
+	Casl2Symbol STR_CONST() {
+		int c = read();
+		StringBuilder buf = new StringBuilder();
+		do{
+			while (c != '\'') {
+				if (c == '\n') {
+					sval = buf.toString();
+					peekc =c;
+					return Casl2Symbol.ERROR;
+				}
+				buf.append((char) c);
+				c = read();
+			}
+			c = read();
+			if (c != '\'') break;
+			else {
+				buf.append((char) c);
+				c = read();
+			}
+		}while(true);
 		String candidate = buf.toString();
-		if(isSTRING(candidate)) {return new Casl2Token(STR_CONST,buf.toString());}
-		Casl2Token token = new Casl2Token(ERROR,candidate);
-		errorTable.writeTemp(line,token,"óLå¯Ç»éØï éqÇ≈ÇÕÇ†ÇËÇ‹ÇπÇÒÅB");
-		return token;
+		peekc = c;
+		if(isSTRING(candidate)) {
+			sval = candidate;
+			return Casl2Symbol.STR_CONST;
+		}else {
+			errorTable.writeError(line, 3,candidate);/// ",JIS X 0201„Å´ÂØæÂøú„Åó„Å¶„ÅÑ„Å™„ÅÑÊñáÂ≠ó„ÅåÂê´„Åæ„Çå„Å¶„ÅÑ„Åæ„Åô„ÄÇ
+			skipToEOL();
+			return Casl2Symbol.ERROR;
+		}
 	}
 
-	private Casl2Token KEYWORD() {
-		StringBuilder buf = new StringBuilder();
-		do{buf.append(c);advance();} while(isKEYWORD() || isNUMBER());
-		String keyword = buf.toString();
-		Casl2Symbol symbol = SymbolTable.searchSymbol(keyword);
-		return new Casl2Token(symbol,keyword);
+	Casl2Symbol NUM(int c,boolean neg) {
+		int v = 0;
+		while(true){
+			if(isNUMBER(c))
+				v = v * 10 + (c - '0');
+			else break;
+			c = read();
+		}
+		nval = neg ? -v : v;
+		peekc = c;
+		if(!(-32768<=v && v<=65535)) {
+			nval = v & 0x0000FFFF;
+			errorTable.writeWarning(line,0, nval);// Êï∞ÂÄ§%nval„ÅØ1word„Å´Âèé„Åæ„Çâ„Å™„ÅÑ„Åü„ÇÅÔºå16bit‰ª•Èôç„ÅØÂàá„ÇäÊç®„Å¶„Çâ„Çå„Åæ„Åó„Åü„ÄÇ
+		}else if(nval>=0) {
+			return Casl2Symbol.DS_CONST;
+		}
+		return Casl2Symbol.NUM_CONST;
 	}
 
-	private Casl2Token NUMBER() {
+	Casl2Symbol KEYWORD(int c) {
 		StringBuilder buf = new StringBuilder();
-		do{buf.append(c);advance();} while(isNUMBER());
-		String value = buf.toString();
-		Integer numerical = Integer.parseInt(value);
-		if(numerical<=65535)
-			return new Casl2Token(NUM_CONST , value );
-		Casl2Token token = new Casl2Token(ERROR,value);
-		errorTable.writeTemp(line,token,"óLå¯Ç»éØï éqÇ≈ÇÕÇ†ÇËÇ‹ÇπÇÒÅB");
-		return token;
+		buf.append((char)c);
+		c = read();
+		boolean warn = false;
+		while(true){
+			if(isUPPER_CASE_LETTER(c)|| isNUMBER(c)){
+				buf.append((char)c);
+			}else if(c=='_'){
+				warn = true;
+				buf.append((char)c);
+			}else if(isLOWER_CASE_LETTER(c)){
+				c = 'A' + (c - 'a');
+				warn = true;
+				buf.append((char)c);
+			}else break;
+			c = read();
+		}
+		sval = buf.toString();
+		peekc = c;
+		Casl2Symbol symbol = symbolTable.searchSymbol(sval);
+		if(symbol!= Casl2Symbol.LABEL) return symbol;
+		if(warn) errorTable.writeWarning(line,3,sval);
+		if(sval.length()>8) errorTable.writeWarning(line,4,sval);
+		nval = symbolTable.getLabelID();
+		return symbol;
+	}
+
+	public int getLine() {return line;}
+	public int getNval() {return nval;}
+	public String getSval(){return sval;}
+	void setSval(String sval){this.sval = sval;}
+	void setNval(int nval){this.nval = nval;}
+	void skipToEOL(){
+		while(peekc!='\n' && peekc != -1)
+			peekc = read();
+	}
+
+	ErrorTable getErrTbl() {
+		return errorTable;
+	}
+	SymbolTable getSymTbl(){
+		return symbolTable;
 	}
 }

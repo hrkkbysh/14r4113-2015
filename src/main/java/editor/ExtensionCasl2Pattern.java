@@ -1,7 +1,7 @@
 package editor;
 
 public enum ExtensionCasl2Pattern implements SyntaxPattern{
-	PRSP("\\b(PR|SP|\\$)\\b"),
+	PRSP("\\b(PR|SP)\\b"),
 	DEFMACRO("(\\$.+)")
 	;
 	private String pattern;

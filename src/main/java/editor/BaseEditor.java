@@ -24,22 +24,25 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import org.fxmisc.undo.UndoManager;
-import org.fxmisc.undo.UndoManagerFactory;
 
-public class BaseEditor<E extends Enum<E> & SyntaxPattern>{
-	
-	private Pattern syntaxRegex;
+public class BaseEditor<E extends Enum<E> & SyntaxPattern,E1 extends Enum<E1> & SyntaxPattern>{
 	private String path;
-	
 	private CodeArea codeArea;
 	private ExecutorService service;
 	private Task<StyleSpans<Collection<String>>> task;
 	private static int ff= 0;
+	private Class<E> sr;
+	private Class<E1> ex;
+	Pattern p1;
+	Pattern p2;
+	private boolean exhighlight = false;
 	
-	public BaseEditor(ExecutorService service,Class<E> sr,String cssfile,Stage stage) {
+	public BaseEditor(ExecutorService service,String cssfile,Stage stage,Class<E> sr,Class<E1> ex) {
 		this.service = service;
-		initSyntax(sr);
-
+		p1 = initSyntax(sr);
+		p2 = initSyntax(sr,ex);
+		this.sr = sr;
+		this.ex = ex;
 		codeArea = new CodeArea();
 
 		String styleSheet = sr.getResource(cssfile).toExternalForm();
@@ -66,7 +69,11 @@ public class BaseEditor<E extends Enum<E> & SyntaxPattern>{
 			//String caretlineString = codeArea.getText(cc);
 			if(nt.length()>ot.length())
 				codeArea.replaceText(cp-1, cp, rc.toUpperCase());
-			codeArea.setStyleSpans(0,computeHighlighting(codeArea.getText(),sr));
+					if(exhighlight) {
+						codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText(), sr, ex,p2));
+					}else{
+						codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText(), sr,p1));
+					}
 		});
 		
 		codeArea.caretPositionProperty().addListener(
@@ -98,7 +105,7 @@ public class BaseEditor<E extends Enum<E> & SyntaxPattern>{
 
 	}
 
-	private void initSyntax(Class<E> sp) {
+	private Pattern initSyntax(Class<E> sp) {
 		StringBuilder sb = new StringBuilder();
 		for(E csp:sp.getEnumConstants()){
 			sb.append("(?<");
@@ -108,11 +115,31 @@ public class BaseEditor<E extends Enum<E> & SyntaxPattern>{
 			sb.append(")|");
 		}
 		sb.deleteCharAt(sb.length()-1);
-		syntaxRegex = Pattern.compile(sb.toString());
+		return Pattern.compile(sb.toString());
 	}
 
-	public StyleSpans<Collection<String>> computeHighlighting(String text,Class<E> sp){
-		Matcher matcher = syntaxRegex.matcher(text);
+	private Pattern initSyntax(Class<E> sp,Class<E1> ex) {
+		StringBuilder sb = new StringBuilder();
+		for(E1 csp:ex.getEnumConstants()){
+			sb.append("(?<");
+			sb.append(csp.toString());
+			sb.append(">");
+			sb.append(csp.getPattern());
+			sb.append(")|");
+		}
+		for(E csp:sp.getEnumConstants()){
+			sb.append("(?<");
+			sb.append(csp.toString());
+			sb.append(">");
+			sb.append(csp.getPattern());
+			sb.append(")|");
+		}
+		sb.deleteCharAt(sb.length()-1);
+		return Pattern.compile(sb.toString());
+	}
+
+	public StyleSpans<Collection<String>> computeHighlighting(String text,Class<E> sp,Pattern p){
+		Matcher matcher = p.matcher(text);
         int lastKwEnd = 0;
         
         StyleSpansBuilder<Collection<String>> spansBuilder
@@ -131,6 +158,38 @@ public class BaseEditor<E extends Enum<E> & SyntaxPattern>{
         
         spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);        
         return spansBuilder.create();
+	}
+	public StyleSpans<Collection<String>> computeHighlighting(String text,Class<E> sp,Class<E1> ex, Pattern p2){
+		Matcher matcher = p2.matcher(text);
+		int lastKwEnd = 0;
+
+		StyleSpansBuilder<Collection<String>> spansBuilder
+				= new StyleSpansBuilder<>();
+		while(matcher.find()) {
+			String styleClass=null;
+			for(E csp:sp.getEnumConstants()){
+				if(matcher.group(csp.toString()) !=null)styleClass = csp.toString();
+			}
+			for(E1 csp:ex.getEnumConstants()){
+				if(matcher.group(csp.toString()) !=null)styleClass = csp.toString();
+			}
+			assert styleClass != null;
+
+			spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
+			spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
+			lastKwEnd = matcher.end();
+		}
+
+		spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
+		return spansBuilder.create();
+	}
+
+	public void refrechView(){
+		if(exhighlight) {
+			codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText(), sr, ex,p2));
+		}else{
+			codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText(), sr,p1));
+		}
 	}
 
 	public void applyHighlighting(StyleSpans<Collection<String>> highlighting) {
@@ -158,4 +217,17 @@ public class BaseEditor<E extends Enum<E> & SyntaxPattern>{
 	public void setPath(String path) {this.path = path;}
 
 	public UndoManager getUndoManager(){return getCodeArea().getUndoManager();}
+
+	public boolean isExhighlight() {
+		return exhighlight;
+	}
+
+	public void setExhighlight(boolean exhighlight) {
+		this.exhighlight = exhighlight;
+		if(exhighlight) {
+			codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText(), sr, ex,p2));
+		}else{
+			codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText(), sr,p1));
+		}
+	}
 }

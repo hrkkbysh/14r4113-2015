@@ -1,9 +1,6 @@
-package casl2;
+package editor;
 
-
-import assembler.MachineInstruction;
-
-public enum Comet2Instruction implements MachineInstruction {
+public enum Comet2Instruction{
 	ADDA(5),
 	ADDL(5),
 	AND(5),
@@ -35,7 +32,7 @@ public enum Comet2Instruction implements MachineInstruction {
 	INVALID_COI(-1);
 	
 	private int syntaxType;
-	private Comet2Instruction(int syntaxType) {
+	Comet2Instruction(int syntaxType) {
 		this.syntaxType =syntaxType;
 	}
 	public int getSyntaxType(){return syntaxType;}

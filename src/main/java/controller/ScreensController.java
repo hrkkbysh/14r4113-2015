@@ -113,6 +113,51 @@ public class ScreensController<T extends Enum<T> & SceneType>  extends StackPane
 		}
 	}
 
+	public boolean setNewWindow(T sceneType) {
+		Node node = screens.get(sceneType);
+		//stage.setResizable(true);
+
+		if (node != null) {   //screen loaded
+			final DoubleProperty opacity = opacityProperty();
+			if (!getChildren().isEmpty()) {    //if there is more than one screen
+				Timeline fade = new Timeline(
+						new KeyFrame(Duration.ZERO, new KeyValue(opacity, 1.0)),
+						new KeyFrame(new Duration(1000), t -> {
+							getChildren().remove(0);
+							stage.setTitle(sceneType.toString());
+							getChildren().add(0, node);     //add the screen
+
+							stage.sizeToScene();
+							stage.setHeight(600.0);
+							stage.setWidth(900.0);
+
+							//stage.setResizable(false);
+							//getRoot().prefHeightProperty().bind(stage.heightProperty());
+							//getRoot().prefWidthProperty().bind(stage.widthProperty());
+
+							Timeline fadeIn = new Timeline(
+									new KeyFrame(Duration.ZERO, new KeyValue(opacity, 0.0)),
+									new KeyFrame(new Duration(800), new KeyValue(opacity, 1.0)));
+							fadeIn.play();
+						}, new KeyValue(opacity, 0.0)));
+				fade.play();
+
+			} else {
+				setOpacity(0.0);
+				getChildren().add(node);       //no one else been displayed, then just show
+
+				Timeline fadeIn = new Timeline(
+						new KeyFrame(Duration.ZERO, new KeyValue(opacity, 0.0)),
+						new KeyFrame(new Duration(2500), new KeyValue(opacity, 1.0)));
+				fadeIn.play();
+			}
+			return true;
+		} else {
+			System.out.println("screen hasn't been loaded!!! \n");
+			return false;
+		}
+	}
+
 	/*Node screenToRemove;
          if(screens.get(name) != null){   //screen loaded
          if(!getChildren().isEmpty()){    //if there is more than one screen

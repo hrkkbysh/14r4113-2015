@@ -1,11 +1,7 @@
 package casl2;
 
-import assembler.Token;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -14,21 +10,14 @@ import java.util.List;
 import java.util.Map;
 
 public class ErrorTable {
-
-	private static ErrorTable errorTable;
-
-	private Map<Integer, String> errorDict = new HashMap<>();
-	private Map<Integer, String> warningDict = new HashMap<>();
+	private static final Map<Integer, String> errorDict = new HashMap<>();
+	private static final Map<Integer, String> warningDict = new HashMap<>();
 	private List<String> errorMessages = new ArrayList<>();
 	private List<String> warningMessages = new ArrayList<>();
-	private int errorCount;
-	private int warningCount;
 
-	private ErrorTable(){
-		errorCount =0;
-		warningCount = 0;
+	static{
 		try {
-			byte[] bytes = Files.readAllBytes(Paths.get(System.getProperty("user.dir")+"/src/main/resources/ErrorDictionary.txt"));
+			byte[] bytes = Files.readAllBytes(Paths.get(System.getProperty("user.dir")+"/src/main/resources/MyErrorDictionary.txt"));
 
 			String code;
 			try {
@@ -37,7 +26,7 @@ public class ErrorTable {
 				// fallback
 				code = new String(bytes);
 			}
-			String[] lines = code.split("\n");
+			String[] lines = code.split("\r\n");
 			int i = 0;
 			if(lines[i].equals("WARNING:")) {
 				for (i++; !lines[i].equals(";"); i++) {
@@ -72,19 +61,7 @@ public class ErrorTable {
 			e.printStackTrace();
 		}
 	}
-
-	public void writeError(int line,Integer errorType, Token token) {
-		String errorMessage = errorDict.get(errorType);
-		errorMessage.replaceAll("%s", token.getToken());
-		errorMessages.add(errorMessage);
-		errorCount++;
-	}
-
-	public void writeWarning(int line,Integer errorType, Token token) {
-		String errorMessage = errorDict.get(errorType);
-		errorMessage.replaceAll("%s", token.getToken());
-		errorMessages.add(errorMessage);
-		errorCount++;
+	public ErrorTable(){
 	}
 
 	public List<String> getErrorMessages(){
@@ -92,40 +69,53 @@ public class ErrorTable {
 	}
 
 	public List<String> getWarningMessages(){
-		return errorMessages;
+		return warningMessages;
 	}
 
-	public boolean hasError(){return errorCount!=0;}
-	public boolean hasWarning(){return warningCount!=0;}
-	public void outErrors(){errorMessages.forEach(System.out::println);}
-	public void writeTemp(int line, Token token ,String error){
-		errorMessages.add("("+line +")"+error+"("+token.getToken() +")");
-		errorCount++;
-	}
+	public boolean hasError(){return !errorMessages.isEmpty();}
+	public boolean hasWarning(){return !warningMessages.isEmpty();}
 
-	public static ErrorTable getInstance() {
-		if(errorTable==null){
-			errorTable = new ErrorTable();
-		}
-		return errorTable;
-	}
 	public void clear(){
 		warningMessages.clear();
 		errorMessages.clear();
-		errorCount=0;
-		warningCount=0;
 	}
 
-	public void writeError(int line,int errorType,String sval){}
-    public void writeError(int line,int errorType,int nval){}
-    public void writeError(int line,int errorType,char cval){}
-    public void writeError(int line,int errorType){}
-
-    public void writeWarning(int line,int errorType,String sval){}
-    public void writeWarning(int line,int errorType,int nval){}
-    public void writeWarning(int line,int errorType,char cval){}
-    public void writeWarning(int line,int errorType){}
+	public void writeError(int line,int errorType,String sval){
+		String em = errorDict.get(errorType);
+		em = em.replaceFirst("sval",sval);
+		errorMessages.add("("+line+") "+em);
+	}
+    public void writeError(int line,int errorType,int nval){
+		String em = errorDict.get(errorType);
+		em = em.replaceFirst("nval",Integer.toString(nval));
+		errorMessages.add("("+line+") "+em);
+	}
+    public void writeError(int line,int errorType){
+		String em = errorDict.get(errorType);
+		errorMessages.add("("+line+") "+em);
+	}
 
 	public void writeError(int line, int errorType, String inst, int nval, String sval) {
+		String em = errorDict.get(errorType);
+		em = em.replaceFirst("inst",inst);
+		em = em.replaceFirst("sval",sval);
+		em = em.replaceFirst("nval",Integer.toString(nval));
+		errorMessages.add("("+line+") "+em);
 	}
+
+    public void writeWarning(int line,int errorType,String sval){
+        String em = warningDict.get(errorType);
+        em = em.replaceFirst("sval",sval);
+        warningMessages.add("("+line+") "+em);
+    }
+    public void writeWarning(int line,int errorType,int nval){
+        String em = warningDict.get(errorType);
+        em = em.replaceFirst("nval",Integer.toString(nval));
+        warningMessages.add("("+line+") "+em);
+    }
+
+    public void writeWarning(int line,int errorType){
+        String wm = warningDict.get(errorType);
+        warningMessages.add("("+line+") "+wm);
+    }
 }

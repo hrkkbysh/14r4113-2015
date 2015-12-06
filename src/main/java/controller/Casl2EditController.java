@@ -11,11 +11,10 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 
-import casl2.casl2ex.Casl2Lexer;
-import casl2.casl2ex.Casl2SymbolA;
+import casl2.Casl2Parser;
 import editor.BaseEditor;
 import editor.Casl2SyntaxPattern;
-import editor.CustomEditor;
+import editor.BaseEditor;
 import editor.ExtensionCasl2Pattern;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -205,20 +204,21 @@ public class Casl2EditController extends BorderPane implements Initializable,Con
 
 	@FXML
 	void newAction(ActionEvent event) {
-		CustomEditor<Casl2SyntaxPattern, ExtensionCasl2Pattern> casl2Editor =
-				new CustomEditor<>(service, Casl2SyntaxPattern.class, ExtensionCasl2Pattern.class,"/Casl2SyntaxHighLighting.css",sc.getStage());
+		BaseEditor<Casl2SyntaxPattern, ExtensionCasl2Pattern> casl2Editor =
+				new BaseEditor<>(service, "/Casl2SyntaxHighlighting.css",sc.getStage(), Casl2SyntaxPattern.class, ExtensionCasl2Pattern.class);
 		casl2Editor.setPath("new Tab");
 		Tab tab = new Tab();
 		tab.setContent(casl2Editor.getCodeArea());
 		editorTabPane.getTabs().add(tab);
 		editorMap.put(tab,casl2Editor);
+		editors.add(casl2Editor);
 		activeEditor = casl2Editor;
 	}
 
 	@FXML
 	void openAction(ActionEvent event) {
-		CustomEditor<Casl2SyntaxPattern,ExtensionCasl2Pattern> casl2Editor =
-				new CustomEditor<>(service, Casl2SyntaxPattern.class, ExtensionCasl2Pattern.class, "/Casl2SyntaxHighlighting.css",sc.getStage());
+		BaseEditor<Casl2SyntaxPattern,ExtensionCasl2Pattern> casl2Editor =
+				new BaseEditor<>(service, "/Casl2SyntaxHighlighting.css",sc.getStage(), Casl2SyntaxPattern.class, ExtensionCasl2Pattern.class);
 
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Select File");
@@ -246,6 +246,7 @@ public class Casl2EditController extends BorderPane implements Initializable,Con
 				Tab tab = new Tab(target.getName(),casl2Editor.getCodeArea());
 				editorTabPane.getTabs().add(tab);
 				editorMap.put(tab, casl2Editor);
+				editors.add(casl2Editor);
 				casl2Editor.getUndoManager().mark();
 				activeEditor = casl2Editor;
 				assembleMenuItem.setDisable(false);
@@ -375,48 +376,27 @@ public class Casl2EditController extends BorderPane implements Initializable,Con
 	}
 
 	@FXML
+	private ListView<String> emView;
+	@FXML
 	void assembleAction(ActionEvent event) {
-/*	String code = activeEditor.getCodeArea().getText();
-		System.out.println(code);
-		Casl2Lexer lexer = new Casl2Lexer(code);
-		BinaryGenerator bg = new Comet2BG(new Comet2InstructionTable(),new LabelTable());
-		bg.setPath(activeEditor.getPath());
-		Casl2Parser parser = new Casl2Parser(lexer,bg);
-		parser.enter();*/
         try {
+            //String code = activeEditor.getCodeArea().getText();
             InputStreamReader is = new InputStreamReader(new FileInputStream(activeEditor.getPath()));
-            Casl2Lexer lexerLexer = new Casl2Lexer(is);
-           /* try {
-                for(Casl2SymbolA symbol = lexerLexer.nextToken();symbol!=Casl2SymbolA.EOF;symbol = lexerLexer.nextToken() ){
-                   System.out.print("Symbol : " + symbol.toString());
-                   *//* if(symbol == Casl2Symbol.MACHINEINST || symbol == Casl2Symbol.ASSEMBLERINST  || symbol == Casl2Symbol.LABEL
-                            || symbol == Casl2Symbol.MACROINST || symbol == Casl2Symbol.REGISTER || symbol == Casl2Symbol.STR_CONST){
-                        System.out.print("{ sval : " + lexerLexer.getSval() + " } ");
-                    }else if(symbol == Casl2Symbol.NUM_CONST){
-                        System.out.print("{ nval : " + lexerLexer.getNval() +" } ");
-                    }*//*
-                }
-            } *//*catch (IOException e) {
-                e.printStackTrace();
+            /*for(Casl2Symbol symbol = lexer.nextToken();symbol!=Casl2Symbol.EOF;symbol = lexer.nextToken()){
+                System.out.print(symbol.toString());
+                if(symbol ==Casl2Symbol.EOL) System.out.println();
+                else System.out.print(" , ");
             }*/
+            Casl2Parser parser = new Casl2Parser(is);
+            parser.enter(activeEditor.getPath());
+	        emView.getItems().clear();
+	        if(parser.hasError()||parser.hasWarning()){
+		        emView.getItems().addAll(parser.getErrorMessages());
+		        emView.getItems().addAll(parser.getWarningMessages());
+	        }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        System.out.println();
-        for(int i = 0; i<70; i++){
-            System.out.println("private Casl2Symbol state" +i+"()throws IOException{}");
-        }
-        for(int i = 0; i<7; i++){
-            System.out.println("private Casl2Symbol stateL" +i+"()throws IOException{}");
-        }
-
-		/*StringBuilder buf = new StringBuilder();
-		for(Token token = lexer.nextToken();token.getSymbol()!= Casl2Symbol.EOF;token = lexer.nextToken(),buf = new StringBuilder()){
-			buf.append("[ ");buf.append(token.getToken());
-			buf.append(": ");buf.append(token.getSymbol().toString());
-			buf.append(" ]");
-			System.out.print(buf.toString());
-		}*/
 	}
 
 	@FXML
@@ -441,7 +421,6 @@ public class Casl2EditController extends BorderPane implements Initializable,Con
 
 	@FXML
 	void codingAssistAction(ActionEvent event) {
-
 	}
 
 	@FXML
@@ -488,6 +467,7 @@ public class Casl2EditController extends BorderPane implements Initializable,Con
 
 	@FXML
 	void gotoLoadModeAction(ActionEvent event) {
+		//sc.showNewWindow(SimSceneType.RELOCATABLE);
 		sc.setScreen(SimSceneType.RELOCATABLE);
 	}
 	@FXML
@@ -516,14 +496,12 @@ public class Casl2EditController extends BorderPane implements Initializable,Con
 	@FXML
 	void transitionCasl2EditAction(ActionEvent event) {
 		asmMode = AssemblerMode.NORMALCASL2;
-
 		setNormalMode();
 	}
 
 	@FXML
 	void transitionCasl2ExtensionAction(ActionEvent event) {
 		asmMode = AssemblerMode.EXTENSIONCASL2;
-
 		setExtensionMode();
 	}
 
@@ -552,17 +530,21 @@ public class Casl2EditController extends BorderPane implements Initializable,Con
 			default: setNormalMode();
 		}
 	}
-
 	private void setNormalMode() {
 		insertMacroStateButton.setVisible(false);
 		modeIcon.setImage(normalModeIcon.getImage());
 		modeToolTip.setText(asmMode.getTooltip());
-
+		for(BaseEditor editor: editors){
+			editor.setExhighlight(false);
+		}
 	}
 	private void setExtensionMode() {
 		insertMacroStateButton.setVisible(true);
 		modeIcon.setImage(extensionModeIcon.getImage());
 		modeToolTip.setText(asmMode.getTooltip());
+		for(BaseEditor editor: editors){
+			editor.setExhighlight(true);
+		}
 	}
 	//初期設定
 	@Override
@@ -640,8 +622,8 @@ public class Casl2EditController extends BorderPane implements Initializable,Con
 	private AssemblerMode asmMode;
 
 	private ObservableList<BaseEditor> editors;
-	private ObservableMap<Tab,CustomEditor> editorMap;
-	private CustomEditor<Casl2SyntaxPattern,ExtensionCasl2Pattern> activeEditor;
+	private ObservableMap<Tab,BaseEditor> editorMap;
+	private BaseEditor<Casl2SyntaxPattern,ExtensionCasl2Pattern> activeEditor;
 
 	public void setRC(RelocatableController rc) {
 		this.rc = rc;
@@ -709,7 +691,7 @@ public class Casl2EditController extends BorderPane implements Initializable,Con
 		contentPane.setDividerPositions(0.01);
 
 		editorMap = FXCollections.observableHashMap();
-
+		editors = FXCollections.observableArrayList();
 		editorTabPane.setTabClosingPolicy(TabClosingPolicy.SELECTED_TAB);
 		editorTabPane.getSelectionModel().selectedItemProperty().addListener
 				((observable, oldValue, newValue) -> {
@@ -719,6 +701,8 @@ public class Casl2EditController extends BorderPane implements Initializable,Con
 						activeEditor = editorMap.get(newValue);
 
 						saveButton.setDisable(false);
+						saveMenuItem.setDisable(false);
+						saveAllButton.setDisable(false);
 						saveAsMenuItem.setDisable(false);
 						prettyPrintButton.setDisable(false);
 					}

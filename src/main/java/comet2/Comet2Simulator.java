@@ -12,10 +12,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
-
-import assembler.InstructionData;
-import assembler.MachineInstructionTable;
-import casl2.Comet2Instruction;
+import casl2.Casl2Symbol;
+import casl2.Comet2InstructionTable;
 import casl2.Comet2Word;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.SetChangeListener.Change;
@@ -27,7 +25,7 @@ public class Comet2Simulator{
 	private Comet2Word PR,IR,o1,o2;
 	private AddressSpace memory;
 	private Register register;
-	private MachineInstructionTable instructionTable;
+	private Comet2InstructionTable instructionTable;
 	private ExecState execState;
 	public enum DataType {ADDRESS,DATA,FUNCTION_NAME}
 
@@ -133,13 +131,14 @@ public class Comet2Simulator{
 		register.incrementPc();
 
 		//instruction decode,//calculate and fetch operand address
-		int instructionCode = IR.getContent() & maskInst;
-		int r1Code = IR.getContent() & maskR1;
+		int instructionCode = IR.getContent() & maskInst >>> 8;
+		int r1Code = IR.getContent() & maskR1 >>> 4;
 		int r2Code = IR.getContent() & maskR2;
 		int opperandSize =-1;
 		
-		InstructionData instruction = instructionTable.findFromOpCode(instructionCode);
-		switch(instruction.getMnemonic()){
+		Casl2Symbol instruction = instructionTable.findFromOpCode(instructionCode);
+		Integer opcode = instructionTable.findFromMachineInst(instruction);
+		switch(instruction){
 		case LD:
 		case ADDA:
 		case ADDL:
@@ -152,7 +151,7 @@ public class Comet2Simulator{
 		case CPL:
 			opperandSize = 2;
 			o1=register.getGr()[r1Code];
-			if(instructionCode == instruction.getOpCode()){
+			if(instructionCode == opcode){
 				//2 words
 				register.incrementPc();
 				o2 = memory.readIndexMode(memory.readA(register.getPc().getContent()), register.getGr()[r2Code]);
@@ -168,7 +167,7 @@ public class Comet2Simulator{
 		case SRA:
 		case SRL:
 			opperandSize = 2;
-			if(instructionCode == instruction.getOpCode()){
+			if(instructionCode == opcode){
 				//2 words
 				o1=register.getGr()[r1Code];
 				register.incrementPc();
@@ -185,7 +184,7 @@ public class Comet2Simulator{
 		case CALL:
 		case SVC:
 			opperandSize = 1;
-			if(instructionCode == instruction.getOpCode()){
+			if(instructionCode == opcode){
 				//2 words
 				o1=register.getGr()[r1Code];
 				register.incrementPc();
@@ -208,7 +207,7 @@ public class Comet2Simulator{
 
 		if(opperandSize!=-1){
 			/*execute*/
-			switch(instruction.getMnemonic()){
+			switch(instruction){
 			case LD:
 				o1 = Executor.ldComet2Word(o1, o2);
 				break;
