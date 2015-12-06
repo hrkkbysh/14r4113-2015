@@ -47,5 +47,5 @@ public enum Casl2Symbol {
 
 	MACROSTART,
 	MACROEND,
-	MACRO_ARG
+	MACRO_INST,  MACRO_ARG
 }

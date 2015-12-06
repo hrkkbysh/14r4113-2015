@@ -1,6 +1,7 @@
 package casl2;
 
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ExAssembler {
@@ -29,7 +30,82 @@ public class ExAssembler {
 	}
 
 	private void checkMacro(){
-
+		for (token = lexer.nextToken(); token != Casl2Symbol.EOF; setNextLine()) {
+			if(token == Casl2Symbol.MACROSTART){
+				token = lexer.nextToken();
+				if(token == Casl2Symbol.EOF){
+					macroHead();
+				}
+			}
+		}
+	}
+	class MacroData {
+		int macroID;
+		List<Integer> args = new ArrayList<>();
+		List<Data> datas = new ArrayList<>();
+		public MacroData(int macroID,List<Integer> args) {
+			this.args = args;
+			this.macroID = macroID;
+		}
+		class Data{
+			Casl2Symbol token;
+			int val;
+			public Data( Casl2Symbol token, int val) {
+				this.token = token;
+				this.val = val;
+			}
+		}
+		void addData(Casl2Symbol token,int val){
+			datas.add(new Data(token,val));
+		}
+	}
+	private void macroHead(){
+		for (token = lexer.nextToken(); token != Casl2Symbol.EOF; setNextLine()) {
+			int macroID;
+			List<Integer> argIDs = new ArrayList<>();
+			if(token == Casl2Symbol.LABEL){
+				macroID = lexer.getNval();
+				do {
+					token = lexer.nextToken();
+					switch (token) {
+						case MACRO_ARG:
+							argIDs.add(lexer.getNval());
+						default:
+							er = true;
+							errorTable.writeError(lexer.getLine(), 9, token.toString());//no args
+							break;
+					}
+					if(er) break;
+					token = lexer.nextToken();
+				}while(token == Casl2Symbol.COMMA);
+				checkEOL();
+				setNextLine();
+				if(!er){
+					MacroData md = new MacroData(macroID,argIDs);
+					if(!er){
+						//シンボルテーブルに命令名を登録
+						//マクロテーブルにコードブロックと引数idのテーブルを登録
+						//引数テーブルを開放
+					}else{
+						//エラー処理
+					}
+				}else {
+					//error
+				}
+			}
+		}
+	}
+	private void macroContents(MacroData md){
+		er = true;
+		for(;token != Casl2Symbol.MACROEND && token != Casl2Symbol.EOF;token = lexer.nextToken()){
+			switch(token){
+				case MACRO_ARG:
+					if(argTbl.searchArgtbl(lexer.getNval())==null){
+					er = true;
+					}
+			}
+			md.addData(token,lexer.getNval());
+		}
 	}
 
 	public void enter(String filepath) {
@@ -217,6 +293,12 @@ public class ExAssembler {
 						er = true;
 					}
 					break;
+				case MACRO_INST:
+					/*MacroData d = macroTable.getCodes(lexer.getNval());
+					for(int i = 0; i<d.args.size();i++) {
+						//引数チェック
+					}
+					//引数okならdをパース*/
 				default:
 					er = true;
 			}
