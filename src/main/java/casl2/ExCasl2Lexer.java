@@ -5,13 +5,11 @@ import java.io.InputStreamReader;
 public class ExCasl2Lexer extends Casl2Lexer{
 	private int peekc;
 	private int line = 1;
-	private ArgTbl argTbl;
 
 	/*Unicode専用.
 * @param 入力ストリーム*/
-	public ExCasl2Lexer(InputStreamReader is, ExSymbolTable symbolTable, ErrorTable errorTable,ArgTbl argTbl){
+	public ExCasl2Lexer(InputStreamReader is, ExSymbolTable symbolTable, ErrorTable errorTable){
 		super(is,  symbolTable, errorTable);
-		this.argTbl = argTbl;
 	}
 
 	@Override
@@ -64,7 +62,6 @@ public class ExCasl2Lexer extends Casl2Lexer{
 		super.setSval(buf.toString());
 		peekc = c;
 		if(getSval().length()>8) super.getErrTbl().writeWarning(line, 4, getSval());
-		super.setNval(argTbl.registerAndGetArgID(getSval()));
 
 		return Casl2Symbol.MACRO_ARG;
 	}
