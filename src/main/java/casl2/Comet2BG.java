@@ -181,8 +181,8 @@ public class Comet2BG {
 
 	/*
 	 *  */
-	public boolean defineLabel(int symbolName) {
-		return symbolTable.addLblDefLoc(symbolName, lc.get());
+	public boolean defineLabel(int symbolName,int proDefLoc) {
+		return symbolTable.addLblDefLoc(symbolName, lc.get(),proDefLoc);
 	}
 
 	public void genAdrCode(int nval) {

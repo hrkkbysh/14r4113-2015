@@ -1,7 +1,7 @@
 package casl2;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,13 +12,13 @@ public class Casl2Lexer {
 	private String sval;
 	private int nval;
 	private int line = 1;
-	private InputStreamReader input;
+	private BufferedReader input;
 	private int peekc;
 
 	/*Unicode専用.
 * @param 入力ストリーム*/
-	public Casl2Lexer(InputStreamReader is,SymbolTable symbolTable,ErrorTable errorTable){
-		init(is);
+	public Casl2Lexer(BufferedReader r,SymbolTable symbolTable,ErrorTable errorTable){
+		init(r);
 		this.symbolTable = symbolTable;
 		this.errorTable = errorTable;
 	}
@@ -29,11 +29,11 @@ public class Casl2Lexer {
 			e.printStackTrace();
 		}
 	}
-	public void init(InputStreamReader is){
-		if(is == null){
+	public void init(BufferedReader r){
+		if(r == null){
 			throw new NullPointerException();
 		}
-		this.input = is;
+		this.input = r;
 		peekc = read();
 	}
 
@@ -46,32 +46,37 @@ public class Casl2Lexer {
 			return -1;
 		}
 	}
+	void closeReader(){
+		try {
+			input.close();
+		} catch (IOException e) {
+			errorTable.writeError(line, -1, "I/O EXCEPTION occurred.");//例外
+		}
+	}
 
 	public Casl2Symbol nextToken(){
 		boolean neg = false;
+		boolean arg = false;
 		int c = peekc;
 		switch (c) {
-			case  -1 : return Casl2Symbol.EOF;
-			case ' ' : case '\t': case '\r': peekc = read();return nextToken();
+			case  -1 : closeReader(); return Casl2Symbol.EOF;
+			case ' ' : case '\t': case '\r': peekc = read(); return nextToken();
 			case ';' : skipToEOL();
 			case '\n': peekc = read();line++; return Casl2Symbol.EOL;
 			case ',' : peekc = read();return Casl2Symbol.COMMA;
 			case '=' : peekc = read();return Casl2Symbol.EQUAL;
 			case '\'': return STR_CONST();
 			case '#' : return HEX();
-			case '-' : neg = true;  c = read(); if(!isNUMBER(c)) return Casl2Symbol.ERROR;
+			case '-' : neg = true; c = read(); if(!isNUMBER(c)) return ERROR('-',c);
 			case '0' : case '1' : case '2' : case '3' : case '4' : case '5' :
 			case '6' : case '7' : case '8' : case '9' : return NUM(c,neg);
+			case '$' : arg = true; c = read(); if(!isLETTERorNUMBER(c)) return  ERROR('$',c);
 			case 'A' : case 'B' : case 'C' : case 'D' : case 'E' : case 'F' : case 'G' :
 			case 'H' : case 'I' : case 'J' : case 'K' : case 'L' : case 'M' : case 'N' :
 			case 'O' : case 'P' : case 'Q' : case 'R' : case 'S' : case 'T' : case 'U' :
-			case 'V' : case 'W' : case 'X' : case 'Y' : case 'Z' : return KEYWORD(c);
+			case 'V' : case 'W' : case 'X' : case 'Y' : case 'Z' : return KEYWORD(c,arg);
 			default:
-
-				errorTable.writeError(line, 1, Character.getName(c));//"有効な識別子ではありません。"
-				peekc = read();
-				skipToEOL();
-				return Casl2Symbol.ERROR;
+				return ERROR(c);
 		}
 	}
 
@@ -83,6 +88,9 @@ public class Casl2Lexer {
 		Pattern pattern = Pattern.compile("[\\x00-\\x7F\\xA1-\\xDF]{1,65535}");
 		Matcher matcher = pattern.matcher(candidate);
 		return matcher.matches();
+	}
+	boolean isLETTERorNUMBER(int c){
+		return isNUMBER(c)||isUPPER_CASE_LETTER(c)||isLOWER_CASE_LETTER(c);
 	}
 
 	Casl2Symbol HEX(){
@@ -105,6 +113,7 @@ public class Casl2Lexer {
 		return Casl2Symbol.NUM_CONST;
 	}
 
+	/* XXX */
 	Casl2Symbol STR_CONST() {
 		int c = read();
 		StringBuilder buf = new StringBuilder();
@@ -112,8 +121,7 @@ public class Casl2Lexer {
 			while (c != '\'') {
 				if (c == '\n') {
 					sval = buf.toString();
-					peekc =c;
-					return Casl2Symbol.ERROR;
+					return ERROR(sval.codePoints().toArray());
 				}
 				buf.append((char) c);
 				c = read();
@@ -156,7 +164,7 @@ public class Casl2Lexer {
 		return Casl2Symbol.NUM_CONST;
 	}
 
-	Casl2Symbol KEYWORD(int c) {
+	Casl2Symbol KEYWORD(int c,boolean arg) {
 		StringBuilder buf = new StringBuilder();
 		buf.append((char)c);
 		c = read();
@@ -181,23 +189,25 @@ public class Casl2Lexer {
 		if(warn) errorTable.writeWarning(line,3,sval);
 		if(sval.length()>8) errorTable.writeWarning(line,4,sval);
 		nval = symbolTable.getLabelID();
-		return symbol;
+		return arg ? Casl2Symbol.MACRO_ARG:symbol;
 	}
 
 	public int getLine() {return line;}
 	public int getNval() {return nval;}
 	public String getSval(){return sval;}
-	void setSval(String sval){this.sval = sval;}
-	void setNval(int nval){this.nval = nval;}
+
 	void skipToEOL(){
 		while(peekc!='\n' && peekc != -1)
 			peekc = read();
 	}
-
-	ErrorTable getErrTbl() {
-		return errorTable;
-	}
-	SymbolTable getSymTbl(){
-		return symbolTable;
+	Casl2Symbol ERROR(int ...c){
+		StringBuilder buf = new StringBuilder();
+		for(int index = 0; index < c.length; index++){
+			buf.append((char)index);
+		}
+		errorTable.writeError(line, 1,buf.toString());//"有効な識別子ではありません。"
+		peekc = read();
+		skipToEOL();
+		return Casl2Symbol.ERROR;
 	}
 }

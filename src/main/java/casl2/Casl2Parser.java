@@ -1,5 +1,6 @@
 package casl2;
 
+import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.List;
 
@@ -11,17 +12,17 @@ public class Casl2Parser {
 	private Casl2Symbol token;
 	boolean er;
 
-	public Casl2Parser(InputStreamReader is) {
+	public Casl2Parser( BufferedReader r) {
 		symbolTable = new SymbolTable();
 		errorTable = new ErrorTable();
-		lexer = new Casl2Lexer(is,symbolTable,errorTable);
+		lexer = new Casl2Lexer(r,symbolTable,errorTable);
 		bg = new Comet2BG(new Comet2InstructionTable(),symbolTable,errorTable);
 	}
-	public void init(InputStreamReader is){
+	public void init( BufferedReader r){
 		errorTable.clear();
 		symbolTable.clear();
 		bg.init();
-		lexer.init(is);
+		lexer.init(r);
 	}
 
 
@@ -68,7 +69,7 @@ public class Casl2Parser {
 					checkEOL();
 					return;
 				case LABEL:
-					if (!bg.defineLabel(lexer.getNval())) {
+					if (!bg.defineLabel(lexer.getNval(),lexer.getLine())) {
 						errorTable.writeError(lexer.getLine(), 8, lexer.getSval());//"二重定義"
 					}
 					token = lexer.nextToken();
@@ -187,6 +188,7 @@ public class Casl2Parser {
 					break;
 				case IN:
 				case OUT:
+					mnemonic = token;
 					token = lexer.nextToken();
 					if(token== Casl2Symbol.LABEL){
 						int bufLabel = lexer.getNval();
@@ -194,7 +196,7 @@ public class Casl2Parser {
 							token = lexer.nextToken();
 							if(token== Casl2Symbol.LABEL){
 								int lenLabel =lexer.getNval();
-								bg.genMacroBlock(token, bufLabel, lenLabel, lexer.getLine());
+								bg.genMacroBlock(mnemonic, bufLabel, lenLabel, lexer.getLine());
 								token = lexer.nextToken();
 							}else{
 								errorTable.writeError(lexer.getLine(), 17, 2);

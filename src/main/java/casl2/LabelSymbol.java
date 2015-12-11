@@ -6,6 +6,7 @@ import java.util.List;
 public class LabelSymbol {
 	private int id;
 	private int defineLocation;
+	private int proDefLoc;
 	private List<Integer> refineLocations;
 	private List<Integer> proRefLocs;
 	
@@ -31,6 +32,10 @@ public class LabelSymbol {
 		return defineLocation;
 	}
 
+	public int getProDefLoc() {
+		return proDefLoc;
+	}
+
 	public List<Integer> getRefineLocations() {
 		return refineLocations;
 	}
@@ -38,8 +43,9 @@ public class LabelSymbol {
 		return proRefLocs;
 	}
 
-	public void setDefineLocation(int defineLocation) {
+	public void setDefineLocation(int defineLocation,int proDefLoc) {
 		this.defineLocation = defineLocation;
+		this.proDefLoc = proDefLoc;
 	}
 
 	public void addRefineLocations(int refineLocation,int proRefLoc) {

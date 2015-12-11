@@ -39,13 +39,13 @@ public enum Casl2Symbol {
     XOR,
     LABEL,
     GR, EOL,
-	PR,SP,
+    PR,SP,
     NUM_CONST,
     DS_CONST,
     STR_CONST,EQUAL,
     COMMA,EOF,ERROR,
 
-	MACROSTART,
-	MACROEND,
-	MACRO_INST,  MACRO_ARG
+    MACRO,
+    MEND,
+    MACRO_INST,  MACRO_ARG
 }

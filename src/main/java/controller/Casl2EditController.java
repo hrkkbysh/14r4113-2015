@@ -4,6 +4,7 @@ import java.io.*;
  * Sample Skeleton for 'Casl2EditScene.fxml' Controller Class
  */
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -379,24 +380,18 @@ public class Casl2EditController extends BorderPane implements Initializable,Con
 	private ListView<String> emView;
 	@FXML
 	void assembleAction(ActionEvent event) {
-        try {
-            //String code = activeEditor.getCodeArea().getText();
-            InputStreamReader is = new InputStreamReader(new FileInputStream(activeEditor.getPath()));
-            /*for(Casl2Symbol symbol = lexer.nextToken();symbol!=Casl2Symbol.EOF;symbol = lexer.nextToken()){
-                System.out.print(symbol.toString());
-                if(symbol ==Casl2Symbol.EOL) System.out.println();
-                else System.out.print(" , ");
-            }*/
-            Casl2Parser parser = new Casl2Parser(is);
-            parser.enter(activeEditor.getPath());
-	        emView.getItems().clear();
-	        if(parser.hasError()||parser.hasWarning()){
-		        emView.getItems().addAll(parser.getErrorMessages());
-		        emView.getItems().addAll(parser.getWarningMessages());
-	        }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+		try {
+			BufferedReader reader = Files.newBufferedReader(Paths.get(activeEditor.getPath()));
+			Casl2Parser parser = new Casl2Parser(reader);
+			parser.enter(activeEditor.getPath());
+			emView.getItems().clear();
+			if(parser.hasError()||parser.hasWarning()){
+				emView.getItems().addAll(parser.getErrorMessages());
+				emView.getItems().addAll(parser.getWarningMessages());
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@FXML
