@@ -28,8 +28,7 @@ public enum Comet2Instruction{
 	SUBA(5),
 	SUBL(5),
 	SVC(2),
-	XOR(5),
-	INVALID_COI(-1);
+	XOR(5);
 	
 	private int syntaxType;
 	Comet2Instruction(int syntaxType) {

@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 
+import casl2.AsmMode;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -463,12 +464,12 @@ public class VisualizationController extends BorderPane implements Initializable
 	
 	@FXML
 	void transitionCasl2EditAction(ActionEvent event) {
-		asmMode = AssemblerMode.NORMALCASL2;
+		asmMode = AsmMode.NORMAL;
 		sc.setScreen(SimSceneType.CASL2_EDIT);
 	}
 	@FXML
 	void transitionCasl2ExtensionAction(ActionEvent event) {
-		asmMode = AssemblerMode.EXTENSIONCASL2;
+		asmMode = AsmMode.EXTEND;
 		sc.setScreen(SimSceneType.CASL2_EDIT);
 	}
 	@FXML
@@ -490,9 +491,9 @@ public class VisualizationController extends BorderPane implements Initializable
 		modeMenu.hide();
 		
 		switch(asmMode){
-		case NORMALCASL2: setNormalMode();
+		case NORMAL: setNormalMode();
 		break;
-		case EXTENSIONCASL2: setExtensionMode();
+		case EXTEND: setExtensionMode();
 		break;
 		default: setNormalMode();
 		}
@@ -598,7 +599,7 @@ public class VisualizationController extends BorderPane implements Initializable
 	ScreensController<SimSceneType> sc;
 	private ExecutorService service;
 	private CornerMenu modeMenu;
-	private AssemblerMode asmMode;
+	private AsmMode asmMode;
 
 	@Override
 	public void setScreenParent(ScreensController<SimSceneType> screenPage) {
@@ -612,7 +613,7 @@ public class VisualizationController extends BorderPane implements Initializable
 	}
 	
 	@Override
-	public void setAssemblerMode(AssemblerMode asmMode) {
+	public void setAssemblerMode(AsmMode asmMode) {
 		this.asmMode = asmMode;
 		setModeMenu();
 	}

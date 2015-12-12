@@ -1,5 +1,6 @@
 package editor;
 
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.ExecutorService;
@@ -27,6 +28,7 @@ import org.fxmisc.undo.UndoManager;
 
 public class BaseEditor<E extends Enum<E> & SyntaxPattern,E1 extends Enum<E1> & SyntaxPattern>{
 	private String path;
+	private Charset charset;
 	private CodeArea codeArea;
 	private ExecutorService service;
 	private Task<StyleSpans<Collection<String>>> task;
@@ -215,6 +217,13 @@ public class BaseEditor<E extends Enum<E> & SyntaxPattern,E1 extends Enum<E1> & 
 
 	public String getPath() {return path;}
 	public void setPath(String path) {this.path = path;}
+	public Charset getCharset() {
+		return charset;
+	}
+
+	public void setCharset(Charset charset) {
+		this.charset = charset;
+	}
 
 	public UndoManager getUndoManager(){return getCodeArea().getUndoManager();}
 

@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 
+import casl2.AsmMode;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -202,7 +203,7 @@ public class RelocatableController extends BorderPane implements Initializable,T
 	private ExecutorService service;
 	private Casl2EditController caec;
 	private VisualizationController vc;
-	private AssemblerMode asmMode;
+	private AsmMode asmMode;
 
 	public void setEC(Casl2EditController caec) {
 		this.caec = caec;
@@ -223,7 +224,7 @@ public class RelocatableController extends BorderPane implements Initializable,T
 	}
 
 	@Override
-	public void setAssemblerMode(AssemblerMode asmMode) {
+	public void setAssemblerMode(AsmMode asmMode) {
 		this.asmMode = asmMode;
 	}
 

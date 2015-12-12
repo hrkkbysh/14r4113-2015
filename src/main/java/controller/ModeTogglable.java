@@ -1,5 +1,7 @@
 package controller;
 
+import casl2.AsmMode;
+
 public interface ModeTogglable {
-	void setAssemblerMode(AssemblerMode asmMode);
+	void setAssemblerMode(AsmMode asmMode);
 }

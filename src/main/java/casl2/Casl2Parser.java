@@ -1,7 +1,6 @@
 package casl2;
 
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.List;
 
 public class Casl2Parser {
@@ -12,17 +11,20 @@ public class Casl2Parser {
 	private Casl2Symbol token;
 	boolean er;
 
-	public Casl2Parser( BufferedReader r) {
+	public Casl2Parser(BufferedReader r) {
 		symbolTable = new SymbolTable();
 		errorTable = new ErrorTable();
 		lexer = new Casl2Lexer(r,symbolTable,errorTable);
 		bg = new Comet2BG(new Comet2InstructionTable(),symbolTable,errorTable);
 	}
-	public void init( BufferedReader r){
+	public void init(BufferedReader r){
 		errorTable.clear();
 		symbolTable.clear();
 		bg.init();
 		lexer.init(r);
+	}
+	public void setMode(AsmMode parseMode){
+		symbolTable.setSymbolTable(parseMode);
 	}
 
 

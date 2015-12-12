@@ -13,11 +13,9 @@ public enum Casl2SyntaxPattern implements SyntaxPattern{
 	CONSTANT("\\b("+DECIMAL.getPattern()+
 				"|"+HEXADECIMAL.getPattern()+
 				"|"+STRING.getPattern()+")\\b"),
-						
 	LITERAL("=("+DECIMAL.getPattern()+
 				"|"+HEXADECIMAL.getPattern()+
 				"|"+STRING.getPattern()+")"),
-	
 	COMMENT("\\;.*"),
 	COMMA(","),
 	SPACE("\\s");

@@ -3,6 +3,7 @@ package controller;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import casl2.AsmMode;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -23,14 +24,14 @@ public class RootController extends AnchorPane implements Initializable,ModeTogg
 
 	@FXML
 	void gotoCasl2EditMode(ActionEvent event) {
-		asmMode = AssemblerMode.NORMALCASL2;
+		cec.setAssemblerMode(AsmMode.NORMAL);
 		pretrans();
 		screenPage.setScreen(SimSceneType.CASL2_EDIT);
 	}
 
 	@FXML
 	void gotoCasl2ExtensionEditMode(ActionEvent event){
-		asmMode = AssemblerMode.EXTENSIONCASL2;
+		cec.setAssemblerMode(AsmMode.EXTEND);
 		pretrans();
 		screenPage.setScreen(SimSceneType.CASL2_EDIT);
 	}
@@ -52,11 +53,13 @@ public class RootController extends AnchorPane implements Initializable,ModeTogg
 	}
 
 	private ScreensController<SimSceneType> screenPage;
-	private AssemblerMode asmMode;
+	private AsmMode asmMode;
 	private Stage stage;
 
+	private Casl2EditController cec;
+
 	@Override
-	public void setAssemblerMode(AssemblerMode asmMode) {
+	public void setAssemblerMode(AsmMode asmMode) {
 		this.asmMode = asmMode;
 	}
 	public void setStage(Stage stage){
@@ -65,4 +68,8 @@ public class RootController extends AnchorPane implements Initializable,ModeTogg
 	private void pretrans(){
 		stage.setResizable(true);
 	}
+	public void setCEC(Casl2EditController cec){
+		this.cec = cec;
+	}
+
 }

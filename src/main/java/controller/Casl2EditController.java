@@ -6,16 +6,18 @@ import java.io.*;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 
+import casl2.AsmMode;
 import casl2.Casl2Parser;
+import casl2.MacroAssembler;
 import editor.BaseEditor;
 import editor.Casl2SyntaxPattern;
-import editor.BaseEditor;
 import editor.ExtensionCasl2Pattern;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -208,6 +210,8 @@ public class Casl2EditController extends BorderPane implements Initializable,Con
 		BaseEditor<Casl2SyntaxPattern, ExtensionCasl2Pattern> casl2Editor =
 				new BaseEditor<>(service, "/Casl2SyntaxHighlighting.css",sc.getStage(), Casl2SyntaxPattern.class, ExtensionCasl2Pattern.class);
 		casl2Editor.setPath("new Tab");
+		casl2Editor.setCharset(Charset.defaultCharset());
+		setMode(casl2Editor);
 		Tab tab = new Tab();
 		tab.setContent(casl2Editor.getCodeArea());
 		editorTabPane.getTabs().add(tab);
@@ -237,11 +241,13 @@ public class Casl2EditController extends BorderPane implements Initializable,Con
 				String code = null;
 				try {
 					code = new String(bytes, "SHIFT_JIS");
+					casl2Editor.setCharset(Charset.forName("SHIFT_JIS"));
 				} catch (UnsupportedEncodingException ex) {
 					// fallback
 					code = new String(bytes);
+					casl2Editor.setCharset(Charset.defaultCharset());
 				}
-
+				setMode(casl2Editor);
 				casl2Editor.getCodeArea().appendText(code);
 				casl2Editor.setPath(target.toPath().toString());
 				Tab tab = new Tab(target.getName(),casl2Editor.getCodeArea());
@@ -270,12 +276,7 @@ public class Casl2EditController extends BorderPane implements Initializable,Con
 		String code =activeEditor.getCodeArea().getText();
 
 		byte[] bytes;
-		try {
-			bytes = code.getBytes("SHIFT_JIS");
-		} catch (UnsupportedEncodingException ex) {
-			// fallback
-			bytes = code.getBytes();
-		}
+		bytes = code.getBytes(activeEditor.getCharset());
 
 		try {
 			FileChooser fileChooser = new FileChooser();
@@ -303,12 +304,8 @@ public class Casl2EditController extends BorderPane implements Initializable,Con
 		String code =activeEditor.getCodeArea().getText();
 
 		byte[] bytes;
-		try {
-			bytes = code.getBytes("SHIFT_JIS");
-		} catch (UnsupportedEncodingException ex) {
-			// fallback
-			bytes = code.getBytes();
-		}
+			bytes = code.getBytes(activeEditor.getCharset());
+
 
 		try {
 			if(activeEditor.getPath()==null) {
@@ -381,14 +378,28 @@ public class Casl2EditController extends BorderPane implements Initializable,Con
 	@FXML
 	void assembleAction(ActionEvent event) {
 		try {
-			BufferedReader reader = Files.newBufferedReader(Paths.get(activeEditor.getPath()));
+			System.out.println(activeEditor.getPath());
+			BufferedReader reader = Files.newBufferedReader(Paths.get(activeEditor.getPath()), activeEditor.getCharset());
+			Path path = null;
+			if(asmMode == AsmMode.EXTEND){
+				System.out.println(activeEditor.getCodeArea().getText());
+				MacroAssembler assembler = new MacroAssembler(reader);
+				path = Files.createTempFile("tmp",".tmp");
+				boolean f = assembler.checkMacro(path);
+				if(f) reader = Files.newBufferedReader(path);
+			}
 			Casl2Parser parser = new Casl2Parser(reader);
 			parser.enter(activeEditor.getPath());
+			if(asmMode == AsmMode.EXTEND){
+				path.toFile().deleteOnExit();
+			}
 			emView.getItems().clear();
-			if(parser.hasError()||parser.hasWarning()){
+			if (parser.hasError() || parser.hasWarning()) {
 				emView.getItems().addAll(parser.getErrorMessages());
 				emView.getItems().addAll(parser.getWarningMessages());
 			}
+			System.out.println("コンパイル完了");
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -490,13 +501,13 @@ public class Casl2EditController extends BorderPane implements Initializable,Con
 
 	@FXML
 	void transitionCasl2EditAction(ActionEvent event) {
-		asmMode = AssemblerMode.NORMALCASL2;
+		asmMode = AsmMode.NORMAL;
 		setNormalMode();
 	}
 
 	@FXML
 	void transitionCasl2ExtensionAction(ActionEvent event) {
-		asmMode = AssemblerMode.EXTENSIONCASL2;
+		asmMode = AsmMode.EXTEND;
 		setExtensionMode();
 	}
 
@@ -518,9 +529,9 @@ public class Casl2EditController extends BorderPane implements Initializable,Con
 		modeMenu.hide();
 
 		switch(asmMode){
-			case NORMALCASL2: setNormalMode();
+			case NORMAL: setNormalMode();
 				break;
-			case EXTENSIONCASL2: setExtensionMode();
+			case EXTEND: setExtensionMode();
 				break;
 			default: setNormalMode();
 		}
@@ -539,6 +550,16 @@ public class Casl2EditController extends BorderPane implements Initializable,Con
 		modeToolTip.setText(asmMode.getTooltip());
 		for(BaseEditor editor: editors){
 			editor.setExhighlight(true);
+		}
+	}
+	private void setMode(BaseEditor editor){
+		switch(asmMode){
+			case NORMAL:
+				editor.setExhighlight(false);
+				break;
+			case EXTEND:
+				editor.setExhighlight(true);
+				break;
 		}
 	}
 	//初期設定
@@ -614,7 +635,7 @@ public class Casl2EditController extends BorderPane implements Initializable,Con
 	private ExecutorService service;
 	private CornerMenu modeMenu;
 
-	private AssemblerMode asmMode;
+	private AsmMode asmMode;
 
 	private ObservableList<BaseEditor> editors;
 	private ObservableMap<Tab,BaseEditor> editorMap;
@@ -642,7 +663,7 @@ public class Casl2EditController extends BorderPane implements Initializable,Con
 	}
 
 	@Override
-	public void setAssemblerMode(AssemblerMode asmMode) {
+	public void setAssemblerMode(AsmMode asmMode) {
 		this.asmMode = asmMode;
 		setModeMenu();
 	}

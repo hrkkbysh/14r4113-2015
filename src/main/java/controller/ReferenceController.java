@@ -3,12 +3,13 @@ package controller;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
+import casl2.AsmMode;
 import javafx.fxml.FXMLLoader;
 
 public class ReferenceController {
 	
 	public static final void setReference(ScreensController<SimSceneType> sc,ExecutorService service){
-		AssemblerMode asmMode = AssemblerMode.NORMALCASL2;
+		AsmMode asmMode = AsmMode.NORMAL;
 		Map<SimSceneType, FXMLLoader> FXMLMap = sc.getFxmlLoaders();
 		/*参照関係定義*/
 		FXMLLoader froot = FXMLMap.get(SimSceneType.ROOT);
@@ -30,6 +31,7 @@ public class ReferenceController {
 		Comet2InnerL2Controller cic = fcic.getController();
 		
 		rootC.setStage(sc.getStage());
+		rootC.setCEC(caec);
 		
 		caec.setRC(rc);
 		caec.setVC(vc);

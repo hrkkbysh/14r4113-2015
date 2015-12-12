@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 
+import casl2.AsmMode;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -409,25 +410,25 @@ public class Comet2EditController extends BorderPane implements Initializable,Th
 
     @FXML
     void transitionCasl2EditAction(ActionEvent event) {
-    	cec.setAssemblerMode(AssemblerMode.NORMALCASL2);
+    	cec.setAssemblerMode(AsmMode.NORMAL);
     	sc.setScreen(SimSceneType.CASL2_EDIT);
     }
 
     @FXML
     void transitionCasl2EditExtensionAction(ActionEvent event) {
-    	cec.setAssemblerMode(AssemblerMode.EXTENSIONCASL2);
+    	cec.setAssemblerMode(AsmMode.EXTEND);
     	sc.setScreen(SimSceneType.CASL2_EDIT);
     }
    
     @FXML
     void transitionComet2EditAction(ActionEvent event) {
-    	asmMode = AssemblerMode.NORMALCASL2;
+    	asmMode = AsmMode.NORMAL;
     	setNormalMode();
     }
     
     @FXML
     void transitionComet2EditExtensionAction(ActionEvent event) {
-    	asmMode = AssemblerMode.EXTENSIONCASL2;
+    	asmMode = AsmMode.EXTEND;
     	setExtensionMode();
     }
 
@@ -444,9 +445,9 @@ public class Comet2EditController extends BorderPane implements Initializable,Th
 
 
 		switch(asmMode){
-		case NORMALCASL2: setNormalMode();
+		case NORMAL: setNormalMode();
 		break;
-		case EXTENSIONCASL2: setExtensionMode();
+		case EXTEND: setExtensionMode();
 		break;
 		default: setNormalMode();
 		}
@@ -549,7 +550,7 @@ public class Comet2EditController extends BorderPane implements Initializable,Th
   		private ScreensController<SimSceneType> sc;
   		private ExecutorService service;
   		private CornerMenu modeMenu;
-  		private AssemblerMode asmMode;
+  		private AsmMode asmMode;
 
   		public void setVC(VisualizationController vc) {
   			this.vc = vc;
@@ -569,7 +570,7 @@ public class Comet2EditController extends BorderPane implements Initializable,Th
   		}
 
 		@Override
-		public void setAssemblerMode(AssemblerMode asmMode) {
+		public void setAssemblerMode(AsmMode asmMode) {
 			this.asmMode = asmMode;
 			setModeMenu();
 		}

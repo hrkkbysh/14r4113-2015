@@ -1,3 +1,17 @@
+.PRSP{
+	-fx-fill: #899c63;
+	-fx-font-weight: bold;
+}
+
+.MACROARG{
+	-fx-fill: orange;
+	-fx-font-weight: bold;
+}
+.MACRO{
+	-fx-fill: #ea4335;
+	-fx-font-weight: bold;
+}
+
 .LABEL {
 	-fx-fill: #8e908c;
 	-fx-font-weight: bold;
@@ -72,16 +86,6 @@
 
 .activeLine{
 	-fx-background-color: #808000;
-}
-
-.PRSP{
-	-fx-fill: #899c63;
-	-fx-font-weight: bold;
-}
-
-.DEFMACRO{
-	-fx-fill: #899c63;
-	-fx-font-weight: bold;
 }
 
 .label{

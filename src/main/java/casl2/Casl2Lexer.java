@@ -18,9 +18,9 @@ public class Casl2Lexer {
 	/*Unicode専用.
 * @param 入力ストリーム*/
 	public Casl2Lexer(BufferedReader r,SymbolTable symbolTable,ErrorTable errorTable){
-		init(r);
 		this.symbolTable = symbolTable;
 		this.errorTable = errorTable;
+		init(r);
 	}
 	public void reset(){
 		try {
@@ -59,7 +59,7 @@ public class Casl2Lexer {
 		boolean arg = false;
 		int c = peekc;
 		switch (c) {
-			case  -1 : closeReader(); return Casl2Symbol.EOF;
+			case  -1 : return Casl2Symbol.EOF;
 			case ' ' : case '\t': case '\r': peekc = read(); return nextToken();
 			case ';' : skipToEOL();
 			case '\n': peekc = read();line++; return Casl2Symbol.EOL;
