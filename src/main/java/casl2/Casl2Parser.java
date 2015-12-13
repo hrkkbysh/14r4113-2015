@@ -1,6 +1,7 @@
 package casl2;
 
 import java.io.BufferedReader;
+import java.nio.file.Path;
 import java.util.List;
 
 public class Casl2Parser {
@@ -11,8 +12,9 @@ public class Casl2Parser {
 	private Casl2Symbol token;
 	boolean er;
 
-	public Casl2Parser(BufferedReader r) {
+	public Casl2Parser(BufferedReader r,AsmMode asmMode) {
 		symbolTable = new SymbolTable();
+		symbolTable.setSymbolTable(asmMode);
 		errorTable = new ErrorTable();
 		lexer = new Casl2Lexer(r,symbolTable,errorTable);
 		bg = new Comet2BG(new Comet2InstructionTable(),symbolTable,errorTable);

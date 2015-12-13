@@ -62,6 +62,8 @@ public class ErrorTable {
 		}
 	}
 	public ErrorTable(){
+		errorMessages.add("error:");
+		warningMessages.add("warning:");
 	}
 
 	public List<String> getErrorMessages(){
@@ -82,12 +84,12 @@ public class ErrorTable {
 
 	public void writeError(int line,int errorType,String sval){
 		String em = errorDict.get(errorType);
-		em = em.replaceFirst("sval",sval);
+		em = em.replaceFirst("val",sval);
 		errorMessages.add("("+line+") "+em);
 	}
     public void writeError(int line,int errorType,int nval){
 		String em = errorDict.get(errorType);
-		em = em.replaceFirst("nval",Integer.toString(nval));
+		em = em.replaceFirst("val",Integer.toString(nval));
 		errorMessages.add("("+line+") "+em);
 	}
     public void writeError(int line,int errorType){
@@ -105,12 +107,12 @@ public class ErrorTable {
 
     public void writeWarning(int line,int errorType,String sval){
         String em = warningDict.get(errorType);
-        em = em.replaceFirst("sval",sval);
+        em = em.replaceFirst("val",sval);
         warningMessages.add("("+line+") "+em);
     }
     public void writeWarning(int line,int errorType,int nval){
         String em = warningDict.get(errorType);
-        em = em.replaceFirst("nval",Integer.toString(nval));
+        em = em.replaceFirst("val",Integer.toString(nval));
         warningMessages.add("("+line+") "+em);
     }
 

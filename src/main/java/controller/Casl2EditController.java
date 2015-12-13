@@ -16,6 +16,7 @@ import java.util.concurrent.ExecutorService;
 import casl2.AsmMode;
 import casl2.Casl2Parser;
 import casl2.MacroAssembler;
+import casl2.SymbolTable;
 import editor.BaseEditor;
 import editor.Casl2SyntaxPattern;
 import editor.ExtensionCasl2Pattern;
@@ -278,34 +279,6 @@ public class Casl2EditController extends BorderPane implements Initializable,Con
 		byte[] bytes;
 		bytes = code.getBytes(activeEditor.getCharset());
 
-		try {
-			FileChooser fileChooser = new FileChooser();
-			fileChooser.setTitle("Please Save File.");
-			fileChooser.getExtensionFilters().addAll(
-					new ExtensionFilter("Casl2 File", "*.CASL2", "*.cas", "*.txt"),
-					new ExtensionFilter("All File", "*.*"));
-			fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-			File file = fileChooser.showSaveDialog( root.getParent().getScene().getWindow());
-
-			if (file == null) return;
-
-			activeEditor.setPath(file.getPath());
-
-			Files.write(Paths.get(activeEditor.getPath()), bytes, StandardOpenOption.CREATE_NEW,StandardOpenOption.WRITE);
-			activeEditor.getUndoManager().mark();
-
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-	}
-
-	@FXML
-	void saveAsAction(ActionEvent event) {
-		String code =activeEditor.getCodeArea().getText();
-
-		byte[] bytes;
-			bytes = code.getBytes(activeEditor.getCharset());
-
 
 		try {
 			if(activeEditor.getPath()==null) {
@@ -321,6 +294,34 @@ public class Casl2EditController extends BorderPane implements Initializable,Con
 				activeEditor.setPath(file.getPath());
 			}
 			Files.write(Paths.get(activeEditor.getPath()), bytes);
+			activeEditor.getUndoManager().mark();
+
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	@FXML
+	void saveAsAction(ActionEvent event) {
+		String code =activeEditor.getCodeArea().getText();
+
+		byte[] bytes;
+		bytes = code.getBytes(activeEditor.getCharset());
+
+		try {
+			FileChooser fileChooser = new FileChooser();
+			fileChooser.setTitle("Please Save File.");
+			fileChooser.getExtensionFilters().addAll(
+					new ExtensionFilter("Casl2 File", "*.CASL2", "*.cas", "*.txt"),
+					new ExtensionFilter("All File", "*.*"));
+			fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+			File file = fileChooser.showSaveDialog( root.getParent().getScene().getWindow());
+
+			if (file == null) return;
+
+			activeEditor.setPath(file.getPath());
+
+			Files.write(Paths.get(activeEditor.getPath()), bytes, StandardOpenOption.CREATE_NEW,StandardOpenOption.WRITE);
 			activeEditor.getUndoManager().mark();
 
 		} catch (IOException ex) {
@@ -381,22 +382,29 @@ public class Casl2EditController extends BorderPane implements Initializable,Con
 			System.out.println(activeEditor.getPath());
 			BufferedReader reader = Files.newBufferedReader(Paths.get(activeEditor.getPath()), activeEditor.getCharset());
 			Path path = null;
-			if(asmMode == AsmMode.EXTEND){
-				System.out.println(activeEditor.getCodeArea().getText());
-				MacroAssembler assembler = new MacroAssembler(reader);
-				path = Files.createTempFile("tmp",".tmp");
-				boolean f = assembler.checkMacro(path);
-				if(f) reader = Files.newBufferedReader(path);
+			switch(asmMode) {
+				case EXTEND:
+					System.out.println(activeEditor.getCodeArea().getText());
+					MacroAssembler assembler = new MacroAssembler(reader);
+					path = Files.createTempFile("tmp", ".tmp");
+					assembler.checkMacro(path);
+					if (assembler.hasError()) {
+						emView.getItems().addAll(assembler.getErrorMessages());
+						return;
+					}else{
+						reader = Files.newBufferedReader(path);
+					}
+					break;
 			}
-			Casl2Parser parser = new Casl2Parser(reader);
+			Casl2Parser parser = new Casl2Parser(reader,asmMode);
 			parser.enter(activeEditor.getPath());
-			if(asmMode == AsmMode.EXTEND){
-				path.toFile().deleteOnExit();
-			}
 			emView.getItems().clear();
 			if (parser.hasError() || parser.hasWarning()) {
 				emView.getItems().addAll(parser.getErrorMessages());
 				emView.getItems().addAll(parser.getWarningMessages());
+			}
+			if(asmMode == AsmMode.EXTEND){
+				path.toFile().deleteOnExit();
 			}
 			System.out.println("コンパイル完了");
 

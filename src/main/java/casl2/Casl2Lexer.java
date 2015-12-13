@@ -185,7 +185,7 @@ public class Casl2Lexer {
 		sval = buf.toString();
 		peekc = c;
 		Casl2Symbol symbol = symbolTable.searchSymbol(sval);
-		if(symbol!= Casl2Symbol.LABEL) return symbol;
+		if(symbol!= Casl2Symbol.LABEL && symbol != Casl2Symbol.MACRO_INST) return symbol;
 		if(warn) errorTable.writeWarning(line,3,sval);
 		if(sval.length()>8) errorTable.writeWarning(line,4,sval);
 		nval = symbolTable.getLabelID();

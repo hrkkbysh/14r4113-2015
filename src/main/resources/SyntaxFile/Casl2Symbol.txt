@@ -1,6 +1,6 @@
 INSTRUCTION:
     MACHINE{
-	ADDA(),
+	ADDA,
 	ADDL,
 	AND,
 	CALL,

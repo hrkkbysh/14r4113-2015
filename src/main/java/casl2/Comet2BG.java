@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -186,6 +187,7 @@ public class Comet2BG {
 	}
 
 	public void genAdrCode(int nval) {
+		//String bin = Integer.toBinaryString(0x10000 | nval).substring(1);
 		machineCodes.put(lc.getAndIncrement(), new ObjCode(nval, ObjType.CONST));
 	}
 	public void genAdrCode(String sval) {
