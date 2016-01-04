@@ -62,8 +62,6 @@ public class Casl2Parser {
 		}
 	}
 
-
-
 	private void content() {
 		for(token = lexer.nextToken(),er = false ;token!= Casl2Symbol.EOF; setNextLine()){
 			switch(token) {

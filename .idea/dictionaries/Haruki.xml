@@ -4,6 +4,7 @@
       <w>assemblerinst</w>
       <w>casl</w>
       <w>datas</w>
+      <w>haruki</w>
       <w>imtoken</w>
       <w>lbltbl</w>
       <w>machineinst</w>
@@ -13,6 +14,7 @@
       <w>rpop</w>
       <w>rpush</w>
       <w>sval</w>
+      <w>threadable</w>
     </words>
   </dictionary>
 </component>

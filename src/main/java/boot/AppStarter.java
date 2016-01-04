@@ -5,9 +5,9 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import controller.EditModeScene;
 import controller.ReferenceController;
 import controller.ScreensController;
-import controller.SimSceneType;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -28,25 +28,25 @@ public class AppStarter extends Application {
 		try {
 			service = Executors.newFixedThreadPool(3);
 
-			ScreensController<SimSceneType> mainContainer = new ScreensController<>(SimSceneType.class,stage);
-			for (SimSceneType st : SimSceneType.values()) {
+			ScreensController<EditModeScene> mainContainer = new ScreensController<>(EditModeScene.class,stage);
+			for (EditModeScene st : EditModeScene.values()) {
 				mainContainer.loadScreen(st);
 			}
 			ReferenceController.setReference(mainContainer, service);
-	        mainContainer.setScreen(SimSceneType.ROOT);
+			mainContainer.setScreen(EditModeScene.ROOT);
 
-	        Group root = new Group();
-	        root.getChildren().addAll(mainContainer);
-	        Scene scene = new Scene(root);
-	        root.autosize();
-	      
-	        
-	        mainContainer.prefWidthProperty().bind(scene.widthProperty());
-	        mainContainer.prefHeightProperty().bind(scene.heightProperty());
-	        
-	        stage.setScene(scene);
+			Group root = new Group();
+			root.getChildren().addAll(mainContainer);
+			Scene scene = new Scene(root);
+			root.autosize();
+
+
+			mainContainer.prefWidthProperty().bind(scene.widthProperty());
+			mainContainer.prefHeightProperty().bind(scene.heightProperty());
+
+			stage.setScene(scene);
 			stage.setTitle("モード選択画面");
-			
+
 			stage.setResizable(false);
 			stage.show();
 		} catch (Exception ex) {

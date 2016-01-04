@@ -2,58 +2,34 @@ package controller;
 
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-
-import casl2.AsmMode;
 import javafx.fxml.FXMLLoader;
 
 public class ReferenceController {
 	
-	public static final void setReference(ScreensController<SimSceneType> sc,ExecutorService service){
-		AsmMode asmMode = AsmMode.NORMAL;
-		Map<SimSceneType, FXMLLoader> FXMLMap = sc.getFxmlLoaders();
+	public static void setReference(ScreensController<EditModeScene> sc,ExecutorService service){
+
+		Map<EditModeScene, FXMLLoader> FXMLMap = sc.getFxmlLoaders();
 		/*参照関係定義*/
-		FXMLLoader froot = FXMLMap.get(SimSceneType.ROOT);
+		FXMLLoader froot = FXMLMap.get(EditModeScene.ROOT);
 		RootController rootC = froot.getController();
 		
-		FXMLLoader fcaec = FXMLMap.get(SimSceneType.CASL2_EDIT);
-		Casl2EditController caec = fcaec.getController();
-		
-		FXMLLoader frc = FXMLMap.get(SimSceneType.RELOCATABLE);
-		RelocatableController rc = frc.getController();
-		
-		FXMLLoader fvc = FXMLMap.get(SimSceneType.VISUALIZATION);
-		VisualizationController vc = fvc.getController();
-		
-		FXMLLoader fcoec = FXMLMap.get(SimSceneType.COMET2_EDIT);
-		Comet2EditController coec = fcoec.getController();
-		
-		FXMLLoader fcic = FXMLMap.get(SimSceneType.COMET_INNERL2);
-		Comet2InnerL2Controller cic = fcic.getController();
+		FXMLLoader fcaec = FXMLMap.get(EditModeScene.CASL2_EDIT);
+		EditModeController caec = fcaec.getController();
+
+		FXMLLoader fcoec = FXMLMap.get(EditModeScene.DEBUG);
+		DebugModeController coec = fcoec.getController();
 		
 		rootC.setStage(sc.getStage());
-		rootC.setCEC(caec);
+		rootC.setCOEC(coec);
+
+		caec.setCOEC(coec);
+
+		coec.setCAEC(caec);
 		
-		caec.setRC(rc);
-		caec.setVC(vc);
-		
-		rc.setEC(caec);
-		rc.setVC(vc);
-		
-		vc.setEC(caec);
-		vc.setRC(rc);
-		
-		coec.setVC(vc);
-		coec.setCEC(caec);
-		
-		cic.setVC(vc);
-		
-		for (SimSceneType sst : SimSceneType.values()) {
-			if(sst.isThreadable()){
-				Threadable threadable = (Threadable) FXMLMap.get(sst).getController();
+		for (EditModeScene sst : EditModeScene.values())
+			if (sst.isThreadable()) {
+				Threadable threadable = FXMLMap.get(sst).getController();
 				threadable.setExecutorService(service);
 			}
-			ModeTogglable modeTogglable = (ModeTogglable) FXMLMap.get(sst).getController();
-			modeTogglable.setAssemblerMode(asmMode);
-		}
 	}
 }

@@ -3,7 +3,6 @@ package controller;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import casl2.AsmMode;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -11,7 +10,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 
-public class RootController extends AnchorPane implements Initializable,ModeTogglable,Controllable<SimSceneType>{
+public class RootController extends AnchorPane implements Initializable,Controllable<EditModeScene>{
 
 	@FXML // ResourceBundle that was given to the FXMLLoader
 	private ResourceBundle resources;
@@ -21,29 +20,23 @@ public class RootController extends AnchorPane implements Initializable,ModeTogg
 
 	@FXML // fx:id="root"
 	private AnchorPane root; // Value injected by FXMLLoader
+	private DebugModeController coec;
 
 	@FXML
 	void gotoCasl2EditMode(ActionEvent event) {
-		cec.setAssemblerMode(AsmMode.NORMAL);
-		pretrans();
-		screenPage.setScreen(SimSceneType.CASL2_EDIT);
-	}
-
-	@FXML
-	void gotoCasl2ExtensionEditMode(ActionEvent event){
-		cec.setAssemblerMode(AsmMode.EXTEND);
-		pretrans();
-		screenPage.setScreen(SimSceneType.CASL2_EDIT);
+		preTrans();
+		screenPage.setScreen(EditModeScene.CASL2_EDIT);
 	}
 
 	@FXML
 	void gotoComet2EditMode(ActionEvent event) {
-		pretrans();
-		screenPage.setScreen(SimSceneType.COMET2_EDIT);
+		preTrans();
+		coec.setEditMode();
+		screenPage.setScreen(EditModeScene.DEBUG);
 	}
 
 	@Override
-	public void setScreenParent(ScreensController<SimSceneType> screenPage) {
+	public void setScreenParent(ScreensController<EditModeScene> screenPage) {
 		this.screenPage = screenPage;
 	}
 
@@ -52,24 +45,18 @@ public class RootController extends AnchorPane implements Initializable,ModeTogg
 		assert root != null : "fx:id=\"root\" was not injected: check your FXML file 'Root.fxml'.";
 	}
 
-	private ScreensController<SimSceneType> screenPage;
-	private AsmMode asmMode;
+	private ScreensController<EditModeScene> screenPage;
 	private Stage stage;
 
-	private Casl2EditController cec;
-
-	@Override
-	public void setAssemblerMode(AsmMode asmMode) {
-		this.asmMode = asmMode;
-	}
-	public void setStage(Stage stage){
-		this.stage = stage;
-	}
-	private void pretrans(){
+	private void preTrans(){
 		stage.setResizable(true);
 	}
-	public void setCEC(Casl2EditController cec){
-		this.cec = cec;
+
+	public void setStage(Stage stage) {
+		this.stage = stage;
 	}
 
+	public void setCOEC(DebugModeController COEC) {
+		this.coec = COEC;
+	}
 }

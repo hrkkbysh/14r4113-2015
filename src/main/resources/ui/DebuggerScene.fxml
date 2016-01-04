@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:id="root" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="400.0" minWidth="600.0" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DebugModeController">
+   <top>
+       <VBox>
+          <children>
+              <MenuBar maxHeight="25.0" maxWidth="1.7976931348623157E308" minHeight="25.0" minWidth="900.0" prefHeight="25.0" prefWidth="900.0" BorderPane.alignment="CENTER" VBox.vgrow="SOMETIMES">
+                 <menus>
+                     <Menu mnemonicParsing="false" text="実行(R)">
+                        <items>
+                            <MenuItem fx:id="runMenuItem" mnemonicParsing="false" text="実行">
+                                <graphic>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                           <Image url="@../1443921963_New_file.png" />
+                                       </image>
+                                    </ImageView>
+                                </graphic>
+                            </MenuItem>
+                            <MenuItem fx:id="stepRunMenuItem" mnemonicParsing="false" text="ステップ実行">
+                                <graphic>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                           <Image url="@../1443921963_New_file.png" />
+                                       </image>
+                                    </ImageView>
+                                </graphic>
+                            </MenuItem>
+                            <MenuItem fx:id="backToExStateMenuItem" mnemonicParsing="false" text="手戻り実行">
+                                <graphic>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                           <Image url="@../1443921963_New_file.png" />
+                                       </image>
+                                    </ImageView>
+                                </graphic>
+                            </MenuItem>
+                            <SeparatorMenuItem mnemonicParsing="false" />
+                            <MenuItem fx:id="outTraceViewMenuItem" mnemonicParsing="false" text="トレース表出力">
+                                <graphic>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                           <Image url="@../1443921963_New_file.png" />
+                                       </image>
+                                    </ImageView>
+                                </graphic>
+                            </MenuItem>
+                            <MenuItem fx:id="instProfileMenuItem" mnemonicParsing="false" text="命令プロファイル出力">
+                                <graphic>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                           <Image url="@../1443921963_New_file.png" />
+                                       </image>
+                                    </ImageView>
+                                </graphic>
+                            </MenuItem>
+                            <SeparatorMenuItem mnemonicParsing="false" />
+                            <MenuItem fx:id="reloadMenuItem" mnemonicParsing="false" text="リロード">
+                                <graphic>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                           <Image url="@../1443921963_New_file.png" />
+                                       </image>
+                                    </ImageView>
+                                </graphic>
+                            </MenuItem>
+                        </items>
+                     </Menu>
+                     <Menu fx:id="settingMenu" mnemonicParsing="false" text="設定(S)">
+                        <items>
+                            <MenuItem fx:id="setDataVisualMenuItem" mnemonicParsing="false" text="データ可視化設定">
+                                <graphic>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                           <Image url="@../1443921963_New_file.png" />
+                                       </image>
+                                    </ImageView>
+                                </graphic>
+                            </MenuItem>
+                            <MenuItem fx:id="setStopStatementMenuItem" mnemonicParsing="false" text="停止条件文設定">
+                                <graphic>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                           <Image url="@../1443921963_New_file.png" />
+                                       </image>
+                                    </ImageView>
+                                </graphic>
+                            </MenuItem>
+                            <MenuItem fx:id="setBPMenuItem" mnemonicParsing="false" text="ブレークポイント挿入/除去">
+                                <graphic>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                           <Image url="@../1443921963_New_file.png" />
+                                       </image>
+                                    </ImageView>
+                                </graphic>
+                            </MenuItem>
+                            <MenuItem fx:id="setDetailMenuItem" mnemonicParsing="false" text="シミュレーション詳細設定">
+                                <graphic>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                           <Image url="@../1443921963_New_file.png" />
+                                       </image>
+                                    </ImageView>
+                                </graphic>
+                            </MenuItem>
+                        </items>
+                     </Menu>
+                 </menus>
+              </MenuBar>
+              <ToolBar maxHeight="40.0" maxWidth="1.7976931348623157E308" minHeight="40.0" prefHeight="40.0" prefWidth="900.0" VBox.vgrow="SOMETIMES">
+                 <items>
+                     <Button fx:id="backToExStateButton" layoutX="30.0" layoutY="27.0" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
+                         <graphic>
+                             <ImageView pickOnBounds="true" preserveRatio="true">
+                                <image>
+                                    <Image url="@../Gnome-Media-Skip-Backward-32.png" />
+                                </image>
+                             </ImageView>
+                         </graphic>
+                         <tooltip>
+                             <Tooltip text="一ステップ前の実行状態へ戻します。" />
+                         </tooltip>
+                     </Button>
+                     <Button fx:id="stopButton" layoutX="20.0" layoutY="17.0" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
+                         <graphic>
+                             <ImageView pickOnBounds="true" preserveRatio="true">
+                                <image>
+                                    <Image url="@../Gnome-Media-Playback-Stop-32.png" />
+                                </image>
+                             </ImageView>
+                         </graphic>
+                         <tooltip>
+                             <Tooltip text="プログラム実行を停止します。" />
+                         </tooltip>
+                     </Button>
+                     <Button fx:id="runButton" layoutX="792.0" layoutY="7.0" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
+                         <graphic>
+                             <ImageView pickOnBounds="true" preserveRatio="true">
+                                <image>
+                                    <Image url="@../Gnome-Media-Playback-Start-32.png" />
+                                </image>
+                             </ImageView>
+                         </graphic>
+                         <tooltip>
+                             <Tooltip text="一行ずつ実行します" />
+                         </tooltip>
+                     </Button>
+                     <Button fx:id="pauseButton" layoutX="86.0" layoutY="7.0" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
+                         <graphic>
+                             <ImageView pickOnBounds="true" preserveRatio="true">
+                                <image>
+                                    <Image url="@../Gnome-Media-Playback-Pause-32.png" />
+                                </image>
+                             </ImageView>
+                         </graphic>
+                         <tooltip>
+                             <Tooltip text="プログラム実行を一時中断します。" />
+                         </tooltip>
+                     </Button>
+                     <Button fx:id="stepRunButton" layoutX="716.0" layoutY="7.0" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
+                         <graphic>
+                             <ImageView pickOnBounds="true" preserveRatio="true">
+                                <image>
+                                    <Image url="@../Gnome-Media-Skip-Forward-32.png" />
+                                </image>
+                             </ImageView>
+                         </graphic>
+                         <tooltip>
+                             <Tooltip text="プログラムを決められたステップごと実行します。" />
+                         </tooltip>
+                     </Button>
+                     <Separator orientation="VERTICAL" prefHeight="200.0" />
+                     <Button fx:id="setBPButton" layoutX="248.0" layoutY="7.0" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
+                         <graphic>
+                             <ImageView pickOnBounds="true" preserveRatio="true">
+                                <image>
+                                    <Image url="@../Gnome-Media-Record-32.png" />
+                                </image>
+                             </ImageView>
+                         </graphic>
+                         <tooltip>
+                             <Tooltip text="ブレークポイントを設定します。" />
+                         </tooltip>
+                     </Button>
+                     <Button fx:id="setStopStatementButton" layoutX="124.0" layoutY="7.0" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
+                         <graphic>
+                             <ImageView pickOnBounds="true" preserveRatio="true">
+                                <image>
+                                    <Image url="@../1444502690_chat_stop.png" />
+                                </image>
+                             </ImageView>
+                         </graphic>
+                         <tooltip>
+                             <Tooltip text="停止条件文を設定します。" />
+                         </tooltip>
+                     </Button>
+                     <Separator orientation="VERTICAL" prefHeight="28.0" prefWidth="30.0" />
+                     <Label text="投入値(位取り記数or文字)  :  " />
+                     <SplitMenuButton fx:id="splitAryMenuButton" mnemonicParsing="false" text="16進数">
+                         <items>
+                             <MenuItem mnemonicParsing="false" text="２進数">
+                                 <graphic>
+                                     <ImageView fx:id="binaryImageView" pickOnBounds="true" preserveRatio="true">
+                                        <image>
+                                            <Image url="@../1443924315_application-x-object.png" />
+                                        </image>
+                                     </ImageView>
+                                 </graphic>
+                             </MenuItem>
+                             <MenuItem mnemonicParsing="false" text="8進数">
+                                 <graphic>
+                                     <ImageView fx:id="octalImageView" pickOnBounds="true" preserveRatio="true">
+                                        <image>
+                                            <Image url="@../1444005684_seg-eight.png" />
+                                        </image>
+                                     </ImageView>
+                                 </graphic>
+                             </MenuItem>
+                             <MenuItem mnemonicParsing="false" text="符号なし10進数">
+                                 <graphic>
+                                     <ImageView fx:id="decimalImageView" pickOnBounds="true" preserveRatio="true">
+                                        <image>
+                                            <Image url="@../1444005600_ten_blue_half_pool_ball.png" />
+                                        </image>
+                                     </ImageView>
+                                 </graphic>
+                             </MenuItem>
+                             <MenuItem mnemonicParsing="false" text="符号つき10進数">
+                                 <graphic>
+                                     <ImageView fx:id="signDecimalImageView" pickOnBounds="true" preserveRatio="true">
+                                        <image>
+                                            <Image url="@../1444005600_ten_blue_half_pool_ball.png" />
+                                        </image>
+                                     </ImageView>
+                                 </graphic>
+                             </MenuItem>
+                             <MenuItem mnemonicParsing="false" text="16進数">
+                                 <graphic>
+                                     <ImageView fx:id="hexImageView" pickOnBounds="true" preserveRatio="true">
+                                        <image>
+                                            <Image url="@../1444005284_text-x-hex.png" />
+                                        </image>
+                                     </ImageView>
+                                 </graphic>
+                             </MenuItem>
+                             <MenuItem mnemonicParsing="false" text="文字">
+                                 <graphic>
+                                     <ImageView fx:id="charImageView" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                                        <image>
+                                            <Image url="@../jisx0201.jpg" />
+                                        </image>
+                                     </ImageView>
+                                 </graphic>
+                             </MenuItem>
+                         </items>
+                         <graphic>
+                             <HBox>
+                                <children>
+                                    <ImageView fx:id="selectAryImage" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                           <Image url="@../1444005284_text-x-hex.png" />
+                                       </image>
+                                    </ImageView>
+                                </children>
+                             </HBox>
+                         </graphic>
+                     </SplitMenuButton>
+                     <Separator orientation="VERTICAL" prefHeight="28.0" prefWidth="56.0" />
+                     <Pane maxWidth="-Infinity" minHeight="-Infinity" prefWidth="70.0" />
+                 </items>
+              </ToolBar>
+          </children>
+       </VBox>
+   </top>
+   <bottom>
+       <HBox id="HBox" maxHeight="20.0" maxWidth="900.0" minHeight="20.0" minWidth="900.0" prefHeight="20.0" prefWidth="900.0" spacing="5.0" BorderPane.alignment="CENTER_LEFT">
+           <padding>
+               <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+           </padding>
+          <children>
+              <Label fx:id="leftStatus1" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="400.0" />
+              <Separator orientation="VERTICAL" prefHeight="200.0" />
+              <Label fx:id="leftStatus2" alignment="CENTER_RIGHT" prefWidth="200.0" />
+              <Separator orientation="VERTICAL" prefHeight="200.0" />
+              <Label fx:id="leftStatus3" />
+          </children>
+       </HBox>
+   </bottom>
+   <left>
+       <ToolBar orientation="VERTICAL" BorderPane.alignment="CENTER">
+          <items>
+              <Button fx:id="showCL1SButton" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
+                 <graphic>
+                     <ImageView pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@../1444502969_data_grid.png" />
+                        </image>
+                     </ImageView>
+                 </graphic>
+                 <tooltip>
+                     <Tooltip text="通常画面" />
+                 </tooltip>
+              </Button>
+              <Button fx:id="showCL2SButton" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
+                 <graphic>
+                     <ImageView pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@../1444502969_data_grid.png" />
+                        </image>
+                     </ImageView>
+                 </graphic>
+                 <tooltip>
+                     <Tooltip text="マシンサイクル可視化画面" />
+                 </tooltip>
+              </Button>
+              <Button fx:id="showLogSButton" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
+                 <graphic>
+                     <ImageView pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@../1444502969_data_grid.png" />
+                        </image>
+                     </ImageView>
+                 </graphic>
+                 <tooltip>
+                     <Tooltip text="実行履歴(トレース表、命令プロファイル)" />
+                 </tooltip>
+              </Button>
+              <Button fx:id="showDISButton" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
+                 <graphic>
+                     <ImageView pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@../1444502969_data_grid.png" />
+                        </image>
+                     </ImageView>
+                 </graphic>
+                 <tooltip>
+                     <Tooltip text="シミュレーション条件設定画面" />
+                 </tooltip>
+              </Button>
+              <Button fx:id="showLSButton" layoutX="10.0" layoutY="127.0" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
+                 <graphic>
+                     <ImageView pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@../1444502969_data_grid.png" />
+                        </image>
+                     </ImageView>
+                 </graphic>
+                 <tooltip>
+                     <Tooltip text="中間データ(オブジェクトプログラム、ロードモジュール)可視化画面" />
+                 </tooltip>
+              </Button>
+          </items>
+       </ToolBar>
+   </left>
+   <center>
+      <Group fx:id="debugSceneContainer" BorderPane.alignment="CENTER" />
+   </center>
+</BorderPane>
