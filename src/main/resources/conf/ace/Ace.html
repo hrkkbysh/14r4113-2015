@@ -22,9 +22,10 @@
 
 <pre id="editor"></pre>
 <script src="src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+<script src="src-noconflict/ext-language_tools.js"></script>
 <script>
     var editor = ace.edit("editor");
-
+ var langTools = ace.require("ace/ext/language_tools");
     editor.setTheme("ace/theme/twilight");
     editor.session.setMode("ace/mode/casl2");
 
@@ -33,6 +34,11 @@
     function pasteContent(content){
         editor.onPaste(content);
     }
+    editor.setOptions({
+    enableBasicAutocompletion: true,
+    enableSnippets: true,
+    enableLiveAutocompletion: true
+    });
 </script>
 
 </body>
