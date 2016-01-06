@@ -1,26 +1,31 @@
 package controller;
 
-import java.io.BufferedReader;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 
-import casl2.AsmMode;
-import casl2.Casl2Parser;
-import casl2.MacroAssembler;
+import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Worker;
+import javafx.concurrent.Worker.State;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.TilePane;
+import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.FileChooser;
+import javafx.stage.Window;
+import util.DetectUtils;
+import netscape.javascript.JSObject;
 
 public class EditModeController extends BorderPane implements Initializable,Controllable<EditModeScene>,Threadable{
 
@@ -135,7 +140,41 @@ public class EditModeController extends BorderPane implements Initializable,Cont
 
 	@FXML
 	void openAction(ActionEvent event) {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Select File");
+		fileChooser.getExtensionFilters().addAll(
+				new FileChooser.ExtensionFilter("Casl2 File", "*.CASL2", "*.cas", "*.txt"),
+				new FileChooser.ExtensionFilter("All File", "*.*"));
+		fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+		Window window = root.getParent().getScene().getWindow();
+		File target = fileChooser.showOpenDialog(window);
+		if(target!=null){
+			try {
+				curcsName = DetectUtils.getEncoding(target);
+				currentPath = target.toPath();
+				byte[] bytes = Files.readAllBytes(currentPath);
+				String code = null;
+				try {
+					code = new String(bytes, curcsName);
+					leftStatus3.setText(curcsName);
+				} catch (UnsupportedEncodingException ex) {
+					// fallback
+					code = new String(bytes);
+				}
+				code = code.replace("'", "\\'");
+				code = code.replace(System.getProperty("line.separator"), "\\n");
+				code = code.replace("\n", "\\n");
+				code = code.replace("\r", "\\n");
+				webEngine.executeScript("editor.setValue('" + code + "',-1)");
+				leftStatus3.setText(Charset.defaultCharset().displayName());
+				assembleMenuItem.setDisable(false);
+				if(!webView.isVisible())
+					webView.setVisible(true);
+			} catch (IOException ex) {
 
+				ex.printStackTrace();
+			}
+		}
 	}
 
 	@FXML
@@ -199,32 +238,67 @@ public class EditModeController extends BorderPane implements Initializable,Cont
 	}
 
 	@FXML
-	void newAction(ActionEvent event) {
-		WebView webView = new WebView();
-		webView.getEngine().load(getClass().getResource("/conf/ace/Ace.html").toExternalForm());
-		//webView.setMaxHeight(500);
-		/*centerPane.maxHeightProperty().bind(webView.heightProperty());
-		centerPane.maxWidthProperty().bind(webView.widthProperty());*/
-		webView.maxHeightProperty().bind(centerPane.heightProperty());
-		webView.maxWidthProperty().bind(centerPane.widthProperty());
-		webView.prefWidthProperty().bind(centerPane.widthProperty());
-		webView.prefHeightProperty().bind(centerPane.heightProperty());
-		centerPane.getChildren().add(webView);
+	void newAction(ActionEvent event){
+		currentPath = null;
+		initCode = initCode.replace("'", "\\'");
+		initCode = initCode.replace(System.getProperty("line.separator"), "\\n");
+		initCode = initCode.replace("\n", "\\n");
+		initCode = initCode.replace("\r", "\\n");
+		webEngine.executeScript("editor.setValue('" + initCode + "',-1)");
+		if(!webView.isVisible())
+			webView.setVisible(true);
+		leftStatus3.setText(curcsName);
 	}
 
 	@FXML
 	void saveAction(ActionEvent event) {
-
+		try {
+			if(currentPath==null) {
+				FileChooser fileChooser = new FileChooser();
+				fileChooser.setTitle("Please Save File.");
+				fileChooser.getExtensionFilters().addAll(
+						new FileChooser.ExtensionFilter("Casl2 File", "*.CASL2", "*.cas", "*.txt"),
+						new FileChooser.ExtensionFilter("All File", "*.*"));
+				fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+				File file = fileChooser.showSaveDialog( root.getParent().getScene().getWindow());
+				if (file == null) return;
+				currentPath = file.toPath();
+			}
+			BufferedWriter writer = Files.newBufferedWriter(currentPath,Charset.forName(curcsName));
+			String code = (String)webEngine.executeScript("editor.getValue()");
+			code = code.replaceAll("\n",System.lineSeparator());
+			writer.write(code);
+			writer.close();
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	@FXML
 	void saveAsAction(ActionEvent event) {
-
+		try {
+			FileChooser fileChooser = new FileChooser();
+			fileChooser.setTitle("Please Save File.");
+			fileChooser.getExtensionFilters().addAll(
+					new FileChooser.ExtensionFilter("Casl2 File", "*.CASL2", "*.cas", "*.txt"),
+					new FileChooser.ExtensionFilter("All File", "*.*"));
+			fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+			File file = fileChooser.showSaveDialog(root.getParent().getScene().getWindow());
+			if (file == null) return;
+			currentPath = file.toPath();
+			BufferedWriter writer = Files.newBufferedWriter(currentPath,Charset.forName(curcsName));
+			String code = (String)webEngine.executeScript("editor.getValue()");
+			code = code.replaceAll("\n",System.lineSeparator());
+			writer.write(code);
+			writer.close();
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	@FXML
 	void exitAction(ActionEvent event) {
-
+		System.exit(0);
 	}
 
 	@FXML
@@ -334,14 +408,65 @@ public class EditModeController extends BorderPane implements Initializable,Cont
 		assert xRefButton != null : "fx:id=\"xRefButton\" was not injected: check your FXML file 'EditScene.fxml'.";
 		assert undoMenuItem != null : "fx:id=\"undoMenuItem\" was not injected: check your FXML file 'EditScene.fxml'.";
 
+		webView = new WebView();
+		webEngine = webView.getEngine();
+		webEngine.load(getClass().getResource("/conf/ace/Ace.html").toExternalForm());
+		//webView.setMaxHeight(500);
+		/*centerPane.maxHeightProperty().bind(webView.heightProperty());
+		centerPane.maxWidthProperty().bind(webView.widthProperty());*/
+		webView.maxHeightProperty().bind(centerPane.heightProperty());
+		webView.maxWidthProperty().bind(centerPane.widthProperty());
+		webView.prefWidthProperty().bind(centerPane.widthProperty());
+		webView.prefHeightProperty().bind(centerPane.heightProperty());
+		centerPane.getChildren().add(webView);
+		webView.setVisible(false);
+		webEngine.setJavaScriptEnabled(true);
+		webEngine.getLoadWorker().stateProperty().addListener(
+				(ObservableValue<? extends State> p, State oldState, State newState) -> {
+			if (newState == Worker.State.SUCCEEDED) {
+				JSObject win = (JSObject) webEngine.executeScript("window");
+				win.setMember("java", new Object() {
+					public void paste() {
+						String content = (String) Clipboard.getSystemClipboard().getContent(DataFormat.PLAIN_TEXT);
+						if (content != null) {
+							webEngine.executeScript(" pasteContent(\"" + content.replace("\n", "\\n") + "\") ");
+						}
+					}
+				});
+			}
+		});
+		initShortCut();
 	}
+	private void initShortCut() {
+		final KeyCombination saveSC = new KeyCodeCombination(KeyCode.S,
+				KeyCombination.CONTROL_DOWN,KeyCodeCombination.SHIFT_DOWN);
+		saveMenuItem.acceleratorProperty().set(saveSC);
+
+		final KeyCombination saveasSC = new KeyCodeCombination(KeyCode.S,
+				KeyCombination.CONTROL_DOWN);
+		saveMenuItem.acceleratorProperty().set(saveasSC);
+
+		final KeyCombination openSC = new KeyCodeCombination(KeyCode.O,
+				KeyCombination.CONTROL_DOWN);
+		openMenuItem.acceleratorProperty().set(openSC);
+
+		final KeyCombination newSC = new KeyCodeCombination(KeyCode.N,
+				KeyCombination.CONTROL_DOWN);
+		newMenuItem.acceleratorProperty().set(newSC);
+	}
+
 
 	//骨格の自動生成はここまで
 	private ScreensController<EditModeScene> sc;
 	private ExecutorService service;
 
 	private ObservableList<String> editorCodes;
-	private String activeEditor;
+	private Path currentPath;
+	private String curcsName = "SHIFT-JIS";
+	private WebView webView;
+	private WebEngine webEngine;
+
+	private String initCode = "TEST	START"+System.lineSeparator()+"	RET"+System.lineSeparator()+"	END";
 
 	@Override
 	public void setExecutorService(ExecutorService service) {

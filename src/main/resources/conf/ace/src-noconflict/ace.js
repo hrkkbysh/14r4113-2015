@@ -2187,20 +2187,21 @@ var TextInput = function(parentNode, host) {
         doCopy(e, false);
     };
     
-    var onPaste = function(e) {
-        var data = handleClipboardData(e);
-        if (typeof data == "string") {
-            if (data)
-                host.onPaste(data, e);
-            if (useragent.isIE)
-                setTimeout(resetSelection);
-            event.preventDefault(e);
-        }
-        else {
-            text.value = "";
-            pasted = true;
-        }
-    };
+var onPaste = function(e) {
+    java.paste();
+//  var data = handleClipboardData(e);
+//  if (typeof data == "string") {
+//      if (data)
+//          host.onPaste(data, e);
+//      if (useragent.isIE)
+//          setTimeout(resetSelection);
+//      event.preventDefault(e);
+//  }
+//      else {
+//          text.value = "";
+//          pasted = true;
+//      }
+};
 
     event.addCommandKeyListener(text, host.onCommandKey.bind(host));
 
