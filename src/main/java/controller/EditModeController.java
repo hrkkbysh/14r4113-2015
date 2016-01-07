@@ -5,11 +5,9 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 
-import casl2.Comet2Register;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
 import javafx.concurrent.Worker.State;
@@ -25,9 +23,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
-import temp.AssemblyInstrution;
-import temp.MacroInstruction;
-import temp.ObjectInstruction;
+import org.controlsfx.control.PopOver;
 import util.DetectUtils;
 import netscape.javascript.JSObject;
 
@@ -238,7 +234,7 @@ public class EditModeController extends BorderPane implements Initializable,Cont
 
 	@FXML
 	void gotoHomeAction(ActionEvent event) {
-
+		sc.setScreen(EditModeScene.ROOT);
 	}
 
 	@FXML
@@ -348,7 +344,7 @@ public class EditModeController extends BorderPane implements Initializable,Cont
 
 	@FXML
 	void assembleAllAction(ActionEvent event) {
-
+	 sc.setScreen(EditModeScene.DEBUG);
 	}
 
 	@FXML
@@ -369,7 +365,7 @@ public class EditModeController extends BorderPane implements Initializable,Cont
 	@FXML
 	void helpAction(ActionEvent event) {
 		System.out.print("[");
-		for(ObjectInstruction oi:ObjectInstruction.values()){
+		/*for(ObjectInstruction oi:ObjectInstruction.values()){
 			System.out.println("{\"機械語命令\": \""+oi.toString()+"\"},");
 		}
 		for(AssemblyInstrution oi:AssemblyInstrution.values()){
@@ -380,7 +376,7 @@ public class EditModeController extends BorderPane implements Initializable,Cont
 		}
 		for(Comet2Register oi:Comet2Register.values()){
 			System.out.println("{\"汎用レジスタ\": \""+oi.toString()+"\"},");
-		}
+		}*/
 		System.out.print("]");
 	}
 

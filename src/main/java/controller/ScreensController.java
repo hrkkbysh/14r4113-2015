@@ -10,6 +10,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -18,7 +19,7 @@ public class ScreensController<T extends Enum<T> & SceneType>  extends StackPane
 	//Holds the screens to be displayed
 
 	private Stage stage;
-
+	private Scene dScene;
 	private Map<T, Node> screens;
 	private Map<T, FXMLLoader> fxmlLoaders;
 
@@ -81,10 +82,7 @@ public class ScreensController<T extends Enum<T> & SceneType>  extends StackPane
                             getChildren().remove(0);
                             stage.setTitle(sceneType.toString());
                             getChildren().add(0, node);     //add the screen
-
                             stage.sizeToScene();
-                            stage.setHeight(600.0);
-                            stage.setWidth(900.0);
 
                             //stage.setResizable(false);
                             //getRoot().prefHeightProperty().bind(stage.heightProperty());
@@ -128,9 +126,6 @@ public class ScreensController<T extends Enum<T> & SceneType>  extends StackPane
 							getChildren().add(0, node);     //add the screen
 
 							stage.sizeToScene();
-							stage.setHeight(600.0);
-							stage.setWidth(900.0);
-
 							//stage.setResizable(false);
 							//getRoot().prefHeightProperty().bind(stage.heightProperty());
 							//getRoot().prefWidthProperty().bind(stage.widthProperty());

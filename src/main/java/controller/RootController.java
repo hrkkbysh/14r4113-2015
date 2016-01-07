@@ -24,13 +24,11 @@ public class RootController extends AnchorPane implements Initializable,Controll
 
 	@FXML
 	void gotoCasl2EditMode(ActionEvent event) {
-		preTrans();
 		screenPage.setScreen(EditModeScene.CASL2_EDIT);
 	}
 
 	@FXML
 	void gotoComet2EditMode(ActionEvent event) {
-		preTrans();
 		coec.setEditMode();
 		screenPage.setScreen(EditModeScene.DEBUG);
 	}
@@ -47,10 +45,6 @@ public class RootController extends AnchorPane implements Initializable,Controll
 
 	private ScreensController<EditModeScene> screenPage;
 	private Stage stage;
-
-	private void preTrans(){
-		stage.setResizable(true);
-	}
 
 	public void setStage(Stage stage) {
 		this.stage = stage;

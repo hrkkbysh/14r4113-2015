@@ -38,16 +38,9 @@ public class AppStarter extends Application {
 			Group root = new Group();
 			root.getChildren().addAll(mainContainer);
 			Scene scene = new Scene(root);
-			root.autosize();
-
-
-			mainContainer.prefWidthProperty().bind(scene.widthProperty());
-			mainContainer.prefHeightProperty().bind(scene.heightProperty());
-
+			stage.sizeToScene();
 			stage.setScene(scene);
 			stage.setTitle("モード選択画面");
-
-			stage.setResizable(false);
 			stage.show();
 		} catch (Exception ex) {
 			Logger.getLogger(AppStarter.class.getName()).log(Level.SEVERE, null, ex);
