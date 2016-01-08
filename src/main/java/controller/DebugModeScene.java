@@ -1,10 +1,11 @@
 package controller;
 
 public enum DebugModeScene  implements SceneType {
-	ROOT("/ui/RootScene.fxml",false),
-	CASL2_EDIT("/ui/EditScene.fxml",true),
-	DEBUG("/ui/DebuggerScene.fxml",true);
-
+	MEDIAN("/ui/MedViewScene.fxml",false),
+	SETTING("/ui/SimSettingScene.fxml",true),
+	VLOG("/ui/LogScene.fxml",true),
+	VL1("/ui/VisL1Scene.fxml",true),
+	VL2("/ui/VisL2Scene.fxml",true);
 	private String resource;
 	private Boolean threadable;
 	@Override

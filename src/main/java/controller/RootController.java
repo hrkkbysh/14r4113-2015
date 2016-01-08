@@ -24,12 +24,14 @@ public class RootController extends AnchorPane implements Initializable,Controll
 
 	@FXML
 	void gotoCasl2EditMode(ActionEvent event) {
+		stage.setResizable(true);
 		screenPage.setScreen(EditModeScene.CASL2_EDIT);
 	}
 
 	@FXML
 	void gotoComet2EditMode(ActionEvent event) {
 		coec.setEditMode();
+		stage.setResizable(true);
 		screenPage.setScreen(EditModeScene.DEBUG);
 	}
 

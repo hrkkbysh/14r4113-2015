@@ -34,11 +34,10 @@ public class AppStarter extends Application {
 			}
 			ReferenceController.setReference(mainContainer, service);
 			mainContainer.setScreen(EditModeScene.ROOT);
-
 			Group root = new Group();
 			root.getChildren().addAll(mainContainer);
 			Scene scene = new Scene(root);
-			stage.sizeToScene();
+			//stage.sizeToScene();
 			stage.setScene(scene);
 			stage.setTitle("モード選択画面");
 			stage.show();

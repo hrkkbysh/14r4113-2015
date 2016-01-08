@@ -1,11 +1,8 @@
 package controller;
 
-import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -13,7 +10,6 @@ import javafx.scene.shape.Line;
 import javafx.scene.web.WebView;
 import org.controlsfx.control.PopOver;
 
-import javax.xml.stream.EventFilter;
 import java.util.List;
 
 /**

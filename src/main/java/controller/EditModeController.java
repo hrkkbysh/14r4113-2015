@@ -5,6 +5,8 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 
@@ -19,9 +21,11 @@ import javafx.scene.control.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.controlsfx.control.PopOver;
 import util.DetectUtils;
@@ -72,7 +76,7 @@ public class EditModeController extends BorderPane implements Initializable,Cont
 	private Label leftStatus3;
 
 	@FXML
-	private AnchorPane centerPane;
+	private StackPane centerPane;
 
 	@FXML
 	private Label leftStatus1;
@@ -184,6 +188,7 @@ public class EditModeController extends BorderPane implements Initializable,Cont
 
 	@FXML
 	void assembleAction(ActionEvent event) {
+		popOverCreator.markError(centerPane,new ArrayList<>(Arrays.asList("a","b")));
 		/*try {
 			System.out.println(activeEditor.getPath());
 			BufferedReader reader = Files.newBufferedReader(Paths.get(activeEditor.getPath()), activeEditor.getCharset());
@@ -234,6 +239,8 @@ public class EditModeController extends BorderPane implements Initializable,Cont
 
 	@FXML
 	void gotoHomeAction(ActionEvent event) {
+		sc.unbindS();
+		sc.setPrefSize(400.0,200.0);
 		sc.setScreen(EditModeScene.ROOT);
 	}
 
@@ -449,6 +456,7 @@ public class EditModeController extends BorderPane implements Initializable,Cont
 			}
 		});
 		initShortCut();
+		popOverCreator = new PopOverCreator(webView);
 	}
 	private void initShortCut() {
 		final KeyCombination saveSC = new KeyCodeCombination(KeyCode.S,
@@ -478,6 +486,7 @@ public class EditModeController extends BorderPane implements Initializable,Cont
 	private String curcsName = "SHIFT-JIS";
 	private WebView webView;
 	private WebEngine webEngine;
+	PopOverCreator popOverCreator;
 
 	private String initCode = "TEST	START"+System.lineSeparator()+"	RET"+System.lineSeparator()+"	END";
 
@@ -491,6 +500,11 @@ public class EditModeController extends BorderPane implements Initializable,Cont
 	@Override
 	public void setScreenParent(ScreensController<EditModeScene> sc) {
 		this.sc = sc;
+	}
+Stage stage;
+	@Override
+	public void setStage(Stage stage) {
+		this.stage = stage;
 	}
 
 

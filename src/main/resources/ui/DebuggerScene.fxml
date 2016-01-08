@@ -7,7 +7,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane fx:id="root" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="400.0" minWidth="600.0" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DebugModeController">
+<BorderPane fx:id="root" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="600.0" minWidth="900.0" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DebugModeController">
    <top>
        <VBox>
           <children>
@@ -357,6 +357,18 @@
                      <Tooltip text="中間データ(オブジェクトプログラム、ロードモジュール)可視化画面" />
                  </tooltip>
               </Button>
+            <Button fx:id="gotoHomeButton" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" onAction="#gotoHomeAction" prefHeight="35.0" prefWidth="34.0">
+               <graphic>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../Gnome-Go-Home-32.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="機械語プログラム編集画面へ遷移します。" />
+               </tooltip>
+            </Button>
           </items>
        </ToolBar>
    </left>

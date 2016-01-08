@@ -15,6 +15,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitMenuButton;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 
 public class DebugModeController extends BorderPane implements Initializable,Threadable,Controllable<EditModeScene>{
 
@@ -135,8 +136,13 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 	@FXML
 	private ImageView decimalImageView;
 
+
+	@FXML
+	private Button gotoHomeButton;
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		assert gotoHomeButton != null : "fx:id=\"gotoHomeButton\" was not injected: check your FXML file 'EditScene.fxml'.";
 		assert showDISButton != null : "fx:id=\"showDISButton\" was not injected: check your FXML file 'DebuggerScene.fxml'.";
 		assert outTraceViewMenuItem != null : "fx:id=\"outTraceViewMenuItem\" was not injected: check your FXML file 'DebuggerScene.fxml'.";
 		assert setDataVisualMenuItem != null : "fx:id=\"setDataVisualMenuItem\" was not injected: check your FXML file 'DebuggerScene.fxml'.";
@@ -172,7 +178,6 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 		assert settingMenu != null : "fx:id=\"settingMenu\" was not injected: check your FXML file 'DebuggerScene.fxml'.";
 		assert setBPButton != null : "fx:id=\"setBPButton\" was not injected: check your FXML file 'DebuggerScene.fxml'.";
 		assert decimalImageView != null : "fx:id=\"decimalImageView\" was not injected: check your FXML file 'DebuggerScene.fxml'.";
-
 	}
 
 
@@ -193,6 +198,22 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 	public void setScreenParent(ScreensController<EditModeScene> sc) {
 		this.scEMC = sc;
 	}
+Stage stage;
+	@Override
+	public void setStage(Stage stage) {
+		this.stage = stage;
+		/*scDMC = new ScreensController<>(DebugModeScene.class,stage);
+		for(DebugModeScene d:DebugModeScene.values()){
+			scDMC.loadScreen(d);
+		}
+		scDMC.setScreen(DebugModeScene.VL1);
+		debugSceneContainer.getChildren().addAll(scDMC);
+		showCL1SButton.setOnAction(e->scDMC.setScreen(DebugModeScene.VL1));
+		showCL2SButton.setOnAction(e->scDMC.setScreen(DebugModeScene.VL2));
+		showDISButton.setOnAction(e->scDMC.setScreen(DebugModeScene.SETTING));
+		showLogSButton.setOnAction(e->scDMC.setScreen(DebugModeScene.VLOG));
+		showLSButton.setOnAction(e->scDMC.setScreen(DebugModeScene.MEDIAN));*/
+	}
 
 	public void setCAEC(EditModeController CAEC) {
 		this.caec = CAEC;
@@ -201,5 +222,10 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 	public void setEditMode() {
 
 	}
+	@FXML
+	void gotoHomeAction(javafx.event.ActionEvent event) {
+		scEMC.unbindS();
+		scEMC.setPrefSize(400.0,200.0);
+		scEMC.setScreen(EditModeScene.ROOT);
+	}
 }
-

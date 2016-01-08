@@ -83,11 +83,8 @@ public class ScreensController<T extends Enum<T> & SceneType>  extends StackPane
                             stage.setTitle(sceneType.toString());
                             getChildren().add(0, node);     //add the screen
                             stage.sizeToScene();
-
-                            //stage.setResizable(false);
-                            //getRoot().prefHeightProperty().bind(stage.heightProperty());
-                            //getRoot().prefWidthProperty().bind(stage.widthProperty());
-
+                            prefHeightProperty().bind(stage.getScene().heightProperty());
+                            prefWidthProperty().bind(stage.getScene().widthProperty());
                             Timeline fadeIn = new Timeline(
                                     new KeyFrame(Duration.ZERO, new KeyValue(opacity, 0.0)),
                                     new KeyFrame(new Duration(800), new KeyValue(opacity, 1.0)));
@@ -177,6 +174,9 @@ public class ScreensController<T extends Enum<T> & SceneType>  extends StackPane
 			return true;
 		}
 	}
+	public void unbindS(){
+		prefHeightProperty().unbind();
+		prefWidthProperty().unbind();}
 
 	public Map<T,FXMLLoader> getFxmlLoaders() {
 		return fxmlLoaders;
