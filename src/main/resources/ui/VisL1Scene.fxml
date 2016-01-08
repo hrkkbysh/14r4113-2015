@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.web.*?>
 <?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import javafx.scene.input.*?>
@@ -9,11 +10,11 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<SplitPane dividerPositions="0.5" prefHeight="515.0" prefWidth="856.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<SplitPane dividerPositions="0.5" prefHeight="515.0" prefWidth="856.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.debugger.VisL1SceneController">
    <items>
       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
          <children>
-            <GridPane prefHeight="513.0" prefWidth="339.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <GridPane fx:id="memGrid" prefHeight="513.0" prefWidth="339.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
                   <VBox GridPane.rowIndex="1">
                      <children>
@@ -22,13 +23,20 @@
                               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                            </columnResizePolicy>
                            <columns>
-                              <TableColumn fx:id="addressColumn" editable="false" prefWidth="75.0" sortable="false" text="番地" />
-                              <TableColumn fx:id="contentColumn" editable="false" prefWidth="75.0" sortable="false" text="格納されている内容" />
+                              <TableColumn fx:id="addressCol" editable="false" prefWidth="75.0" sortable="false" text="番地" />
+                              <TableColumn fx:id="contentCol" editable="false" prefWidth="75.0" sortable="false" text="格納されている内容" />
                            </columns>
                         </TableView>
                      </children>
                   </VBox>
-                  <VBox>
+                  <GridPane>
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="50.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="50.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
                      <children>
                         <HBox>
                            <children>
@@ -43,12 +51,9 @@
                                  </children>
                               </AnchorPane>
                            </children>
-                           <VBox.margin>
-                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                           </VBox.margin>
                         </HBox>
                      </children>
-                  </VBox>
+                  </GridPane>
                </children>
                <columnConstraints>
                   <ColumnConstraints hgrow="SOMETIMES" percentWidth="100.0" />
@@ -77,53 +82,53 @@
                               <Label fx:id="gr4Label" text="GR4" GridPane.rowIndex="7" />
                               <Label fx:id="gr5Label" text="GR5" GridPane.rowIndex="8" />
                               <Label fx:id="gr6Label" text="GR6" GridPane.rowIndex="9" />
-                              <TextField fx:id="prField" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                              <TextField fx:id="prF" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                  <GridPane.margin>
                                     <Insets left="10.0" right="10.0" />
                                  </GridPane.margin>
                               </TextField>
-                              <TextField fx:id="spField" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                              <TextField fx:id="spF" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                  <GridPane.margin>
                                     <Insets left="10.0" right="10.0" />
                                  </GridPane.margin>
                               </TextField>
-                              <TextField fx:id="gr0Field" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                              <TextField fx:id="gr0F" GridPane.columnIndex="1" GridPane.rowIndex="3">
                                  <GridPane.margin>
                                     <Insets left="10.0" right="10.0" />
                                  </GridPane.margin>
                               </TextField>
-                              <TextField fx:id="gr1Field" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                              <TextField fx:id="gr1F" GridPane.columnIndex="1" GridPane.rowIndex="4">
                                  <GridPane.margin>
                                     <Insets left="10.0" right="10.0" />
                                  </GridPane.margin>
                               </TextField>
-                              <TextField fx:id="gr2Field" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                              <TextField fx:id="gr2F" GridPane.columnIndex="1" GridPane.rowIndex="5">
                                  <GridPane.margin>
                                     <Insets left="10.0" right="10.0" />
                                  </GridPane.margin>
                               </TextField>
-                              <TextField fx:id="gr3Field" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                              <TextField fx:id="gr3F" GridPane.columnIndex="1" GridPane.rowIndex="6">
                                  <GridPane.margin>
                                     <Insets left="10.0" right="10.0" />
                                  </GridPane.margin>
                               </TextField>
-                              <TextField fx:id="gr4Field" GridPane.columnIndex="1" GridPane.rowIndex="7">
+                              <TextField fx:id="gr4F" GridPane.columnIndex="1" GridPane.rowIndex="7">
                                  <GridPane.margin>
                                     <Insets left="10.0" right="10.0" />
                                  </GridPane.margin>
                               </TextField>
-                              <TextField fx:id="gr5Field" GridPane.columnIndex="1" GridPane.rowIndex="8">
+                              <TextField fx:id="gr5F" GridPane.columnIndex="1" GridPane.rowIndex="8">
                                  <GridPane.margin>
                                     <Insets left="10.0" right="10.0" />
                                  </GridPane.margin>
                               </TextField>
-                              <TextField fx:id="gr6Field" GridPane.columnIndex="1" GridPane.rowIndex="9">
+                              <TextField fx:id="gr6F" GridPane.columnIndex="1" GridPane.rowIndex="9">
                                  <GridPane.margin>
                                     <Insets left="10.0" right="10.0" />
                                  </GridPane.margin>
                               </TextField>
                               <Label fx:id="gr7Label" text="GR7" GridPane.rowIndex="10" />
-                              <TextField fx:id="gr7Field" GridPane.columnIndex="1" GridPane.rowIndex="10">
+                              <TextField fx:id="gr7F" GridPane.columnIndex="1" GridPane.rowIndex="10">
                                  <GridPane.margin>
                                     <Insets left="10.0" right="10.0" />
                                  </GridPane.margin>
@@ -152,12 +157,15 @@
                               <Label text="OF" />
                               <Label text="ZF" GridPane.rowIndex="1" />
                               <Label text="SF" GridPane.rowIndex="2" />
-                              <TextField fx:id="prField1" GridPane.columnIndex="1" />
-                              <TextField fx:id="spField1" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                              <TextField fx:id="spField11" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <TextField fx:id="ofF" maxWidth="50.0" prefWidth="50.0" GridPane.columnIndex="1">
+                                 <GridPane.margin>
+                                    <Insets />
+                                 </GridPane.margin></TextField>
+                              <TextField fx:id="zfF" maxWidth="50.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <TextField fx:id="sfF" maxWidth="50.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                            </children>
                            <columnConstraints>
-                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" percentWidth="30.0" prefWidth="100.0" />
                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                            </columnConstraints>
                            <rowConstraints>
@@ -170,7 +178,10 @@
                   </SplitPane>
                   <TitledPane text="IN/OUT">
                      <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                           <children>
+                              <WebView fx:id="ioField" layoutX="10.0" layoutY="10.0" prefHeight="100.0" prefWidth="420.0" AnchorPane.bottomAnchor="9.199996948242188" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="9.20001220703125" AnchorPane.topAnchor="10.0" />
+                           </children></AnchorPane>
                      </content>
                   </TitledPane>
                </items>

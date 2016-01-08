@@ -10,7 +10,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 
-public class RootController extends AnchorPane implements Initializable,Controllable<EditModeScene>{
+public class RootController extends AnchorPane implements Initializable, Controllable<EditModeScene> {
 
 	@FXML // ResourceBundle that was given to the FXMLLoader
 	private ResourceBundle resources;

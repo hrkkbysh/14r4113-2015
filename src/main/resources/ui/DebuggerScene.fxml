@@ -345,7 +345,7 @@
                      <Tooltip text="シミュレーション条件設定画面" />
                  </tooltip>
               </Button>
-              <Button fx:id="showLSButton" layoutX="10.0" layoutY="127.0" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
+              <Button fx:id="showLoadSButton" layoutX="10.0" layoutY="127.0" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
                  <graphic>
                      <ImageView pickOnBounds="true" preserveRatio="true">
                         <image>
@@ -373,6 +373,10 @@
        </ToolBar>
    </left>
    <center>
-      <Group fx:id="debugSceneContainer" BorderPane.alignment="CENTER" />
+      <AnchorPane>
+         <children>
+            <Group fx:id="debugSceneContainer" BorderPane.alignment="CENTER" />
+         </children>
+      </AnchorPane>
    </center>
 </BorderPane>

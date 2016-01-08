@@ -1,4 +1,4 @@
-package controller;
+package uicomponent;
 
 import javafx.collections.ObservableList;
 import javafx.scene.Group;

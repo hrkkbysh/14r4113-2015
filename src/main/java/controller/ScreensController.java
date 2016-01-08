@@ -20,7 +20,7 @@ public class ScreensController<T extends Enum<T> & SceneType>  extends StackPane
 
 	private Stage stage;
 	private Scene dScene;
-	private Map<T, Node> screens;
+	protected Map<T, Node> screens;
 	private Map<T, FXMLLoader> fxmlLoaders;
 
 	public ScreensController(Class<T> sceneClass,Stage stage) {
@@ -65,10 +65,6 @@ public class ScreensController<T extends Enum<T> & SceneType>  extends StackPane
 		}
 	}
 
-	//This method tries to displayed the screen with a predefined name.
-	//First it makes sure the screen has been already loaded.  Then if there is more than
-	//one screen the new screen is been added second, and then the current screen is removed.
-	// If there isn't any screen being displayed, the new screen is just added to the root.
 	public boolean setScreen(T sceneType) {
 		Node node = screens.get(sceneType);
 		//stage.setResizable(true);
@@ -79,17 +75,17 @@ public class ScreensController<T extends Enum<T> & SceneType>  extends StackPane
 				Timeline fade = new Timeline(
 						new KeyFrame(Duration.ZERO, new KeyValue(opacity, 1.0)),
 						new KeyFrame(new Duration(1000), t -> {
-                            getChildren().remove(0);
-                            stage.setTitle(sceneType.toString());
-                            getChildren().add(0, node);     //add the screen
-                            stage.sizeToScene();
-                            prefHeightProperty().bind(stage.getScene().heightProperty());
-                            prefWidthProperty().bind(stage.getScene().widthProperty());
-                            Timeline fadeIn = new Timeline(
-                                    new KeyFrame(Duration.ZERO, new KeyValue(opacity, 0.0)),
-                                    new KeyFrame(new Duration(800), new KeyValue(opacity, 1.0)));
-                            fadeIn.play();
-                        }, new KeyValue(opacity, 0.0)));
+							getChildren().remove(0);
+							stage.setTitle(sceneType.toString());
+							getChildren().add(0, node);     //add the screen
+							stage.sizeToScene();
+							prefHeightProperty().bind(stage.getScene().heightProperty());
+							prefWidthProperty().bind(stage.getScene().widthProperty());
+							Timeline fadeIn = new Timeline(
+									new KeyFrame(Duration.ZERO, new KeyValue(opacity, 0.0)),
+									new KeyFrame(new Duration(800), new KeyValue(opacity, 1.0)));
+							fadeIn.play();
+						}, new KeyValue(opacity, 0.0)));
 				fade.play();
 
 			} else {
@@ -107,6 +103,8 @@ public class ScreensController<T extends Enum<T> & SceneType>  extends StackPane
 			return false;
 		}
 	}
+
+
 
 	public boolean setNewWindow(T sceneType) {
 		Node node = screens.get(sceneType);

@@ -19,7 +19,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebEngine;
@@ -27,11 +26,11 @@ import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import org.controlsfx.control.PopOver;
+import uicomponent.PopOverCreator;
 import util.DetectUtils;
 import netscape.javascript.JSObject;
 
-public class EditModeController extends BorderPane implements Initializable,Controllable<EditModeScene>,Threadable{
+public class EditModeController extends BorderPane implements Initializable, Controllable<EditModeScene>,Threadable{
 
 	@FXML
 	private ResourceBundle resources;

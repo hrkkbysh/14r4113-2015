@@ -1,9 +1,9 @@
 package controller;
 
 public enum DebugModeScene  implements SceneType {
-	MEDIAN("/ui/MedViewScene.fxml",false),
+	LOAD("/ui/LoadScene.fxml",false),
 	SETTING("/ui/SimSettingScene.fxml",true),
-	VLOG("/ui/LogScene.fxml",true),
+	LOG("/ui/LogScene.fxml",true),
 	VL1("/ui/VisL1Scene.fxml",true),
 	VL2("/ui/VisL2Scene.fxml",true);
 	private String resource;

@@ -1,6 +1,5 @@
 package controller;
 
-import java.awt.event.ActionEvent;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
@@ -17,7 +16,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
-public class DebugModeController extends BorderPane implements Initializable,Threadable,Controllable<EditModeScene>{
+public class DebugModeController extends BorderPane implements Initializable,Threadable, Controllable<EditModeScene> {
 
 	@FXML
 	private MenuItem runMenuItem;
@@ -107,7 +106,7 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 	private MenuItem reloadMenuItem;
 
 	@FXML
-	private Button showLSButton;
+	private Button showLoadSButton;
 
 	@FXML
 	private Button stopButton;
@@ -168,7 +167,7 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 		assert stepRunButton != null : "fx:id=\"stepRunButton\" was not injected: check your FXML file 'DebuggerScene.fxml'.";
 		assert instProfileMenuItem != null : "fx:id=\"instProfileMenuItem\" was not injected: check your FXML file 'DebuggerScene.fxml'.";
 		assert reloadMenuItem != null : "fx:id=\"reloadMenuItem\" was not injected: check your FXML file 'DebuggerScene.fxml'.";
-		assert showLSButton != null : "fx:id=\"showLSButton\" was not injected: check your FXML file 'DebuggerScene.fxml'.";
+		assert showLoadSButton != null : "fx:id=\"showLoadSButton\" was not injected: check your FXML file 'DebuggerScene.fxml'.";
 		assert stopButton != null : "fx:id=\"stopButton\" was not injected: check your FXML file 'DebuggerScene.fxml'.";
 		assert debugSceneContainer != null : "fx:id=\"debugSceneContainer\" was not injected: check your FXML file 'DebuggerScene.fxml'.";
 		assert setStopStatementMenuItem != null : "fx:id=\"setStopStatementMenuItem\" was not injected: check your FXML file 'DebuggerScene.fxml'.";
@@ -182,7 +181,7 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 
 
 	private ScreensController<EditModeScene> scEMC;
-	private ScreensController<DebugModeScene> scDMC;
+	private NodeController<DebugModeScene> scDMC;
 	private EditModeController caec;
 	private ExecutorService service;
 
@@ -198,11 +197,18 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 	public void setScreenParent(ScreensController<EditModeScene> sc) {
 		this.scEMC = sc;
 	}
-Stage stage;
+	Stage stage;
 	@Override
 	public void setStage(Stage stage) {
 		this.stage = stage;
-		/*scDMC = new ScreensController<>(DebugModeScene.class,stage);
+	}
+
+	public void setCAEC(EditModeController CAEC) {
+		this.caec = CAEC;
+	}
+
+	public void setEditMode() {
+		scDMC = new NodeController<>(DebugModeScene.class,stage);
 		for(DebugModeScene d:DebugModeScene.values()){
 			scDMC.loadScreen(d);
 		}
@@ -211,16 +217,8 @@ Stage stage;
 		showCL1SButton.setOnAction(e->scDMC.setScreen(DebugModeScene.VL1));
 		showCL2SButton.setOnAction(e->scDMC.setScreen(DebugModeScene.VL2));
 		showDISButton.setOnAction(e->scDMC.setScreen(DebugModeScene.SETTING));
-		showLogSButton.setOnAction(e->scDMC.setScreen(DebugModeScene.VLOG));
-		showLSButton.setOnAction(e->scDMC.setScreen(DebugModeScene.MEDIAN));*/
-	}
-
-	public void setCAEC(EditModeController CAEC) {
-		this.caec = CAEC;
-	}
-
-	public void setEditMode() {
-
+		showLogSButton.setOnAction(e->scDMC.setScreen(DebugModeScene.LOG));
+		showLoadSButton.setOnAction(e->scDMC.setScreen(DebugModeScene.LOAD));
 	}
 	@FXML
 	void gotoHomeAction(javafx.event.ActionEvent event) {
