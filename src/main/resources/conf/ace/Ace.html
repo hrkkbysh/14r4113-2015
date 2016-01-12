@@ -19,8 +19,8 @@
     </style>
 </head>
 <body>
-
-<pre id="editor"></pre>
+<pre id="editor">
+</pre>
 <script src="src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 <script src="src-noconflict/ext-language_tools.js"></script>
 <script>
@@ -33,6 +33,10 @@
     document.getElementById('editor').style.fontSize='20px';
     function pasteContent(content){
         editor.onPaste(content);
+    }
+
+    function showSetMenu(){
+        editor.showSettingsMenu();
     }
     editor.setOptions({
     enableBasicAutocompletion: true,

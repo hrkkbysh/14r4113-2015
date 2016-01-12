@@ -15,25 +15,11 @@
               <Menu fx:id="fileMenu" mnemonicParsing="false" text="ファイル(F)">
                 <items>
                   <MenuItem fx:id="newMenuItem" mnemonicParsing="false" onAction="#newAction" text="新規作成">
-                           <graphic>
-                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../1443921963_New_file.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
                            <accelerator>
                               <KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                            </accelerator>
                         </MenuItem>
                   <MenuItem fx:id="openMenuItem" mnemonicParsing="false" onAction="#openAction" text="開く ...">
-                           <graphic>
-                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../1443922292_Open_v2.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
                            <accelerator>
                               <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                            </accelerator>
@@ -41,38 +27,17 @@
                   <Menu fx:id="openRecentMenu" mnemonicParsing="false" text="最近編集したファイル" />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="saveMenuItem" mnemonicParsing="false" onAction="#saveAction" text="上書き保存">
-                           <graphic>
-                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../1443922179_Save.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
                            <accelerator>
                               <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                            </accelerator>
                         </MenuItem>
                   <MenuItem fx:id="saveAsMenuItem" mnemonicParsing="false" onAction="#saveAsAction" text="名前をつけて保存">
-                           <graphic>
-                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../1443986260_Save_as.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
                            <accelerator>
                               <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
                            </accelerator>
                         </MenuItem>
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="exitMenuItem" mnemonicParsing="false" onAction="#exitAction" text="終了">
-                           <graphic>
-                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../1443986433_gtk-quit.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
                            <accelerator>
                               <KeyCodeCombination alt="UP" code="Q" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                            </accelerator>
@@ -85,99 +50,43 @@
               <Menu fx:id="editMenu" mnemonicParsing="false" text="編集(E)">
                 <items>
                         <MenuItem fx:id="undoMenuItem" mnemonicParsing="false" onAction="#undoAction" text="元に戻す">
-                           <graphic>
-                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../1443921963_New_file.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
                            <accelerator>
                               <KeyCodeCombination alt="UP" code="Z" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                            </accelerator>
                         </MenuItem>
                         <MenuItem fx:id="redoMenuItem" mnemonicParsing="false" onAction="#redoAction" text="やり直す">
-                           <graphic>
-                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../1443921963_New_file.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
                            <accelerator>
                               <KeyCodeCombination alt="UP" code="Y" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                            </accelerator>
                         </MenuItem>
                   <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem fx:id="cutMenuItem" mnemonicParsing="false" onAction="#cutAction" text="切り取り">
-                           <graphic>
-                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../1443921963_New_file.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
                            <accelerator>
                               <KeyCodeCombination alt="UP" code="X" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                            </accelerator>
                         </MenuItem>
                         <MenuItem fx:id="copyMenuItem" mnemonicParsing="false" onAction="#copyAction" text="コピー">
-                           <graphic>
-                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../1443921963_New_file.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
                            <accelerator>
                               <KeyCodeCombination alt="UP" code="C" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                            </accelerator>
                         </MenuItem>
                         <MenuItem fx:id="pasteMenuItem" mnemonicParsing="false" onAction="#pasteAction" text="貼り付け">
-                           <graphic>
-                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../1443921963_New_file.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
                            <accelerator>
                               <KeyCodeCombination alt="UP" code="P" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                            </accelerator>
                         </MenuItem>
                         <MenuItem fx:id="selectAllMenuItem" mnemonicParsing="false" onAction="#selectAllAction" text="全て選択">
-                           <graphic>
-                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../1443921963_New_file.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
                            <accelerator>
                               <KeyCodeCombination alt="UP" code="A" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                            </accelerator>
                         </MenuItem>
                   <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem fx:id="toggleCommentMenuItem" mnemonicParsing="false" onAction="#toggleCommentAction" text="コメントの切り替え">
-                           <graphic>
-                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../1443921963_New_file.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
                            <accelerator>
                               <KeyCodeCombination alt="UP" code="K" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                            </accelerator>
                         </MenuItem>
                         <MenuItem fx:id="prettyPrintMenuItem" mnemonicParsing="false" onAction="#prettyPrintAction" text="プログラム整形">
-                           <graphic>
-                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../1443921963_New_file.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
                            <accelerator>
                               <KeyCodeCombination alt="UP" code="I" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                            </accelerator>
@@ -186,65 +95,36 @@
               </Menu>
                   <Menu fx:id="compileMenu" mnemonicParsing="false" text="コンパイル/実行(R)">
                      <items>
-                        <MenuItem fx:id="assembleMenuItem" mnemonicParsing="false" onAction="#assembleAction" onMenuValidation="#checkEditorState" text="コンパイル/実行">
-                           <graphic>
-                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../1443921963_New_file.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                        </MenuItem>
-                        <MenuItem fx:id="assembleAllMenuItem" mnemonicParsing="false" onAction="#assembleAllAction" onMenuValidation="#checkEditorsState" text="全てのCASL2ファイルをコンパイル/実行">
-                           <graphic>
-                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../1443921963_New_file.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                        </MenuItem>
+                        <MenuItem fx:id="assembleMenuItem" mnemonicParsing="false" onAction="#assembleAction" text="コンパイル （通常）">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="F10" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
+                           </accelerator></MenuItem>
+                        <MenuItem fx:id="exAssembleMenuItem" mnemonicParsing="false" onAction="#exAssembleAction" text="コンパイル （拡張）">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="F9" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
+                           </accelerator></MenuItem>
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" onAction="#xRefAction" onMenuValidation="#checkEditorState" text="クロスリファレンス" fx:id="xRefMenuItem">
-                           <graphic>
-                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../1443921963_New_file.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                        </MenuItem>
-                        <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem fx:id="codingAssistMenuItem" mnemonicParsing="false" onAction="#setCAAction" text="コード補完設定">
-                           <graphic>
-                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../1443921963_New_file.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                        </MenuItem>
-                        <MenuItem fx:id="setLoaderMenuItem" mnemonicParsing="false" onAction="#setLoaderAction" text="ロード設定">
-                           <graphic>
-                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../1443921963_New_file.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                        </MenuItem>
+                        <MenuItem mnemonicParsing="false" onAction="#xRefAction"  text="クロスリファレンス" fx:id="xRefMenuItem">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="X" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
+                           </accelerator></MenuItem>
+                     </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" text="設定(S)">
+                     <items>
+                        <MenuItem fx:id="setEditorMenuItem" mnemonicParsing="false" text="エディタ設定">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="COMMA" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator></MenuItem>
+                        <MenuItem fx:id="setLoaderMenuItem" mnemonicParsing="false" text="ロード設定">
+                           <accelerator>
+                              <KeyCodeCombination alt="DOWN" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator></MenuItem>
                      </items>
                   </Menu>
                   <Menu mnemonicParsing="false" text="ヘルプ(H)">
                      <items>
                         <MenuItem fx:id="helpMenuItem" mnemonicParsing="false" onAction="#helpAction" text="CASL2シミュレータについて">
-                           <graphic>
-                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../1443921963_New_file.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
                            <accelerator>
                               <KeyCodeCombination alt="UP" code="H" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                            </accelerator>
@@ -260,75 +140,33 @@
       <ToolBar orientation="VERTICAL" BorderPane.alignment="CENTER">
         <items>
             <Button fx:id="exploreButton" layoutX="10.0" layoutY="7.0" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" onAction="#exploreAction" prefHeight="35.0" prefWidth="34.0">
-               <graphic>
-                  <ImageView pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../1443922292_Open_v2.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
                <tooltip>
-                  <Tooltip text="ファイルツリー" />
-               </tooltip>
-            </Button>
-            <Button fx:id="prettyPrintButton" layoutX="86.0" layoutY="7.0" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" onAction="#prettyPrintAction" prefHeight="35.0" prefWidth="34.0">
-               <graphic>
-                  <ImageView pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../1443922793_format-indent-more.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-               <tooltip>
-                  <Tooltip text="コードを整形します。" />
+                  <Tooltip text="エクスプローラー" />
                </tooltip>
             </Button>
             <Button fx:id="assembleButton" layoutX="124.0" layoutY="7.0" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" onAction="#assembleAction" prefHeight="35.0" prefWidth="34.0">
-               <graphic>
-                  <ImageView pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../1443923127_utilities-terminal.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
                <tooltip>
                   <Tooltip text="現在表示しているCASL2ファイルをコンパイルします。" />
                </tooltip>
             </Button>
             <Button fx:id="exAssembleButton" layoutX="10.0" layoutY="166.0" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" onAction="#exAssembleAction" prefHeight="35.0" prefWidth="34.0">
-               <graphic>
-                  <ImageView pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../1443923127_utilities-terminal.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
                <tooltip>
                   <Tooltip text="現在表示しているCASL2プログラムをコンパイルします。" />
                </tooltip>
             </Button>
             <Button layoutX="770.0" layoutY="7.0" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" onAction="#xRefAction" prefHeight="35.0" prefWidth="34.0" fx:id="xRefButton">
-               <graphic>
-                  <ImageView pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../1443924180_book.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
                <tooltip>
                   <Tooltip text="クロスリファレンスをコンソール画面に出力します。" />
                </tooltip>
             </Button>
-            <Button fx:id="gotoHomeButton" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" onAction="#gotoHomeAction" prefHeight="35.0" prefWidth="34.0">
-               <graphic>
-                  <ImageView pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../Gnome-Go-Home-32.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
+            <Button fx:id="showSetVButton" layoutX="10.0" layoutY="127.0" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
                <tooltip>
-                  <Tooltip text="機械語プログラム編集画面へ遷移します。" />
+                  <Tooltip text="設定ウィンドウを開きます" />
+               </tooltip>
+            </Button>
+            <Button fx:id="gotoHomeButton" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" onAction="#gotoHomeAction" prefHeight="35.0" prefWidth="34.0">
+               <tooltip>
+                  <Tooltip text="モード選択画面へ遷移します。" />
                </tooltip>
             </Button>
         </items>

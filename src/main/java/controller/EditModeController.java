@@ -22,6 +22,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
@@ -33,6 +34,10 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.controlsfx.control.MasterDetailPane;
 import org.controlsfx.control.StatusBar;
+import org.controlsfx.glyphfont.FontAwesome;
+import org.controlsfx.glyphfont.Glyph;
+import org.controlsfx.glyphfont.GlyphFont;
+import org.controlsfx.glyphfont.GlyphFontRegistry;
 import uicomponent.SideNode;
 import util.DetectUtils;
 import netscape.javascript.JSObject;
@@ -52,7 +57,7 @@ public class EditModeController extends BorderPane implements Initializable, Con
 	private MenuItem toggleCommentMenuItem;
 
 	@FXML
-	private MenuItem assembleAllMenuItem;
+	private MenuItem exAssembleMenuItem;
 
 	@FXML
 	private MenuItem saveMenuItem;
@@ -67,7 +72,7 @@ public class EditModeController extends BorderPane implements Initializable, Con
 	private MenuItem exitMenuItem;
 
 	@FXML
-	private MenuItem codingAssistMenuItem;
+	private MenuItem setEditorMenuItem;
 
 	@FXML
 	private BorderPane root;
@@ -103,7 +108,7 @@ public class EditModeController extends BorderPane implements Initializable, Con
 	private MenuItem prettyPrintMenuItem;
 
 	@FXML
-	private Button prettyPrintButton;
+	private Button showSetVButton;
 
 	@FXML
 	private MenuItem selectAllMenuItem;
@@ -137,6 +142,7 @@ public class EditModeController extends BorderPane implements Initializable, Con
 
 	@FXML
 	private MenuItem undoMenuItem;
+
 	private DebugModeController coec;
 
 	@FXML
@@ -202,6 +208,7 @@ public class EditModeController extends BorderPane implements Initializable, Con
 			}
 			if(!parser.hasError()){
 				errView.getErrorLog().appendText("コンパイル完了");
+				sc.setScreen(EditModeScene.DEBUG);
 			}
 
 		} catch (IOException e) {
@@ -239,6 +246,7 @@ public class EditModeController extends BorderPane implements Initializable, Con
 		} catch (IOException e) {
 			e.printStackTrace();
 		}*/
+		sc.setScreen(EditModeScene.DEBUG);
 	}
 
 	@FXML
@@ -352,27 +360,6 @@ public class EditModeController extends BorderPane implements Initializable, Con
 
 	}
 
-
-	@FXML
-	void checkEditorState(ActionEvent event) {
-
-	}
-
-	@FXML
-	void assembleAllAction(ActionEvent event) {
-		sc.setScreen(EditModeScene.DEBUG);
-	}
-
-	@FXML
-	void checkEditorsState(ActionEvent event) {
-
-	}
-
-	@FXML
-	void setCAAction(ActionEvent event) {
-
-	}
-
 	@FXML
 	void setLoaderAction(ActionEvent event) {
 
@@ -404,16 +391,17 @@ public class EditModeController extends BorderPane implements Initializable, Con
 			masterDetailPane.setShowDetailNode(true);
 		}
 	}
+	private GlyphFont fontAwesome = GlyphFontRegistry.font("FontAwesome");
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		assert openRecentMenu != null : "fx:id=\"openRecentMenu\" was not injected: check your FXML file 'EditScene.fxml'.";
 		assert toggleCommentMenuItem != null : "fx:id=\"toggleCommentMenuItem\" was not injected: check your FXML file 'EditScene.fxml'.";
-		assert assembleAllMenuItem != null : "fx:id=\"assembleAllMenuItem\" was not injected: check your FXML file 'EditScene.fxml'.";
+		assert exAssembleMenuItem != null : "fx:id=\"exAssembleMenuItem\" was not injected: check your FXML file 'EditScene.fxml'.";
 		assert saveMenuItem != null : "fx:id=\"saveMenuItem\" was not injected: check your FXML file 'EditScene.fxml'.";
 		assert copyMenuItem != null : "fx:id=\"copyMenuItem\" was not injected: check your FXML file 'EditScene.fxml'.";
 		assert exploreButton != null : "fx:id=\"exploreButton\" was not injected: check your FXML file 'EditScene.fxml'.";
 		assert exitMenuItem != null : "fx:id=\"exitMenuItem\" was not injected: check your FXML file 'EditScene.fxml'.";
-		assert codingAssistMenuItem != null : "fx:id=\"codingAssistMenuItem\" was not injected: check your FXML file 'EditScene.fxml'.";
+		assert setEditorMenuItem != null : "fx:id=\"setEditorMenuItem\" was not injected: check your FXML file 'EditScene.fxml'.";
 		assert root != null : "fx:id=\"root\" was not injected: check your FXML file 'EditScene.fxml'.";
 		assert helpMenuItem != null : "fx:id=\"helpMenuItem\" was not injected: check your FXML file 'EditScene.fxml'.";
 		assert exAssembleButton != null : "fx:id=\"exAssembleButton\" was not injected: check your FXML file 'EditScene.fxml'.";
@@ -425,7 +413,7 @@ public class EditModeController extends BorderPane implements Initializable, Con
 		assert cutMenuItem != null : "fx:id=\"cutMenuItem\" was not injected: check your FXML file 'EditScene.fxml'.";
 		assert assembleMenuItem != null : "fx:id=\"assembleMenuItem\" was not injected: check your FXML file 'EditScene.fxml'.";
 		assert prettyPrintMenuItem != null : "fx:id=\"prettyPrintMenuItem\" was not injected: check your FXML file 'EditScene.fxml'.";
-		assert prettyPrintButton != null : "fx:id=\"prettyPrintButton\" was not injected: check your FXML file 'EditScene.fxml'.";
+		assert showSetVButton != null : "fx:id=\"prettyPrintButton\" was not injected: check your FXML file 'EditScene.fxml'.";
 		assert selectAllMenuItem != null : "fx:id=\"selectAllMenuItem\" was not injected: check your FXML file 'EditScene.fxml'.";
 		assert compileMenu != null : "fx:id=\"compileMenu\" was not injected: check your FXML file 'EditScene.fxml'.";
 		assert gotoHomeButton != null : "fx:id=\"gotoHomeButton\" was not injected: check your FXML file 'EditScene.fxml'.";
@@ -437,6 +425,36 @@ public class EditModeController extends BorderPane implements Initializable, Con
 		assert pasteMenuItem != null : "fx:id=\"pasteMenuItem\" was not injected: check your FXML file 'EditScene.fxml'.";
 		assert xRefButton != null : "fx:id=\"xRefButton\" was not injected: check your FXML file 'EditScene.fxml'.";
 		assert undoMenuItem != null : "fx:id=\"undoMenuItem\" was not injected: check your FXML file 'EditScene.fxml'.";
+
+		exploreButton.setGraphic(createAweSome(FontAwesome.Glyph.FOLDER_ALT));
+		assembleButton.setGraphic(createAweSome(FontAwesome.Glyph.BUG));
+		exAssembleButton.setGraphic(createAweSome(FontAwesome.Glyph.BUG).color(Color.BLUE));
+		xRefButton.setGraphic(createAweSome(FontAwesome.Glyph.BOOK));
+		showSetVButton.setGraphic(createAweSome(FontAwesome.Glyph.COGS));
+		gotoHomeButton.setGraphic(createAweSome(FontAwesome.Glyph.HOME));
+
+		newMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.FILE_ALT));
+		openMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.FOLDER_OPEN_ALT));
+		saveMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.SAVE));
+		saveAsMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.SAVE).color(Color.ALICEBLUE));
+
+		undoMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.ROTATE_LEFT));
+		redoMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.ROTATE_RIGHT));
+		cutMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.CUT));
+		copyMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.COPY));
+		pasteMenuItem.setGraphic((createAweSome(FontAwesome.Glyph.PASTE)));
+		//selectAllMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.SELECT_ALL));
+		toggleCommentMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.COMMENTS));
+		prettyPrintMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.INDENT));
+
+		assembleMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.BUG));
+		exAssembleMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.BUG).color(Color.BLUE));
+		xRefMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.BOOK));
+
+		setEditorMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.COGS).color(Color.ALICEBLUE));
+		setLoaderMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.COGS));
+
+		helpMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.QUESTION_CIRCLE));
 
 		webView = new WebView();
 		webEngine = webView.getEngine();
@@ -493,24 +511,12 @@ public class EditModeController extends BorderPane implements Initializable, Con
 		statusBar.textProperty().set("CASL2プログラミング画面");
 	}
 	private void initStatusBar(){
-
+	}
+	private Glyph createAweSome(FontAwesome.Glyph g){
+		return fontAwesome.create(g).useGradientEffect().useHoverEffect();
 	}
 	private void initShortCut() {
-		final KeyCombination saveSC = new KeyCodeCombination(KeyCode.S,
-				KeyCombination.CONTROL_DOWN,KeyCodeCombination.SHIFT_DOWN);
-		saveMenuItem.acceleratorProperty().set(saveSC);
-
-		final KeyCombination saveasSC = new KeyCodeCombination(KeyCode.S,
-				KeyCombination.CONTROL_DOWN);
-		saveMenuItem.acceleratorProperty().set(saveasSC);
-
-		final KeyCombination openSC = new KeyCodeCombination(KeyCode.O,
-				KeyCombination.CONTROL_DOWN);
-		openMenuItem.acceleratorProperty().set(openSC);
-
-		final KeyCombination newSC = new KeyCodeCombination(KeyCode.N,
-				KeyCombination.CONTROL_DOWN);
-		newMenuItem.acceleratorProperty().set(newSC);
+		setEditorMenuItem.setOnAction(e->webEngine.executeScript("showSetMenu()"));
 	}
 
 
