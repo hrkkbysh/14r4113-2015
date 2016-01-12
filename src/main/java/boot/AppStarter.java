@@ -37,7 +37,6 @@ public class AppStarter extends Application {
 			Group root = new Group();
 			root.getChildren().addAll(mainContainer);
 			Scene scene = new Scene(root);
-			//stage.sizeToScene();
 			stage.setScene(scene);
 			stage.setTitle("モード選択画面");
 			stage.show();

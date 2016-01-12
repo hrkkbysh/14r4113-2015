@@ -42,7 +42,7 @@ public class Casl2Lexer {
 		try {
 			return input.read();
 		} catch (IOException e) {
-			errorTable.writeError(line, -1, "I/O EXCEPTION occurred.");//例外
+			errorTable.printError(line, -1, "I/O EXCEPTION occurred.");//例外
 			return -1;
 		}
 	}
@@ -50,7 +50,7 @@ public class Casl2Lexer {
 		try {
 			input.close();
 		} catch (IOException e) {
-			errorTable.writeError(line, -1, "I/O EXCEPTION occurred.");//例外
+			errorTable.printError(line, -1, "I/O EXCEPTION occurred.");//例外
 		}
 	}
 
@@ -108,7 +108,7 @@ public class Casl2Lexer {
 		peekc = c;
 		if(0<=v && v<=65535) {
 			nval = v & 0x0000FFFF;
-			errorTable.writeWarning(line, 1,nval);//数値%nvalは1wordに収まらないため，16bit以降は切り捨てられました。
+			errorTable.printWarning(line, 1,nval);//数値%nvalは1wordに収まらないため，16bit以降は切り捨てられました。
 		}
 		return Casl2Symbol.NUM_CONST;
 	}
@@ -139,7 +139,7 @@ public class Casl2Lexer {
 			sval = candidate;
 			return Casl2Symbol.STR_CONST;
 		}else {
-			errorTable.writeError(line, 3,candidate);/// ",JIS X 0201に対応していない文字が含まれています。
+			errorTable.printError(line, 3,candidate);/// ",JIS X 0201に対応していない文字が含まれています。
 			skipToEOL();
 			return Casl2Symbol.ERROR;
 		}
@@ -157,7 +157,7 @@ public class Casl2Lexer {
 		peekc = c;
 		if(!(-32768<=v && v<=65535)) {
 			nval = v & 0x0000FFFF;
-			errorTable.writeWarning(line,0, nval);// 数値%nvalは1wordに収まらないため，16bit以降は切り捨てられました。
+			errorTable.printWarning(line,0, nval);// 数値%nvalは1wordに収まらないため，16bit以降は切り捨てられました。
 		}else if(nval>=0) {
 			return Casl2Symbol.DS_CONST;
 		}
@@ -186,8 +186,8 @@ public class Casl2Lexer {
 		peekc = c;
 		Casl2Symbol symbol = symbolTable.searchSymbol(sval);
 		if(symbol!= Casl2Symbol.LABEL && symbol != Casl2Symbol.MACRO_INST) return symbol;
-		if(warn) errorTable.writeWarning(line,3,sval);
-		if(sval.length()>8) errorTable.writeWarning(line,4,sval);
+		if(warn) errorTable.printWarning(line,3,sval);
+		if(sval.length()>8) errorTable.printWarning(line,4,sval);
 		nval = symbolTable.getLabelID();
 		return arg ? Casl2Symbol.MACRO_ARG:symbol;
 	}
@@ -205,7 +205,7 @@ public class Casl2Lexer {
 		for(int index = 0; index < c.length; index++){
 			buf.append((char)index);
 		}
-		errorTable.writeError(line, 1,buf.toString());//"有効な識別子ではありません。"
+		errorTable.printError(line, 1,buf.toString());//"有効な識別子ではありません。"
 		peekc = read();
 		skipToEOL();
 		return Casl2Symbol.ERROR;

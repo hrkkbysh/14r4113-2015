@@ -30,7 +30,6 @@
     editor.session.setMode("ace/mode/casl2");
 
     editor.setScrollSpeed(0.05);
-    editor.setOption("showInvisibles", true);
     document.getElementById('editor').style.fontSize='20px';
     function pasteContent(content){
         editor.onPaste(content);
@@ -38,7 +37,9 @@
     editor.setOptions({
     enableBasicAutocompletion: true,
     enableSnippets: true,
-    enableLiveAutocompletion: true
+    enableLiveAutocompletion: true,
+    showPrintMargin: false,
+    showInvisibles: true
     });
 </script>
 

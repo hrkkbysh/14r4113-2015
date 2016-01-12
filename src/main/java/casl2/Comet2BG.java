@@ -77,11 +77,6 @@ public class Comet2BG {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}else{
-			errorTable.getErrorMessages().forEach(System.out::println);
-		}
-		if(errorTable.hasWarning()) {
-			errorTable.getWarningMessages().forEach(System.out::println);
 		}
 	}
 	public void genFile() {
@@ -98,7 +93,7 @@ public class Comet2BG {
 			}else{
 				String unSolvedSymbol = symbolTable.getLabel(ls.getID());
 				for(int proRefLoc: ls.getProRefLocs()){
-					errorTable.writeError(proRefLoc,19,unSolvedSymbol);
+					errorTable.printError(proRefLoc,19,unSolvedSymbol);
 				}
 				return false;
 			}
@@ -125,7 +120,7 @@ public class Comet2BG {
 			if(ls != null) {
 				startAdr = ls.getDefineLocation();
 			}else {
-				errorTable.writeError(0,19,symbolTable.getLabel(startAdr));
+				errorTable.printError(0,19,symbolTable.getLabel(startAdr));
 				return false;
 			}
 		}

@@ -54,6 +54,7 @@ public class ScreensController<T extends Enum<T> & SceneType>  extends StackPane
 
 			Controllable<T> myScreenController = myLoader.getController();
 			myScreenController.setScreenParent(this);
+			myScreenController.setStage(stage);
 
 			addScreen(sceneType, loadScreen);
 			addLoader(sceneType, myLoader);

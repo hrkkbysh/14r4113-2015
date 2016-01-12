@@ -3,6 +3,7 @@ package uicomponent;
 import javafx.collections.ObservableList;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -17,7 +18,8 @@ import java.util.List;
  */
 public class PopOverCreator {
 
-    private WebView webView;
+    private ListView<String> errorView;
+	private WebView webView;
     private ObservableList<PopOver> errorPops;
 
     public PopOverCreator(WebView webView){
@@ -61,8 +63,8 @@ public class PopOverCreator {
         PopOver popOver = new PopOver();
         popOver.detachedProperty().set(true);
         popOver.setDetachable(true);
-        popOver.setDetached(true);
-        popOver.setDetachedTitle("ERROR");
+        popOver.setDetached(true);/*
+        popOver.setDetachedTitle("ERROR");*/
         popOver.setContentNode(label);
         popOver.setArrowLocation(PopOver.ArrowLocation.LEFT_CENTER);
         return popOver;

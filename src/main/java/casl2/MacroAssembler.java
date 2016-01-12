@@ -33,7 +33,7 @@ public class MacroAssembler {
 				token = lexer.nextToken();
 				checkHeader();
 			}else{
-				errorTable.writeError(lexer.getLine(),20);
+				errorTable.printError(lexer.getLine(),20);
 			}
 		}
 		if(!err) {
@@ -75,14 +75,14 @@ public class MacroAssembler {
 							break;
 						default:
 							err = true;
-							errorTable.writeError(lexer.getLine(), 21, token.toString());//invalid args
+							errorTable.printError(lexer.getLine(), 21, token.toString());//invalid args
 							break;
 					}
 					if (err) break;
 					token = lexer.nextToken();
 				} while (token == Casl2Symbol.COMMA);
 				if(token !=Casl2Symbol.EOL){
-					errorTable.writeError(lexer.getLine(),28);
+					errorTable.printError(lexer.getLine(),28);
 					err = true;
 				}
 				if (!err) {
@@ -104,12 +104,12 @@ public class MacroAssembler {
 									macroInst.add(md);
 									symbolTable.addMacroSymbol(md.getInstID());
 								}else{
-									errorTable.writeError(lexer.getLine(),22);
+									errorTable.printError(lexer.getLine(),22);
 								}
 								return;
 							case MACRO_ARG:
 								if(!argIDs.contains(lexer.getNval())){
-									errorTable.writeError(lexer.getLine(),23,"$"+lexer.getSval());
+									errorTable.printError(lexer.getLine(),23,"$"+lexer.getSval());
 								}
 								break;
 							case START:
@@ -119,7 +119,7 @@ public class MacroAssembler {
 								md.setMBlock(lexer.getCodeBlock());
 								macroInst.add(md);
 								err =true;
-								errorTable.writeError(lexer.getLine(),24);
+								errorTable.printError(lexer.getLine(),24);
 								return;
 							default:
 								break;
@@ -129,17 +129,17 @@ public class MacroAssembler {
 				break;
 			case NUM_CONST:
 			case DS_CONST:
-				errorTable.writeError(lexer.getLine(),25,lexer.getNval());
+				errorTable.printError(lexer.getLine(),25,lexer.getNval());
 				break;
 			case EQUAL:
-				errorTable.writeError(lexer.getLine(),25,"=");
+				errorTable.printError(lexer.getLine(),25,"=");
 				break;
 			case COMMA:
-				errorTable.writeError(lexer.getLine(),25,",");
+				errorTable.printError(lexer.getLine(),25,",");
 				break;
 			case STR_CONST:
 			default:
-				errorTable.writeError(lexer.getLine(),25,lexer.getSval());
+				errorTable.printError(lexer.getLine(),25,lexer.getSval());
 		}
 		err = true;
 	}
@@ -196,7 +196,7 @@ public class MacroAssembler {
 			if(token ==Casl2Symbol.EOL || token == Casl2Symbol.EOF) break;
 		}
 		if(index!=md.getArgIDs().size()-1) {
-			errorTable.writeError(lexer.getLine(), 15);
+			errorTable.printError(lexer.getLine(), 15);
 			return false;
 		}
 		if(token == Casl2Symbol.EOL) {
@@ -208,11 +208,11 @@ public class MacroAssembler {
 			if(lexer.insertMacro(c,md.getInstID())) {
 				lexer.resumeSaveMainCode();
 			}else{
-				errorTable.writeError(lexer.getLine(),27);
+				errorTable.printError(lexer.getLine(),27);
 				return  false;
 			}
 		}else{
-			errorTable.writeError(lexer.getLine(),26);
+			errorTable.printError(lexer.getLine(),26);
 			lexer.resumeSaveMainCode();
 		}
 		return true;
@@ -235,8 +235,5 @@ public class MacroAssembler {
 	}
 	public boolean hasError(){
 		return errorTable.hasError();
-	}
-	public List<String> getErrorMessages(){
-		return errorTable.getErrorMessages();
 	}
 }

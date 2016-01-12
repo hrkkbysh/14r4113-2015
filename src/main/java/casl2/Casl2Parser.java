@@ -47,16 +47,16 @@ public class Casl2Parser {
 						content();
 						bg.genFile(filepath);
 					} else {
-						errorTable.writeError(lexer.getLine(), 4, lexer.getSval()); // "START命令のシンタックスエラー"
+						errorTable.printError(lexer.getLine(), 4, lexer.getSval()); // "START命令のシンタックスエラー"
 					}
 				} else {
-					errorTable.writeError(lexer.getLine(), 5, lexer.getSval());//   "最初にSTART命令を記述してください"
+					errorTable.printError(lexer.getLine(), 5, lexer.getSval());//   "最初にSTART命令を記述してください"
 					//label inst....
 				}
 			} else if (token == Casl2Symbol.START){
-				errorTable.writeError(lexer.getLine(), 6, lexer.getSval());// "START命令のシンタックスエラー(最初のラベルがない)"
+				errorTable.printError(lexer.getLine(), 6, lexer.getSval());// "START命令のシンタックスエラー(最初のラベルがない)"
 			} else {
-				errorTable.writeError(lexer.getLine(), 4, lexer.getSval()); // "START命令のシンタックスエラー"
+				errorTable.printError(lexer.getLine(), 4, lexer.getSval()); // "START命令のシンタックスエラー"
 			}
 			if(token == Casl2Symbol.EOF) break;
 		}
@@ -72,7 +72,7 @@ public class Casl2Parser {
 					return;
 				case LABEL:
 					if (!bg.defineLabel(lexer.getNval(),lexer.getLine())) {
-						errorTable.writeError(lexer.getLine(), 8, lexer.getSval());//"二重定義"
+						errorTable.printError(lexer.getLine(), 8, lexer.getSval());//"二重定義"
 					}
 					token = lexer.nextToken();
 			}
@@ -97,7 +97,7 @@ public class Casl2Parser {
 								break;
 							default:
 								er = true;
-								errorTable.writeError(lexer.getLine(), 9, token.toString());//no constant
+								errorTable.printError(lexer.getLine(), 9, token.toString());//no constant
 								break;
 						}
 						if(er) break;
@@ -111,11 +111,11 @@ public class Casl2Parser {
 						token = lexer.nextToken();
 					}else{
 						er = true;
-						errorTable.writeError(lexer.getLine(), 10, token.toString());//DSシンタックスエラー．
+						errorTable.printError(lexer.getLine(), 10, token.toString());//DSシンタックスエラー．
 					}
 					break;
 				case START:
-					errorTable.writeError(lexer.getLine(), 11);//START命令の位置が不適切です。
+					errorTable.printError(lexer.getLine(), 11);//START命令の位置が不適切です。
 					er = true;
 					break;
 				case ADDA: case ADDL: case AND:
@@ -135,11 +135,11 @@ public class Casl2Parser {
 								adr_x(mnemonic,r1);
 							}
 						} else {
-							errorTable.writeError(lexer.getLine(), 15);//カンマが不足しています。
+							errorTable.printError(lexer.getLine(), 15);//カンマが不足しています。
 							er = true;
 						}
 					} else {
-						errorTable.writeError(lexer.getLine(), 16,mnemonic.toString()); //第一オペランドがレジスタではありません。
+						errorTable.printError(lexer.getLine(), 16, mnemonic.toString()); //第一オペランドがレジスタではありません。
 						er = true;
 					}
 					break;
@@ -152,11 +152,11 @@ public class Casl2Parser {
 							token = lexer.nextToken();
 							adr_x(mnemonic,r1);
 						} else {
-							errorTable.writeError(lexer.getLine(), 15);
+							errorTable.printError(lexer.getLine(), 15);
 							er = true;
 						}
 					} else {
-						errorTable.writeError(lexer.getLine(),16, mnemonic.toString());
+						errorTable.printError(lexer.getLine(), 16, mnemonic.toString());
 						er = true;
 					}
 					break;
@@ -175,7 +175,7 @@ public class Casl2Parser {
 						bg.genRegStackCode(Casl2Symbol.POP, r);
 						token = lexer.nextToken();
 					}else{
-						errorTable.writeError(lexer.getLine(), 12);
+						errorTable.printError(lexer.getLine(), 12);
 						er = true;
 					}
 					break;
@@ -201,15 +201,15 @@ public class Casl2Parser {
 								bg.genMacroBlock(mnemonic, bufLabel, lenLabel, lexer.getLine());
 								token = lexer.nextToken();
 							}else{
-								errorTable.writeError(lexer.getLine(), 17, 2);
+								errorTable.printError(lexer.getLine(), 17, 2);
 								er = true;
 							}
 						}else{
-							errorTable.writeError(lexer.getLine(), 15);
+							errorTable.printError(lexer.getLine(), 15);
 							er = true;
 						}
 					}else{
-						errorTable.writeError(lexer.getLine(), 17,1);
+						errorTable.printError(lexer.getLine(), 17, 1);
 						er = true;
 					}
 					break;
@@ -223,7 +223,7 @@ public class Casl2Parser {
 	private void checkEOL() {
 		if(er) return;
 		if(!(token== Casl2Symbol.EOL)){
-			errorTable.writeError(lexer.getLine(), 18);
+			errorTable.printError(lexer.getLine(), 18);
 		}
 	}
 	private void setNextLine() {
@@ -253,7 +253,7 @@ public class Casl2Parser {
 				str(mnemonic, r1, lexer.getSval(), equal);
 				break;
 			default:
-				errorTable.writeError(lexer.getLine(),  14,mnemonic.toString(),2,token.toString());//illegal address;
+				errorTable.printError(lexer.getLine(), 14, mnemonic.toString(), 2, token.toString());//illegal address;
 				er = true;
 		}
 	}
@@ -267,24 +267,24 @@ public class Casl2Parser {
 				if (x.getCode() != 0) {
 					bg.genSingleWordCode(mnemonic, r1, x, Comet2BG.AddressingMode.INDEX);
 					if(equal) {
-						errorTable.writeWarning(lexer.getLine(), 2);//第二オペランドの値が不安定です。
+						errorTable.printWarning(lexer.getLine(), 2);//第二オペランドの値が不安定です。
 						bg.genImmCode(nval, lexer.getLine());
 					}else {
 						bg.genAdrCode(nval, lexer.getLine());
 					}
 					token = lexer.nextToken();
 				} else {
-					errorTable.writeError(lexer.getLine(), 12);
+					errorTable.printError(lexer.getLine(), 12);
 					er = true;
 				}
 			} else {
-				errorTable.writeError(lexer.getLine(), 13,1);
+				errorTable.printError(lexer.getLine(), 13, 1);
 				er = true;
 			}
 		} else {
 			bg.genSingleWordCode(mnemonic, r1, Comet2Register.GR0, Comet2BG.AddressingMode.INDEX);
 			if(equal) {
-				errorTable.writeWarning(lexer.getLine(), 2);//第二オペランドの値が不安定です。
+				errorTable.printWarning(lexer.getLine(), 2);//第二オペランドの値が不安定です。
 				bg.genAdrCode(nval, lexer.getLine());
 			}else {
 				bg.genAdrCode(nval, lexer.getLine());
@@ -305,11 +305,11 @@ public class Casl2Parser {
 					}
 					token = lexer.nextToken();
 				} else {
-					errorTable.writeError(lexer.getLine(), 12);
+					errorTable.printError(lexer.getLine(), 12);
 					er = true;
 				}
 			} else {
-				errorTable.writeError(lexer.getLine(), 13,2);
+				errorTable.printError(lexer.getLine(), 13, 2);
 				er = true;
 			}
 		} else {
@@ -331,11 +331,11 @@ public class Casl2Parser {
 					bg.genAdrCode(sval);
 					token = lexer.nextToken();
 				} else {
-					errorTable.writeError(lexer.getLine(), 12);
+					errorTable.printError(lexer.getLine(), 12);
 					er = true;
 				}
 			} else {
-				errorTable.writeError(lexer.getLine(),13,3);
+				errorTable.printError(lexer.getLine(), 13, 3);
 				er = true;
 			}
 		} else {
@@ -353,11 +353,8 @@ public class Casl2Parser {
 	public boolean hasWarning(){
 		return errorTable.hasWarning();
 	}
-	public List<String> getErrorMessages(){
-		return errorTable.getErrorMessages();
-	}
-	public List<String> getWarningMessages(){
-		return errorTable.getWarningMessages();
-	}
 
+	public List<String> getMessages() {
+		return errorTable.getMessages();
+	}
 }

@@ -5,11 +5,13 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 
+import casl2.AsmMode;
+import casl2.Casl2Parser;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
 import javafx.concurrent.Worker.State;
@@ -17,16 +19,21 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
+import javafx.geometry.Side;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import uicomponent.PopOverCreator;
+import org.controlsfx.control.MasterDetailPane;
+import org.controlsfx.control.StatusBar;
+import uicomponent.SideNode;
 import util.DetectUtils;
 import netscape.javascript.JSObject;
 
@@ -72,19 +79,10 @@ public class EditModeController extends BorderPane implements Initializable, Con
 	private Button exAssembleButton;
 
 	@FXML
-	private Label leftStatus3;
-
-	@FXML
 	private StackPane centerPane;
 
 	@FXML
-	private Label leftStatus1;
-
-	@FXML
 	private Menu fileMenu;
-
-	@FXML
-	private Label leftStatus2;
 
 	@FXML
 	private MenuItem saveAsMenuItem;
@@ -153,13 +151,12 @@ public class EditModeController extends BorderPane implements Initializable, Con
 		File target = fileChooser.showOpenDialog(window);
 		if(target!=null){
 			try {
-				curcsName = DetectUtils.getEncoding(target);
+				curcsName.set(DetectUtils.getEncoding(target));
 				currentPath = target.toPath();
 				byte[] bytes = Files.readAllBytes(currentPath);
 				String code = null;
 				try {
-					code = new String(bytes, curcsName);
-					leftStatus3.setText(curcsName);
+					code = new String(bytes, curcsName.get());
 				} catch (UnsupportedEncodingException ex) {
 					// fallback
 					code = new String(bytes);
@@ -169,12 +166,10 @@ public class EditModeController extends BorderPane implements Initializable, Con
 				code = code.replace("\n", "\\n");
 				code = code.replace("\r", "\\n");
 				webEngine.executeScript("editor.setValue('" + code + "',-1)");
-				leftStatus3.setText(Charset.defaultCharset().displayName());
 				assembleMenuItem.setDisable(false);
 				if(!webView.isVisible())
 					webView.setVisible(true);
 			} catch (IOException ex) {
-
 				ex.printStackTrace();
 			}
 		}
@@ -187,17 +182,32 @@ public class EditModeController extends BorderPane implements Initializable, Con
 
 	@FXML
 	void assembleAction(ActionEvent event) {
-		popOverCreator.markError(centerPane,new ArrayList<>(Arrays.asList("a","b")));
-		/*try {
-			System.out.println(activeEditor.getPath());
-			BufferedReader reader = Files.newBufferedReader(Paths.get(activeEditor.getPath()), activeEditor.getCharset());
-			Path path = null;
+		//errView.storedLog("MS932");
+		errView.getErrorLog().clear();
+		try {
+			System.out.println(currentPath);
+			BufferedReader reader = Files.newBufferedReader(currentPath, Charset.forName(curcsName.get()));
 			Casl2Parser parser = new Casl2Parser(reader, AsmMode.NORMAL);
-			parser.enter(activeEditor.getPath());
+			parser.enter(currentPath.toString());
 			System.out.println("コンパイル完了");
+			if(parser.hasError()||parser.hasWarning()) {
+				List<String> ems = parser.getMessages();
+				for(String s: ems){
+					errView.getErrorLog().appendText(s);
+					errView.getErrorLog().appendText(System.lineSeparator());
+				}
+				if (editorPane.isShowDetailNode()) {
+					editorPane.setShowDetailNode(true);
+				}
+			}
+			if(!parser.hasError()){
+				errView.getErrorLog().appendText("コンパイル完了");
+			}
+
 		} catch (IOException e) {
 			e.printStackTrace();
-		}*/
+		}
+		//errView.stopLog();
 	}
 
 	@FXML
@@ -253,7 +263,7 @@ public class EditModeController extends BorderPane implements Initializable, Con
 		webEngine.executeScript("editor.setValue('" + initCode + "',-1)");
 		if(!webView.isVisible())
 			webView.setVisible(true);
-		leftStatus3.setText(curcsName);
+		curcsName.set("UTF-8");
 	}
 
 	@FXML
@@ -270,7 +280,7 @@ public class EditModeController extends BorderPane implements Initializable, Con
 				if (file == null) return;
 				currentPath = file.toPath();
 			}
-			BufferedWriter writer = Files.newBufferedWriter(currentPath,Charset.forName(curcsName));
+			BufferedWriter writer = Files.newBufferedWriter(currentPath,Charset.forName(curcsName.get()));
 			String code = (String)webEngine.executeScript("editor.getValue()");
 			code = code.replaceAll("\n",System.lineSeparator());
 			writer.write(code);
@@ -292,7 +302,7 @@ public class EditModeController extends BorderPane implements Initializable, Con
 			File file = fileChooser.showSaveDialog(root.getParent().getScene().getWindow());
 			if (file == null) return;
 			currentPath = file.toPath();
-			BufferedWriter writer = Files.newBufferedWriter(currentPath,Charset.forName(curcsName));
+			BufferedWriter writer = Files.newBufferedWriter(currentPath,Charset.forName(curcsName.get()));
 			String code = (String)webEngine.executeScript("editor.getValue()");
 			code = code.replaceAll("\n",System.lineSeparator());
 			writer.write(code);
@@ -350,7 +360,7 @@ public class EditModeController extends BorderPane implements Initializable, Con
 
 	@FXML
 	void assembleAllAction(ActionEvent event) {
-	 sc.setScreen(EditModeScene.DEBUG);
+		sc.setScreen(EditModeScene.DEBUG);
 	}
 
 	@FXML
@@ -388,7 +398,11 @@ public class EditModeController extends BorderPane implements Initializable, Con
 
 	@FXML
 	void exploreAction(ActionEvent event) {
-
+		if(masterDetailPane.isShowDetailNode()) {
+			masterDetailPane.setShowDetailNode(false);
+		}else{
+			masterDetailPane.setShowDetailNode(true);
+		}
 	}
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -403,11 +417,8 @@ public class EditModeController extends BorderPane implements Initializable, Con
 		assert root != null : "fx:id=\"root\" was not injected: check your FXML file 'EditScene.fxml'.";
 		assert helpMenuItem != null : "fx:id=\"helpMenuItem\" was not injected: check your FXML file 'EditScene.fxml'.";
 		assert exAssembleButton != null : "fx:id=\"exAssembleButton\" was not injected: check your FXML file 'EditScene.fxml'.";
-		assert leftStatus3 != null : "fx:id=\"leftStatus3\" was not injected: check your FXML file 'EditScene.fxml'.";
 		assert centerPane != null : "fx:id=\"centerPane\" was not injected: check your FXML file 'EditScene.fxml'.";
-		assert leftStatus1 != null : "fx:id=\"leftStatus1\" was not injected: check your FXML file 'EditScene.fxml'.";
 		assert fileMenu != null : "fx:id=\"fileMenu\" was not injected: check your FXML file 'EditScene.fxml'.";
-		assert leftStatus2 != null : "fx:id=\"leftStatus2\" was not injected: check your FXML file 'EditScene.fxml'.";
 		assert saveAsMenuItem != null : "fx:id=\"saveAsMenuItem\" was not injected: check your FXML file 'EditScene.fxml'.";
 		assert assembleButton != null : "fx:id=\"assembleButton\" was not injected: check your FXML file 'EditScene.fxml'.";
 		assert setLoaderMenuItem != null : "fx:id=\"setLoaderMenuItem\" was not injected: check your FXML file 'EditScene.fxml'.";
@@ -430,32 +441,59 @@ public class EditModeController extends BorderPane implements Initializable, Con
 		webView = new WebView();
 		webEngine = webView.getEngine();
 		webEngine.load(getClass().getResource("/conf/ace/Ace.html").toExternalForm());
-		//webView.setMaxHeight(500);
-		/*centerPane.maxHeightProperty().bind(webView.heightProperty());
-		centerPane.maxWidthProperty().bind(webView.widthProperty());*/
-		webView.maxHeightProperty().bind(centerPane.heightProperty());
-		webView.maxWidthProperty().bind(centerPane.widthProperty());
-		webView.prefWidthProperty().bind(centerPane.widthProperty());
-		webView.prefHeightProperty().bind(centerPane.heightProperty());
-		centerPane.getChildren().add(webView);
+
+		editorPane = new MasterDetailPane(Side.BOTTOM);
+		editorPane.setMasterNode(webView);
+		editorPane.setShowDetailNode(false);
+
+		masterDetailPane = new MasterDetailPane(Side.LEFT);
+		masterDetailPane.setAnimated(true);
+		masterDetailPane.setShowDetailNode(false);
+		masterDetailPane.setMasterNode(editorPane);
+
+		centerPane.getChildren().add(masterDetailPane);
+
 		webView.setVisible(false);
 		webEngine.setJavaScriptEnabled(true);
 		webEngine.getLoadWorker().stateProperty().addListener(
 				(ObservableValue<? extends State> p, State oldState, State newState) -> {
-			if (newState == Worker.State.SUCCEEDED) {
-				JSObject win = (JSObject) webEngine.executeScript("window");
-				win.setMember("java", new Object() {
-					public void paste() {
-						String content = (String) Clipboard.getSystemClipboard().getContent(DataFormat.PLAIN_TEXT);
-						if (content != null) {
-							webEngine.executeScript(" pasteContent(\"" + content.replace("\n", "\\n") + "\") ");
-						}
+					if (newState == Worker.State.SUCCEEDED) {
+						JSObject win = (JSObject) webEngine.executeScript("window");
+						win.setMember("java", new Object() {
+							public void paste() {
+								String content = (String) Clipboard.getSystemClipboard().getContent(DataFormat.PLAIN_TEXT);
+								if (content != null) {
+									webEngine.executeScript(" pasteContent(\"" + content.replace("\n", "\\n") + "\") ");
+								}
+							}
+						});
 					}
 				});
-			}
-		});
 		initShortCut();
-		popOverCreator = new PopOverCreator(webView);
+
+		statusBar = new StatusBar();
+		root.setBottom(statusBar);
+		Button rightB2 = new Button("E");
+		rightB2.setBackground(new Background(new BackgroundFill(Color.ORANGE,
+				new CornerRadii(2), new Insets(4))));
+		Label rightL1 = new Label();
+		rightL1.textProperty().bind(curcsName);
+		statusBar.getRightItems().addAll(rightL1, new Separator(Orientation.VERTICAL),rightB2);
+
+		errView = new SideNode("ERROR/WARNING VIEW",editorPane);
+		errView.setStyle("-fx-background-color: rgba(255,255,0,.25);");
+		rightB2.setOnAction(e -> {
+					if (editorPane.isShowDetailNode()) {
+						editorPane.setShowDetailNode(false);
+					} else {
+						editorPane.setShowDetailNode(true);
+					}
+				}
+		);
+		statusBar.textProperty().set("CASL2プログラミング画面");
+	}
+	private void initStatusBar(){
+
 	}
 	private void initShortCut() {
 		final KeyCombination saveSC = new KeyCodeCombination(KeyCode.S,
@@ -482,11 +520,15 @@ public class EditModeController extends BorderPane implements Initializable, Con
 
 	private ObservableList<String> editorCodes;
 	private Path currentPath;
-	private String curcsName = "SHIFT-JIS";
+	private SimpleStringProperty curcsName = new SimpleStringProperty("SHIFT-JIS");
 	private WebView webView;
 	private WebEngine webEngine;
-	PopOverCreator popOverCreator;
-
+	//PopOverCreator popOverCreator;
+	private MasterDetailPane masterDetailPane;
+	private MasterDetailPane editorPane;
+	private SideNode errView;
+	private StatusBar statusBar;
+	private String modestr = "CASL2プログラミング画面";
 	private String initCode = "TEST	START"+System.lineSeparator()+"	RET"+System.lineSeparator()+"	END";
 
 	@Override
@@ -500,22 +542,14 @@ public class EditModeController extends BorderPane implements Initializable, Con
 	public void setScreenParent(ScreensController<EditModeScene> sc) {
 		this.sc = sc;
 	}
-Stage stage;
+	Stage stage;
 	@Override
 	public void setStage(Stage stage) {
 		this.stage = stage;
 	}
 
-
-	private void initOther(){
-		leftStatus1.setText("CASL2プログラミング画面");
-		//editorTabPane.setDisable(true);
-		//consolePane.setDisable(true);
-		//fileTreeView.setDisable(true);
-
-	}
-
 	public void setCOEC(DebugModeController COEC) {
 		this.coec = COEC;
 	}
+
 }

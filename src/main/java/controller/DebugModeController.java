@@ -1,10 +1,16 @@
 package controller;
 
 import java.net.URL;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 
+import controller.debugger.VisL1SceneController;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
@@ -13,7 +19,9 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitMenuButton;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class DebugModeController extends BorderPane implements Initializable,Threadable, Controllable<EditModeScene> {
@@ -112,7 +120,7 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 	private Button stopButton;
 
 	@FXML
-	private Group debugSceneContainer;
+	private StackPane debugSceneContainer;
 
 	@FXML
 	private MenuItem setStopStatementMenuItem;
@@ -184,13 +192,43 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 	private NodeController<DebugModeScene> scDMC;
 	private EditModeController caec;
 	private ExecutorService service;
+	private Map<DebugModeScene, FXMLLoader> fxmlLoaders = new EnumMap<>(DebugModeScene.class);
 
+	//FIXME
 	@Override
 	public void setExecutorService(ExecutorService service) {
 		this.service = service;
+		scDMC = new NodeController<>(DebugModeScene.class);
+		for(DebugModeScene d:DebugModeScene.values()){
+			fxmlLoaders.put(d, scDMC.loadScreen(d));
+		}
+		scDMC.setScreen(DebugModeScene.VL1);
+		debugSceneContainer.getChildren().addAll(scDMC);
+
+		stage.heightProperty().addListener(e -> {
+			scDMC.prefHeightProperty().unbind();
+			autosize();
+			scDMC.prefHeightProperty().bind(stage.heightProperty());
+		});
+		stage.widthProperty().addListener(e -> {
+			scDMC.prefWidthProperty().unbind();
+			autosize();
+			scDMC.prefWidthProperty().bind(stage.widthProperty());
+		});
+		showCL1SButton.setOnAction(e->scDMC.setScreen(DebugModeScene.VL1));
+		showCL2SButton.setOnAction(e->scDMC.setScreen(DebugModeScene.VL2));
+		showDISButton.setOnAction(e->scDMC.setScreen(DebugModeScene.SETTING));
+		showLogSButton.setOnAction(e->scDMC.setScreen(DebugModeScene.LOG));
+		showLoadSButton.setOnAction(e->scDMC.setScreen(DebugModeScene.LOAD));
 //		initEditor();
 //		fileTreeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 //		leftStatus1.textProperty().bind(activeFilePath);
+	}
+	public void setDisableButs(boolean value){
+		showCL2SButton.setDisable(value);
+		showDISButton.setDisable(value);
+		showLoadSButton.setDisable(value);
+		showLogSButton.setDisable(value);
 	}
 
 	@Override
@@ -208,17 +246,10 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 	}
 
 	public void setEditMode() {
-		scDMC = new NodeController<>(DebugModeScene.class,stage);
-		for(DebugModeScene d:DebugModeScene.values()){
-			scDMC.loadScreen(d);
-		}
 		scDMC.setScreen(DebugModeScene.VL1);
-		debugSceneContainer.getChildren().addAll(scDMC);
-		showCL1SButton.setOnAction(e->scDMC.setScreen(DebugModeScene.VL1));
-		showCL2SButton.setOnAction(e->scDMC.setScreen(DebugModeScene.VL2));
-		showDISButton.setOnAction(e->scDMC.setScreen(DebugModeScene.SETTING));
-		showLogSButton.setOnAction(e->scDMC.setScreen(DebugModeScene.LOG));
-		showLoadSButton.setOnAction(e->scDMC.setScreen(DebugModeScene.LOAD));
+		setDisableButs(false);
+		VisL1SceneController c = fxmlLoaders.get(DebugModeScene.VL1).getController();
+		//c.setEditMode();
 	}
 	@FXML
 	void gotoHomeAction(javafx.event.ActionEvent event) {
