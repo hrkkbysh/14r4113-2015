@@ -22,7 +22,6 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
@@ -35,12 +34,10 @@ import javafx.stage.Window;
 import org.controlsfx.control.MasterDetailPane;
 import org.controlsfx.control.StatusBar;
 import org.controlsfx.glyphfont.FontAwesome;
-import org.controlsfx.glyphfont.Glyph;
-import org.controlsfx.glyphfont.GlyphFont;
-import org.controlsfx.glyphfont.GlyphFontRegistry;
 import uicomponent.SideNode;
 import util.DetectUtils;
 import netscape.javascript.JSObject;
+import static controller.GraphicCreator.*;
 
 public class EditModeController extends BorderPane implements Initializable, Controllable<EditModeScene>,Threadable{
 
@@ -209,6 +206,7 @@ public class EditModeController extends BorderPane implements Initializable, Con
 			if(!parser.hasError()){
 				errView.getErrorLog().appendText("コンパイル完了");
 				sc.setScreen(EditModeScene.DEBUG);
+				coec.setSimulateMode();
 			}
 
 		} catch (IOException e) {
@@ -246,6 +244,7 @@ public class EditModeController extends BorderPane implements Initializable, Con
 		} catch (IOException e) {
 			e.printStackTrace();
 		}*/
+		coec.setSimulateMode();
 		sc.setScreen(EditModeScene.DEBUG);
 	}
 
@@ -377,7 +376,7 @@ public class EditModeController extends BorderPane implements Initializable, Con
 		for(MacroInstruction oi:MacroInstruction.values()){
 			System.out.println("{\"マクロ命令\": \""+oi.toString()+"\"},");
 		}
-		for(Comet2Register oi:Comet2Register.values()){
+		for(RegMember oi:RegMember.values()){
 			System.out.println("{\"汎用レジスタ\": \""+oi.toString()+"\"},");
 		}*/
 		System.out.print("]");
@@ -391,7 +390,6 @@ public class EditModeController extends BorderPane implements Initializable, Con
 			masterDetailPane.setShowDetailNode(true);
 		}
 	}
-	private GlyphFont fontAwesome = GlyphFontRegistry.font("FontAwesome");
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		assert openRecentMenu != null : "fx:id=\"openRecentMenu\" was not injected: check your FXML file 'EditScene.fxml'.";
@@ -426,35 +424,35 @@ public class EditModeController extends BorderPane implements Initializable, Con
 		assert xRefButton != null : "fx:id=\"xRefButton\" was not injected: check your FXML file 'EditScene.fxml'.";
 		assert undoMenuItem != null : "fx:id=\"undoMenuItem\" was not injected: check your FXML file 'EditScene.fxml'.";
 
-		exploreButton.setGraphic(createAweSome(FontAwesome.Glyph.FOLDER_ALT));
-		assembleButton.setGraphic(createAweSome(FontAwesome.Glyph.BUG));
-		exAssembleButton.setGraphic(createAweSome(FontAwesome.Glyph.BUG).color(Color.BLUE));
-		xRefButton.setGraphic(createAweSome(FontAwesome.Glyph.BOOK));
-		showSetVButton.setGraphic(createAweSome(FontAwesome.Glyph.COGS));
-		gotoHomeButton.setGraphic(createAweSome(FontAwesome.Glyph.HOME));
+		exploreButton.setGraphic(createEffectIcon(FontAwesome.Glyph.FOLDER_ALT));
+		assembleButton.setGraphic(createEffectIcon(FontAwesome.Glyph.BUG));
+		exAssembleButton.setGraphic(createEffectIcon(FontAwesome.Glyph.BUG).color(Color.BLUE));
+		xRefButton.setGraphic(createEffectIcon(FontAwesome.Glyph.BOOK));
+		showSetVButton.setGraphic(createEffectIcon(FontAwesome.Glyph.COGS));
+		gotoHomeButton.setGraphic(createEffectIcon(FontAwesome.Glyph.HOME));
 
-		newMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.FILE_ALT));
-		openMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.FOLDER_OPEN_ALT));
-		saveMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.SAVE));
-		saveAsMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.SAVE).color(Color.ALICEBLUE));
+		newMenuItem.setGraphic(createEffectIcon(FontAwesome.Glyph.FILE_ALT));
+		openMenuItem.setGraphic(createEffectIcon(FontAwesome.Glyph.FOLDER_OPEN_ALT));
+		saveMenuItem.setGraphic(createEffectIcon(FontAwesome.Glyph.SAVE));
+		saveAsMenuItem.setGraphic(createIcon(FontAwesome.Glyph.SAVE).color(Color.ALICEBLUE));
 
-		undoMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.ROTATE_LEFT));
-		redoMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.ROTATE_RIGHT));
-		cutMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.CUT));
-		copyMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.COPY));
-		pasteMenuItem.setGraphic((createAweSome(FontAwesome.Glyph.PASTE)));
-		//selectAllMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.SELECT_ALL));
-		toggleCommentMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.COMMENTS));
-		prettyPrintMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.INDENT));
+		undoMenuItem.setGraphic(createEffectIcon(FontAwesome.Glyph.ROTATE_LEFT));
+		redoMenuItem.setGraphic(createEffectIcon(FontAwesome.Glyph.ROTATE_RIGHT));
+		cutMenuItem.setGraphic(createEffectIcon(FontAwesome.Glyph.CUT));
+		copyMenuItem.setGraphic(createEffectIcon(FontAwesome.Glyph.COPY));
+		pasteMenuItem.setGraphic(createEffectIcon(FontAwesome.Glyph.PASTE));
+		//selectAllMenuItem.setGraphic(createEffectIcon(FontAwesome.Glyph.SELECT_ALL));
+		toggleCommentMenuItem.setGraphic(createEffectIcon(FontAwesome.Glyph.COMMENTS));
+		prettyPrintMenuItem.setGraphic(createEffectIcon(FontAwesome.Glyph.INDENT));
 
-		assembleMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.BUG));
-		exAssembleMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.BUG).color(Color.BLUE));
-		xRefMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.BOOK));
+		assembleMenuItem.setGraphic(createEffectIcon(FontAwesome.Glyph.BUG));
+		exAssembleMenuItem.setGraphic(createEffectIcon(FontAwesome.Glyph.BUG).color(Color.BLUE));
+		xRefMenuItem.setGraphic(createEffectIcon(FontAwesome.Glyph.BOOK));
 
-		setEditorMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.COGS).color(Color.ALICEBLUE));
-		setLoaderMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.COGS));
+		setEditorMenuItem.setGraphic(createEffectIcon(FontAwesome.Glyph.COGS).color(Color.ALICEBLUE));
+		setLoaderMenuItem.setGraphic(createEffectIcon(FontAwesome.Glyph.COGS));
 
-		helpMenuItem.setGraphic(createAweSome(FontAwesome.Glyph.QUESTION_CIRCLE));
+		helpMenuItem.setGraphic(createEffectIcon(FontAwesome.Glyph.QUESTION_CIRCLE));
 
 		webView = new WebView();
 		webEngine = webView.getEngine();
@@ -485,21 +483,24 @@ public class EditModeController extends BorderPane implements Initializable, Con
 								}
 							}
 						});
+						win.setMember("java", new Object() {
+							public void showBPShene() {
+								System.out.println("gutter clicked!!");
+							}
+						});
 					}
 				});
 		initShortCut();
 
 		statusBar = new StatusBar();
 		root.setBottom(statusBar);
-		Button rightB2 = new Button("E");
-		rightB2.setBackground(new Background(new BackgroundFill(Color.ORANGE,
-				new CornerRadii(2), new Insets(4))));
+		Button rightB2 = new Button("",createEffectIcon(FontAwesome.Glyph.INFO));
 		Label rightL1 = new Label();
+		rightL1.setPadding(new Insets(4.0));
 		rightL1.textProperty().bind(curcsName);
 		statusBar.getRightItems().addAll(rightL1, new Separator(Orientation.VERTICAL),rightB2);
 
-		errView = new SideNode("ERROR/WARNING VIEW",editorPane);
-		errView.setStyle("-fx-background-color: rgba(255,255,0,.25);");
+		errView = new SideNode(" Information View",editorPane);
 		rightB2.setOnAction(e -> {
 					if (editorPane.isShowDetailNode()) {
 						editorPane.setShowDetailNode(false);
@@ -511,9 +512,6 @@ public class EditModeController extends BorderPane implements Initializable, Con
 		statusBar.textProperty().set("CASL2プログラミング画面");
 	}
 	private void initStatusBar(){
-	}
-	private Glyph createAweSome(FontAwesome.Glyph g){
-		return fontAwesome.create(g).useGradientEffect().useHoverEffect();
 	}
 	private void initShortCut() {
 		setEditorMenuItem.setOnAction(e->webEngine.executeScript("showSetMenu()"));

@@ -14,10 +14,10 @@
    <children>
       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
          <children>
-            <Rectangle arcHeight="5.0" arcWidth="5.0" height="430.0" layoutX="650.0" layoutY="70.0" stroke="BLACK" strokeType="INSIDE" width="220.0" />
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="LIGHTGRAY" height="430.0" layoutX="650.0" layoutY="70.0" stroke="BLACK" strokeType="INSIDE" width="220.0" />
             <Group>
                <children>
-                  <Rectangle arcHeight="5.0" arcWidth="5.0" height="430.0" layoutX="15.0" layoutY="70.0" stroke="BLACK" strokeType="INSIDE" width="435.0" />
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="LIGHTGRAY" height="430.0" layoutX="15.0" layoutY="70.0" stroke="BLACK" strokeType="INSIDE" width="435.0" />
                   <Group>
                      <children>
                         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="32.0" layoutX="20.0" layoutY="80.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
@@ -170,11 +170,6 @@
                   <Label layoutX="79.0" layoutY="452.0" text="0" />
                   <Label layoutX="106.0" layoutY="452.0" text="0" />
                   <Label layoutX="133.0" layoutY="452.0" text="0" />
-                  <ImageView fitHeight="30.0" fitWidth="30.0" layoutX="209.0" layoutY="467.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../1444482146_clock.png" />
-                     </image>
-                  </ImageView>
                   <Label layoutX="271.0" layoutY="452.0" text="Controller" />
                   <Label layoutX="277.0" layoutY="474.0" text="State:" />
                   <Label layoutX="322.0" layoutY="474.0" prefHeight="16.0" prefWidth="87.0" text="Fetch" />

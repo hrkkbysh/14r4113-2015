@@ -72,7 +72,7 @@
                         </MenuItem>
                         <MenuItem fx:id="pasteMenuItem" mnemonicParsing="false" onAction="#pasteAction" text="貼り付け">
                            <accelerator>
-                              <KeyCodeCombination alt="UP" code="P" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                              <KeyCodeCombination alt="UP" code="V" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                            </accelerator>
                         </MenuItem>
                         <MenuItem fx:id="selectAllMenuItem" mnemonicParsing="false" onAction="#selectAllAction" text="全て選択">
@@ -83,7 +83,7 @@
                   <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem fx:id="toggleCommentMenuItem" mnemonicParsing="false" onAction="#toggleCommentAction" text="コメントの切り替え">
                            <accelerator>
-                              <KeyCodeCombination alt="UP" code="K" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                              <KeyCodeCombination alt="UP" code="SLASH" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                            </accelerator>
                         </MenuItem>
                         <MenuItem fx:id="prettyPrintMenuItem" mnemonicParsing="false" onAction="#prettyPrintAction" text="プログラム整形">
@@ -104,7 +104,7 @@
                               <KeyCodeCombination alt="UP" code="F9" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
                            </accelerator></MenuItem>
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" onAction="#xRefAction"  text="クロスリファレンス" fx:id="xRefMenuItem">
+                        <MenuItem mnemonicParsing="false" onAction="#xRefAction" text="クロスリファレンス" fx:id="xRefMenuItem">
                            <accelerator>
                               <KeyCodeCombination alt="UP" code="X" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
                            </accelerator></MenuItem>
@@ -146,12 +146,12 @@
             </Button>
             <Button fx:id="assembleButton" layoutX="124.0" layoutY="7.0" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" onAction="#assembleAction" prefHeight="35.0" prefWidth="34.0">
                <tooltip>
-                  <Tooltip text="現在表示しているCASL2ファイルをコンパイルします。" />
+                  <Tooltip text="現在表示しているCASL2ファイルを通常アセンブラでコンパイルします。" />
                </tooltip>
             </Button>
             <Button fx:id="exAssembleButton" layoutX="10.0" layoutY="166.0" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" onAction="#exAssembleAction" prefHeight="35.0" prefWidth="34.0">
                <tooltip>
-                  <Tooltip text="現在表示しているCASL2プログラムをコンパイルします。" />
+                  <Tooltip text="現在表示しているCASL2プログラムを拡張アセンブラでコンパイルします。" />
                </tooltip>
             </Button>
             <Button layoutX="770.0" layoutY="7.0" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" onAction="#xRefAction" prefHeight="35.0" prefWidth="34.0" fx:id="xRefButton">

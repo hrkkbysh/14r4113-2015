@@ -6,7 +6,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="root" maxHeight="200.0" maxWidth="400.0" minHeight="200.0" minWidth="400.0" prefHeight="200.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.RootController">
+<AnchorPane maxHeight="200.0" maxWidth="400.0" minHeight="200.0" minWidth="400.0" prefHeight="200.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.RootController">
    <children>
        <GridPane maxHeight="200.0" maxWidth="400.0" minHeight="200.0" minWidth="400.0" prefHeight="200.0" prefWidth="400.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
            <columnConstraints>
@@ -22,28 +22,12 @@
           <children>
               <AnchorPane>
                  <children>
-                     <Button alignment="BOTTOM_CENTER" contentDisplay="TOP" graphicTextGap="10.0" mnemonicParsing="false" onAction="#gotoCasl2EditMode" prefHeight="200.0" prefWidth="207.0" text="アセンブリプログラミング&#10;&#10;" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-                         <graphic>
-                             <ImageView pickOnBounds="true" preserveRatio="true">
-                                <image>
-                                    <Image url="@../1444519438_document_text.png" />
-                                </image>
-                             </ImageView>
-                         </graphic>
-                     </Button>
+                     <Button fx:id="asmButton" alignment="BOTTOM_CENTER" contentDisplay="TOP" graphicTextGap="10.0" mnemonicParsing="false" prefHeight="200.0" prefWidth="200.0" text="&#10;" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
                  </children>
               </AnchorPane>
               <AnchorPane GridPane.columnIndex="1">
                  <children>
-                     <Button alignment="BOTTOM_CENTER" contentDisplay="TOP" graphicTextGap="10.0" mnemonicParsing="false" onAction="#gotoComet2EditMode" prefHeight="200.0" prefWidth="200.0" text="機械語プログラミング&#10;            " AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.columnIndex="2">
-                         <graphic>
-                             <ImageView pickOnBounds="true" preserveRatio="true">
-                                <image>
-                                    <Image url="@../1444519116_Device_and_Hardware.png" />
-                                </image>
-                             </ImageView>
-                         </graphic>
-                     </Button>
+                     <Button fx:id="objButton" alignment="BOTTOM_CENTER" contentDisplay="TOP" graphicTextGap="10.0" mnemonicParsing="false" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.columnIndex="2" />
                  </children>
               </AnchorPane>
           </children>

@@ -3,6 +3,7 @@
     <words>
       <w>assemblerinst</w>
       <w>casl</w>
+      <w>coec</w>
       <w>datas</w>
       <w>haruki</w>
       <w>imtoken</w>
@@ -13,6 +14,8 @@
       <w>peekc</w>
       <w>rpop</w>
       <w>rpush</w>
+      <w>runto</w>
+      <w>sbot</w>
       <w>sval</w>
       <w>threadable</w>
     </words>

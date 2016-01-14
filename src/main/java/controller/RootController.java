@@ -3,50 +3,51 @@ package controller;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.control.Button;
 import javafx.stage.Stage;
+import org.controlsfx.glyphfont.FontAwesome;
 
+import static controller.GraphicCreator.*;
 
-public class RootController extends AnchorPane implements Initializable, Controllable<EditModeScene> {
-
-	@FXML // ResourceBundle that was given to the FXMLLoader
+public class RootController implements Initializable, Controllable<EditModeScene> {
+	@FXML
 	private ResourceBundle resources;
 
-	@FXML // URL location of the FXML file that was given to the FXMLLoader
+	@FXML
 	private URL location;
 
-	@FXML // fx:id="root"
-	private AnchorPane root; // Value injected by FXMLLoader
+	@FXML
+	private Button objButton;
+
+	@FXML
+	private Button asmButton;
+
+	@Override // This method is called by the FXMLLoader when initialization is complete
+	public void initialize(URL location, ResourceBundle resources) {
+		assert objButton != null : "fx:id=\"objButton\" was not injected: check your FXML file 'RootScene.fxml'.";
+		assert asmButton != null : "fx:id=\"asmButton\" was not injected: check your FXML file 'RootScene.fxml'.";
+
+		asmButton.setText("アセンブリプログラミング");
+		objButton.setText("機械語プログラミング");
+
+		asmButton.setGraphic(createEffectIcon(FontAwesome.Glyph.FILE_TEXT_ALT).size(150.0));
+		objButton.setGraphic(createEffectIcon(FontAwesome.Glyph.LAPTOP).size(150.0));
+		asmButton.setOnAction(e->gotoCasl2EditMode());
+		objButton.setOnAction(e->gotoComet2EditMode());
+
+	}
+
+	private ScreensController<EditModeScene> screenPage;
+	private Stage stage;
 	private DebugModeController coec;
-
-	@FXML
-	void gotoCasl2EditMode(ActionEvent event) {
-		stage.setResizable(true);
-		screenPage.setScreen(EditModeScene.CASL2_EDIT);
-	}
-
-	@FXML
-	void gotoComet2EditMode(ActionEvent event) {
-		coec.setEditMode();
-		stage.setResizable(true);
-		screenPage.setScreen(EditModeScene.DEBUG);
-	}
 
 	@Override
 	public void setScreenParent(ScreensController<EditModeScene> screenPage) {
 		this.screenPage = screenPage;
 	}
 
-	@Override // This method is called by the FXMLLoader when initialization is complete
-	public void initialize(URL location, ResourceBundle resources) {
-		assert root != null : "fx:id=\"root\" was not injected: check your FXML file 'Root.fxml'.";
-	}
-
-	private ScreensController<EditModeScene> screenPage;
-	private Stage stage;
 
 	public void setStage(Stage stage) {
 		this.stage = stage;
@@ -54,5 +55,16 @@ public class RootController extends AnchorPane implements Initializable, Control
 
 	public void setCOEC(DebugModeController COEC) {
 		this.coec = COEC;
+	}
+
+	void gotoCasl2EditMode() {
+		stage.setResizable(true);
+		screenPage.setScreen(EditModeScene.CASL2_EDIT);
+	}
+
+	void gotoComet2EditMode() {
+		coec.setEditMode();
+		stage.setResizable(true);
+		screenPage.setScreen(EditModeScene.DEBUG);
 	}
 }

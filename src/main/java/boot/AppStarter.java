@@ -1,5 +1,6 @@
 package boot;
 
+import java.util.BitSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -40,6 +41,10 @@ public class AppStarter extends Application {
 			stage.setScene(scene);
 			stage.setTitle("モード選択画面");
 			stage.show();
+			BitSet bitSet = new BitSet(5);
+			bitSet.set(1,true);
+			bitSet.set(3,true);
+			bitSet.set(4,true);
 		} catch (Exception ex) {
 			Logger.getLogger(AppStarter.class.getName()).log(Level.SEVERE, null, ex);
 		}

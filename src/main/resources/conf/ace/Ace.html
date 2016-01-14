@@ -16,36 +16,23 @@
         left: 0;
         right: 0;
         }
+        .ace_gutter-cell.ace_breakpoint{
+        width: 5px;
+        height: 5px;
+        -webkit-border-radius: 5px;/* 50%でもOK */
+        -moz-border-radius: 50%;
+        border-radius: 50%;
+        background-color: red;/* 円の色 */
+        }
     </style>
 </head>
 <body>
 <pre id="editor">
 </pre>
+<script type="text/javascript" src="extension/jquery-1.8.2.min.js"></script>
 <script src="src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 <script src="src-noconflict/ext-language_tools.js"></script>
-<script>
-    var editor = ace.edit("editor");
- var langTools = ace.require("ace/ext/language_tools");
-    editor.setTheme("ace/theme/twilight");
-    editor.session.setMode("ace/mode/casl2");
-
-    editor.setScrollSpeed(0.05);
-    document.getElementById('editor').style.fontSize='20px';
-    function pasteContent(content){
-        editor.onPaste(content);
-    }
-
-    function showSetMenu(){
-        editor.showSettingsMenu();
-    }
-    editor.setOptions({
-    enableBasicAutocompletion: true,
-    enableSnippets: true,
-    enableLiveAutocompletion: true,
-    showPrintMargin: false,
-    showInvisibles: true
-    });
-</script>
-
+<script src="extension/casl2custom.js"></script>
+<script src="extension/whitespace.js"></script>
 </body>
 </html>
