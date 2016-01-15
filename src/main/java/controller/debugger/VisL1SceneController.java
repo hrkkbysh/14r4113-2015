@@ -3,30 +3,32 @@ package controller.debugger;
 /**
  * @author 14r4113 on 2016/01/08.
  */
-
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import casl2.Casl2Lexer;
 import com.jfoenix.controls.JFXComboBox;
 import comet2casl2.MachineObserver;
 import controller.DebugModeController;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.Cursor;
 import javafx.scene.control.Label;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.*;
 import org.controlsfx.control.spreadsheet.GridBase;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 import org.controlsfx.control.spreadsheet.SpreadsheetCellType;
 import org.controlsfx.control.spreadsheet.SpreadsheetView;
 import org.controlsfx.glyphfont.FontAwesome;
+import org.controlsfx.glyphfont.Glyph;
 import org.controlsfx.glyphfont.GlyphFont;
 import org.controlsfx.glyphfont.GlyphFontRegistry;
+import javafx.scene.paint.Color;
 
 public class VisL1SceneController implements Initializable{
 
@@ -43,13 +45,16 @@ public class VisL1SceneController implements Initializable{
 	private GridPane memGrid;
 
 	@FXML
-	private GridPane memHeader;
-
-	@FXML
 	private GridPane regHeader;
 
 	@FXML
-	private AnchorPane regPane;
+	private AnchorPane otherPane;
+
+	@FXML
+	private AnchorPane memTitlePane;
+
+	@FXML
+	private AnchorPane memSelectPane;
 
 	@FXML
 	private SpreadsheetView memSheet;
@@ -57,51 +62,63 @@ public class VisL1SceneController implements Initializable{
 	@FXML
 	private SpreadsheetView regSheet;
 
+	@FXML
+	private SpreadsheetView frSheet;
+
+	@FXML
+	private AnchorPane watchSheet;
+
+	@FXML
+	private HBox memHeader;
+
 	private GlyphFont fontAwesome = GlyphFontRegistry.font("FontAwesome");
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		assert regGrid != null : "fx:id=\"regGrid\" was not injected: check your FXML file 'VisL1Scene.fxml'.";
 		assert memGrid != null : "fx:id=\"memGrid\" was not injected: check your FXML file 'VisL1Scene.fxml'.";
-		assert memHeader != null : "fx:id=\"memHeader\" was not injected: check your FXML file 'VisL1Scene.fxml'.";
 		assert regHeader != null : "fx:id=\"regHeader\" was not injected: check your FXML file 'VisL1Scene.fxml'.";
-		assert regPane != null : "fx:id=\"regPane\" was not injected: check your FXML file 'VisL1Scene.fxml'.";
-		HBox hBox1 = new HBox();
-		hBox1.getChildren().add(fontAwesome.create(FontAwesome.Glyph.TABLE).size(16.0));
+		assert memSelectPane != null : "fx:id=\"memSelectPane\" was not injected: check your FXML file 'VisL1Scene.fxml'.";
+		assert memTitlePane != null : "fx:id=\"memTitlePane\" was not injected: check your FXML file 'VisL1Scene.fxml'.";
+		assert regSheet != null : "fx:id=\"regSheet\" was not injected: check your FXML file 'VisL1Scene.fxml'.";
+		assert frSheet != null : "fx:id=\"frSheet\" was not injected: check your FXML file 'VisL1Scene.fxml'.";
+		assert memSheet!= null : "fx:id=\"memSheet\" was not injected: check your FXML file 'VisL1Scene.fxml'.";
+		assert watchSheet!= null : "fx:id=\"watchSheet\" was not injected: check your FXML file 'VisL1Scene.fxml'.";
 		Label l1 = new Label("Memory");
-		l1.setPadding(new Insets(0.0,10.0,0.0,10.0));
-		hBox1.getChildren().add(l1);
-		memGrid.add(hBox1, 0, 0);
+		l1.setPadding(new Insets(2.5,10.0,0.0,10.0));
 
 		JFXComboBox<Label> jfxCombo = new JFXComboBox<>();
-		jfxCombo.getItems().add(new Label("#1000"));
-		jfxCombo.getItems().add(new Label("#2000"));
-		jfxCombo.getItems().add(new Label("#3000"));
-		jfxCombo.getItems().add(new Label("#4000"));
+		jfxCombo.getItems().addAll(new Label("#1000"),new Label("#3000"),new Label("#5000"),
+				new Label("#7000"),new Label("#9000"),new Label("#B000"),
+				new Label("#D000"),new Label("#F000"));
 
 		jfxCombo.setEditable(true);
-		jfxCombo.setPromptText("Select Label");
-		hBox1.getChildren().add(jfxCombo);
-		//memGrid.add(new VBox(jfxCombo),1,0);
+		jfxCombo.setPromptText("Select Label or Location");
+		jfxCombo.setPrefWidth(180.0);
+		jfxCombo.setCursor(Cursor.CLOSED_HAND);
+		Glyph g = fontAwesome.create(FontAwesome.Glyph.TABLE).size(16.0);
+		g.setPadding(new Insets(0.0,0.0,10.0,0.0));
+		memHeader.getChildren().addAll(g,l1,jfxCombo);
 
 		HBox hBox2 = new HBox();
 		hBox2.getChildren().add(fontAwesome.create(FontAwesome.Glyph.TABLE).size(16.0));
 		Label l2 = new Label("Register");
 		l2.setPadding(new Insets(0.0,10.0,0.0,10.0));
 		hBox2.getChildren().add(l2);
-		regGrid.add(hBox2, 0, 0);
+		regHeader.add(hBox2, 0, 0);
 
-		int rowCount = 65535;
+		int rowCount = 65536;
 		int columnCount = 1;
 		GridBase grid = new GridBase(rowCount, columnCount);
-		grid.getRowHeaders().add("Memory");
+		grid.getColumnHeaders().add("Memory");
 		ObservableList<ObservableList<SpreadsheetCell>> rows = FXCollections.observableArrayList();
 		for (int row = 0; row < grid.getRowCount(); ++row) {
 			final ObservableList<SpreadsheetCell> list = FXCollections.observableArrayList();
 			for (int column = 0; column < grid.getColumnCount(); ++column) {
-				SpreadsheetCell c = SpreadsheetCellType.STRING.createCell(row, column, 1, 1, "?");
+				SpreadsheetCell c = SpreadsheetCellType.STRING.createCell(row, column, 1, 1, "");
+				grid.getRowHeaders().add(Integer.toString(row));
 				//これ！
-				mo.bindModel(row, c.itemProperty(),MachineObserver.Comp.MEM);
+				//mo.bindModel(row, c.itemProperty(),MachineObserver.Comp.MEM);
 				list.add(c);
 			}
 			rows.add(list);
@@ -109,43 +126,99 @@ public class VisL1SceneController implements Initializable{
 		grid.setRows(rows);
 		memSheet.setGrid(grid);
 		memSheet.setRowHeaderWidth(60);
-		memSheet.setShowColumnHeader(false);
 		memSheet.getColumns().get(0).setPrefWidth(memSheet.getWidth()-70.0);
 		memSheet.widthProperty().addListener(e->{
 			memSheet.getColumns().get(0).setPrefWidth(memSheet.getWidth()-70.0);
 		});
+
+		jfxCombo.getC3DEditor().setOnKeyTyped(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent event) {
+				/*String text = "Key Typed: " + ke.getCharacter();
+				if (ke.isAltDown()) {
+					text += " , alt down";
+				}
+				if (ke.isControlDown()) {
+					text += " , ctrl down";
+				}
+				if (ke.isMetaDown()) {
+					text += " , meta down";
+				}
+				if (ke.isShiftDown()) {
+					text += " , shift down";
+				}
+				if(ke.getCode().isWhitespaceKey()){
+					text +=", enter down";
+				}
+				System.out.println(text);*/
+				if(event.getCharacter().equals("\r")){
+					//grid.getRows().get(Integer.parseInt(jfxCombo.getC3DEditor().getText()));
+					memSheet.scrollToRow(Integer.parseInt(jfxCombo.getC3DEditor().getText()));
+				}
+			}
+		});
+
 		rowCount = 10;
 		columnCount = 2;
 		GridBase grid2 = new GridBase(rowCount, columnCount);
 		ObservableList<ObservableList<SpreadsheetCell>> rows2 = FXCollections.observableArrayList();
-		for (String aRegName : regName) {
-			grid2.getRowHeaders().add(aRegName);
-		}
-
 		for (int row = 0; row < grid2.getRowCount(); ++row) {
 			final ObservableList<SpreadsheetCell> list = FXCollections.observableArrayList();
+			grid2.getRowHeaders().add(regName[row]);
 			for (int column = 0; column < grid.getColumnCount(); ++column) {
-				SpreadsheetCell c = SpreadsheetCellType.STRING.createCell(row, column, 1, 1, "?");
-				mo.bindModel(row, c.itemProperty(), MachineObserver.Comp.REG);
+				//SpreadsheetCell c = SpreadsheetCellType.STRING.createCell(row, column, 1, 1, "?");
+				//mo.bindModel(row, c.itemProperty(), MachineObserver.Comp.REG);
 				//mo.bindRegister(row, c.itemProperty());
 				list.add(SpreadsheetCellType.STRING.createCell(row, column, 1, 1,""));
 			}
 			rows2.add(list);
 		}
-
 		grid2.setRows(rows2);
-		regSheet.setGrid(grid2);
-		regSheet.setShowColumnHeader(false);
 		regSheet.setRowHeaderWidth(60);
-		regSheet.setShowColumnHeader(false);
-		regSheet.getColumns().get(0).setPrefWidth(regSheet.getWidth()-70.0);
+		regSheet.getColumns().get(0).setPrefWidth(regSheet.getWidth()-62.0);
 		regSheet.widthProperty().addListener(e->{
-			regSheet.getColumns().get(0).setPrefWidth(regSheet.getWidth()-70.0);
+			regSheet.getColumns().get(0).setPrefWidth(regSheet.getWidth()-62.0);
 		});
+		regSheet.setGrid(grid2);
+
+		rowCount = 1;
+		columnCount = 3;
+		GridBase grid3 = new GridBase(rowCount, columnCount);
+		ObservableList<ObservableList<SpreadsheetCell>> rows3 = FXCollections.observableArrayList();
+		for(int i = 0;i<3;i++){
+			grid3.getColumnHeaders().add(frName[i]);
+		}
+		for (int row = 0; row < grid3.getRowCount(); ++row) {
+			grid3.getRowHeaders().add("FR");
+			final ObservableList<SpreadsheetCell> list = FXCollections.observableArrayList();
+			for (int column = 0; column < grid3.getColumnCount(); ++column) {
+				//SpreadsheetCell c = SpreadsheetCellType.STRING.createCell(row, column, 1, 1, "?");
+				//mo.bindModel(row, c.itemProperty(), MachineObserver.Comp.REG);
+				//mo.bindRegister(row, c.itemProperty());
+				list.add(SpreadsheetCellType.STRING.createCell(row, column, 1, 1,""));
+			}
+			rows3.add(list);
+		}
+		grid3.setRows(rows3);
+		frSheet.setRowHeaderWidth(60);
+		for(int i=0;i<3;i++){
+			frSheet.getColumns().get(i).setPrefWidth((frSheet.getWidth()-62.0)/3);
+		}
+		frSheet.widthProperty().addListener(e->{
+			frSheet.getColumns().get(0).setPrefWidth((frSheet.getWidth()-62.0)/3);
+		});
+		frSheet.widthProperty().addListener(e->{
+			frSheet.getColumns().get(1).setPrefWidth((frSheet.getWidth()-62.0)/3);
+		});
+		frSheet.widthProperty().addListener(e->{
+			frSheet.getColumns().get(2).setPrefWidth((frSheet.getWidth()-62.0)/3);
+		});
+		frSheet.setGrid(grid3);
 	}
 
 	private final String[] regName = {"PR","SP","GR0","GR1","GR2","GR3","GR4","GR5","GR6","GR7",};
 
+	private final String[] frName = {"OF","SF","ZF"};
 	private MachineObserver mo;
 	public void setRootAndInit(DebugModeController rootAndInit) {
 		this.dmc = rootAndInit;

@@ -286,7 +286,6 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 
 		stopButton.setOnAction(e->{
 			VisL1SceneController c = fxmlLoaders.get(DebugModeScene.VL1).getController();
-			c.update();
 			System.out.println("stop button clicked!");
 		});
 	}

@@ -19,11 +19,11 @@ public class MacroAssembler {
 	private boolean err;
 	private List<MacroData> macroInst = new ArrayList<>();
 
-	public MacroAssembler(BufferedReader reader) {
+	public MacroAssembler(Path path,String charset) {
 		symbolTable = new SymbolTable();
 		symbolTable.setSymbolTable(AsmMode.EXTEND);
 		errorTable = new ErrorTable();
-		lexer = new Casl2MacroLexer(reader, symbolTable, errorTable);
+		lexer = new Casl2MacroLexer(path,charset, symbolTable, errorTable);
 	}
 
 	public boolean checkMacro(Path path) {
