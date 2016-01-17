@@ -29,7 +29,7 @@
                         <MenuItem fx:id="breakSubMI" mnemonicParsing="false" text="サブルーチンの入口でブレーク" />
                         </items>
                      </Menu>
-                     <Menu fx:id="settingMenu" mnemonicParsing="false" text="ウィンドウ">
+                     <Menu fx:id="windowMenu" mnemonicParsing="false" text="ウィンドウ">
                         <items>
                             <MenuItem fx:id="varWindowMI" mnemonicParsing="false" text="ラベル" />
                         <MenuItem fx:id="traceVarWindowMI" mnemonicParsing="false" text="トレース変数" />

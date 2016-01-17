@@ -12,10 +12,10 @@ public class Comet2BG {
 	private Comet2InstructionTable insttable;
 	private SymbolTable symbolTable;
 	private ErrorTable errorTable;
-	private AddressSpace addressSpace = new AddressSpace(65535,0xCCCC);
-	private List<ImmediateData> imDatas = new ArrayList<>();
-	private AtomicInteger lc = new AtomicInteger(0x1000);
-	private int startAdr = 0;
+	private AddressSpace addressSpace;
+	private List<ImmediateData> imDatas;
+	private AtomicInteger lc;
+	private int startAdr;
 	private int endAdr;
 	private String programName;
 
@@ -23,6 +23,9 @@ public class Comet2BG {
 		this.insttable = instTable;
 		this.symbolTable = symbolTable;
 		this.errorTable = errorTable;
+		addressSpace = new AddressSpace(65535,0xCCCC);
+		imDatas = new ArrayList<>();
+		lc = new AtomicInteger(0x1000);
 		init();
 	}
 
@@ -34,17 +37,19 @@ public class Comet2BG {
 		init();
 	}
 
+	public Comet2BG(MachineObserver machineObserver) {
+
+	}
+
 	public void init(){
-		addressSpace.clear();
-		imDatas.clear();
+		addressSpace = new AddressSpace(65535,0xCCCC);
+		imDatas = new ArrayList<>();
+		lc = new AtomicInteger(0x1000);
 	}
 
 	/*  */
 	public void setStartAdr(int startAdr) {
 		this.startAdr = startAdr;
-	}
-	public void setStartAdr() {
-		this.startAdr = lc.get();
 	}
 	/*  */
 	public void setEndAdr() {

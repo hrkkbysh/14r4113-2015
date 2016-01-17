@@ -1,9 +1,5 @@
 package comet2casl2;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,167 +7,161 @@ import java.util.List;
 /**
  * @author Haruki on 2015/12/12.
  */
+
 public class MacroAssembler {
 	private Casl2MacroLexer lexer;
 	private SymbolTable symbolTable;
 	private ErrorTable errorTable;
 	private Casl2Symbol token;
-	private boolean err;
 	private List<MacroData> macroInst = new ArrayList<>();
+	int macroSize;
+
 
 	public MacroAssembler(Path path,String charset) {
 		symbolTable = new SymbolTable();
 		symbolTable.setSymbolTable(AsmMode.EXTEND);
 		errorTable = new ErrorTable();
-		lexer = new Casl2MacroLexer(path,charset, symbolTable, errorTable);
+		lexer = new Casl2MacroLexer(path,charset, errorTable);
 	}
 
-	public boolean checkMacro(Path path) {
-		err = false;
-		token = lexer.nextToken();
-		for (skipToNext(); token == Casl2Symbol.MACRO;skipToNext()){
-			token = lexer.nextToken();
-			if(token == Casl2Symbol.EOL){
-				token = lexer.nextToken();
+	public String parse() {
+		lexer.nextToken();
+		for (nextLine(); token != Casl2Symbol.MACRO; nextLine()){
+			lexer.nextToken();
+			if(Casl2Lexer.STATE == LexerState.EOL){
+				lexer.nextToken();
 				checkHeader();
 			}else{
 				errorTable.printError(lexer.getLine(),20);
 			}
 		}
-		if(!err) {
-			StringBuilder buf = new StringBuilder();
-			lexer.saveCode(buf);
-			boolean res = insertMacroToMain();
-			if (res){
-				try {
-					BufferedWriter writer = Files.newBufferedWriter(path);
-					writer.write(lexer.getOutput().toString());
-					writer.close();
-					return true;
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
+		if(!errorTable.hasError()) {
+			macroSize = lexer.getLine();
+			lexer.saveCode();
+			return insertMacroToMain();
 		}
-		return false;
+		return null;
 	}
 
 
 	private void checkHeader() {
-		skipToNext();
-		int lblID=-1;
-		if(token == Casl2Symbol.MACRO_ARG){
-			lblID = lexer.nval;
-			token = lexer.nextToken();
-		}
-		int instID;
+		nextLine();
+		int lblID = -1;
+		lblID = checkMacroArg();
+		int instID = -1;
 		List<Integer> argIDs = new ArrayList<>();
-		switch(token) {
-			case LABEL:
-				instID = lexer.nval;
-				do {
-					token = lexer.nextToken();
-					switch (token) {
-						case MACRO_ARG:
-							argIDs.add(lexer.nval);
-							break;
-						default:
-							err = true;
-							errorTable.printError(lexer.getLine(), 21, token.toString());//invalid args
-							break;
+		for (int ms = 0; Casl2Lexer.STATE != LexerState.EOF; ) {
+			switch (ms) {
+				case -1:
+					errorTable.printError(lexer.getLine(), 21, token.toString());//invalid args
+					return;
+				case 0:
+					if (Casl2Lexer.STATE == LexerState.KEYWORD) {
+						instID = symbolTable.getLabelID();
+						lexer.nextToken();
+						ms = 1;
+						break;
+					} else {
+						//error
+						ms = -1;
+						break;
 					}
-					if (err) break;
-					token = lexer.nextToken();
-				} while (token == Casl2Symbol.COMMA);
-				if(token != Casl2Symbol.EOL){
-					errorTable.printError(lexer.getLine(),28);
-					err = true;
-				}
-				if (!err) {
-					MacroData md = new MacroData(lblID,instID,argIDs);
+				case 1:
+					int id = checkMacroArg();
+					if (id != -1) {
+						argIDs.add(id);
+						ms = 2;
+					} else {
+						errorTable.printError(lexer.getLine(), 21, token.toString());//invalid args
+						ms = -1;
+					}
+					break;
+				case 2:
+					if (Casl2Lexer.STATE == LexerState.COMMA) {
+						ms = 1;
+						break;
+					}
+					if (Casl2Lexer.STATE != LexerState.EOL) {
+						errorTable.printError(lexer.getLine(), 28);
+						ms = -1;
+						break;
+					}
+					MacroData md = new MacroData(lblID, instID, argIDs);
 					lexer.readMacroStart();
-					while(true){
-						token = lexer.nextToken();
-						switch(token){
+					while (Casl2Lexer.STATE !=LexerState.EOF) {
+						lexer.nextToken();
+						token = symbolTable.searchSymbol(lexer.getSval());
+						switch (token) {
 							case MEND:
-								token = lexer.nextToken();
-								if(token == Casl2Symbol.EOL) {
-									List<Integer> codeBlock = lexer.getCodeBlock();
-									int codeBlockSize = codeBlock.size() - 6;
-									for (int i = codeBlock.size()-1; i >= codeBlockSize; i--){
-										codeBlock.remove(i);
-									}
-									md.setMBlock(lexer.getCodeBlock());
-									lexer.stopRead();
-									macroInst.add(md);
-									symbolTable.addMacroSymbol(md.getInstID());
-								}else{
-									errorTable.printError(lexer.getLine(),22);
+								List<Integer> codeBlock = lexer.getCodeBlock();
+								int codeBlockSize = codeBlock.size() - 6;
+								for (int i = codeBlock.size() - 1; i >= codeBlockSize; i--) {
+									codeBlock.remove(i);
+								}
+								md.setMBlock(lexer.getCodeBlock());
+								lexer.stopRead();
+								macroInst.add(md);
+								symbolTable.addMacroSymbol(md.getInstID());
+								lexer.nextToken();
+								if (Casl2Lexer.STATE != LexerState.EOL){
+									errorTable.printError(lexer.getLine(), 22);
 								}
 								return;
 							case MACRO_ARG:
-								if(!argIDs.contains(lexer.nval)){
-									errorTable.printError(lexer.getLine(),23,"$"+lexer.sval);
+								if (!argIDs.contains(lexer.getNval())) {
+									errorTable.printError(lexer.getLine(), 23, "$" + lexer.getSval());
 								}
 								break;
 							case START:
 							case END:
-							case EOF:
 								lexer.stopRead();
 								md.setMBlock(lexer.getCodeBlock());
 								macroInst.add(md);
-								err =true;
-								errorTable.printError(lexer.getLine(),24);
+								errorTable.printError(lexer.getLine(), 24);
 								return;
 							default:
 								break;
 						}
 					}
-				}
-				break;
-			case NUM_CONST:
-				errorTable.printError(lexer.getLine(),25,lexer.nval);
-				break;
-			case EQUAL:
-				errorTable.printError(lexer.getLine(),25,"=");
-				break;
-			case COMMA:
-				errorTable.printError(lexer.getLine(),25,",");
-				break;
-			case STR_CONST:
-			default:
-				errorTable.printError(lexer.getLine(),25,lexer.sval);
+			}
 		}
-		err = true;
 	}
-	public boolean insertMacroToMain(){
+	public String insertMacroToMain(){
 		StringBuilder buf = lexer.getOutput();
-		token = lexer.nextToken();
-		for (skipToNext(); token != Casl2Symbol.EOF; skipToNext()) {
-			int labelid = -1;
-			switch(token){
-				case LABEL:
-					labelid = symbolTable.getLabelID();
-					token = lexer.nextToken();
-			}
-			switch (token){
-				case MACRO_INST:
-					int mid = lexer.nval;
-					for(MacroData cand :macroInst){
-						if(cand.getInstID() ==mid){
-							buf.delete(buf.length()-lexer.sval.length()-1, buf.length());
-							boolean res = insertMacroCode(labelid,cand);
-							if(!res) return false;
-							break;
+		for (nextLine(); Casl2Lexer.STATE == LexerState.EOF; nextLine()) {
+			int lblID = -1;
+			if(Casl2Lexer.STATE == LexerState.KEYWORD) {
+				token = symbolTable.searchSymbol(lexer.getSval());
+
+				switch (token) {
+					case LABEL:
+						lblID = symbolTable.getLabelID();
+						lexer.nextToken();
+						token = symbolTable.searchSymbol(lexer.getSval());
+					case MACRO_INST:
+						int mid = symbolTable.getLabelID();
+						for (MacroData cand : macroInst) {
+							if (cand.getInstID() == mid) {
+								lexer.delete(buf.length() - lexer.getSval().length() - 1, buf.length());
+								cand.setProLc(lexer.getLine(),lexer.getNest());
+								boolean res = insertMacroCode(lblID, cand);
+								if (!res){
+									cand.setProLc(lexer.getLine(),lexer.getNest());
+									return null;
+								}
+								break;
+							}
 						}
-					}
-					break;
-				default: skipToEOL();
-					break;
+						break;
+					default:
+						skipToEOL();
+						break;
+				}
+			}else{
+				skipToEOL();
 			}
 		}
-		System.out.println(buf.toString());
-		return  true;
+		return  buf.toString();
 	}
 
 	private boolean insertMacroCode(int labelID, MacroData md) {
@@ -179,29 +169,31 @@ public class MacroAssembler {
 		List<Integer> codeBlock = md.getmBlock();
 		StringBuilder sb = new StringBuilder();
 		codeBlock.forEach(sb::appendCodePoint);
-		String code = sb.toString();
+		String macro = sb.toString();
 		if(labelID!=-1){
-			CharSequence arg = "$" + symbolTable.getLabel(labelID);
-			code = code.replace(arg,lexer.sval);
+			CharSequence fromLbl = symbolTable.getLabel(md.getLblID());
+			CharSequence toLbl = symbolTable.getLabel(labelID);
+			macro = macro.replace(fromLbl + "\\.", toLbl);
+			macro = macro.replace(fromLbl, toLbl);
 		}
 		int index = 0;
-		token = lexer.nextToken();
+		lexer.nextToken();
 		for (int i : md.getArgIDs()) {
-			CharSequence arg = "$" + symbolTable.getLabel(i);
-			code = code.replace(arg,lexer.sval);
-			token = lexer.nextToken();
-			if(token == Casl2Symbol.COMMA){
-				token = lexer.nextToken();
+			CharSequence arg = symbolTable.getLabel(i);
+			macro = macro.replace(arg, lexer.getSval());
+			lexer.nextToken();
+			if(Casl2Lexer.STATE == LexerState.COMMA){
+				lexer.nextToken();
 				index++;
 			}
-			if(token == Casl2Symbol.EOL || token == Casl2Symbol.EOF) break;
+			if(Casl2Lexer.STATE == LexerState.EOL || Casl2Lexer.STATE == LexerState.EOF) break;
 		}
 		if(index!=md.getArgIDs().size()-1) {
 			errorTable.printError(lexer.getLine(), 15);
 			return false;
 		}
-		if(token == Casl2Symbol.EOL) {
-			byte[] codeBytes = code.getBytes();
+		if(Casl2Lexer.STATE == LexerState.EOL) {
+			byte[] codeBytes = macro.getBytes();
 			List<Integer> c = new ArrayList<>();
 			for (byte codeByte : codeBytes) {
 				c.add(0x00FFFF & codeByte);
@@ -209,7 +201,7 @@ public class MacroAssembler {
 			if(lexer.insertMacro(c,md.getInstID())) {
 				lexer.resumeSaveMainCode();
 			}else{
-				errorTable.printError(lexer.getLine(),27);
+				errorTable.printError(lexer.getLine(),27);//呼び出しループが発生
 				return  false;
 			}
 		}else{
@@ -221,20 +213,43 @@ public class MacroAssembler {
 
 	void skipToEOL(){
 		while(true){
-			if(token != Casl2Symbol.EOF && token != Casl2Symbol.EOL){
-				token = lexer.nextToken();
+			if(Casl2Lexer.STATE == LexerState.EOF && Casl2Lexer.STATE != LexerState.EOL){
+				lexer.nextToken();
 			}else break;
 		}
 	}
 
-	void skipToNext(){
+	void nextLine(){
 		while(true){
-			if(token == Casl2Symbol.EOL){
-				token = lexer.nextToken();
-			}else break;
+			if(Casl2Lexer.STATE == LexerState.EOL){
+				lexer.nextToken();
+			}else{
+				token = symbolTable.searchSymbol(lexer.getSval());
+				break;
+			}
 		}
 	}
 	public boolean hasError(){
 		return errorTable.hasError();
+	}
+	//helper class
+	public int checkMacroArg(){
+		if(Casl2Lexer.STATE == LexerState.DOLL){
+			lexer.nextToken();
+			switch(Casl2Lexer.STATE){
+				case NUMBER:
+					token = symbolTable.searchSymbol("$"+String.valueOf(lexer.getNval()));
+					return symbolTable.getLabelID();
+				case KEYWORD:
+					token = symbolTable.searchSymbol("$"+lexer.getSval());
+					if(token == Casl2Symbol.LABEL){
+						return symbolTable.getLabelID();
+					}else{
+						//error
+					}
+			}
+			lexer.nextToken();
+		}
+		return -1;
 	}
 }

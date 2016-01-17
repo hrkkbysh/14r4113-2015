@@ -178,16 +178,16 @@ public class MacroAssembler {
 		List<Integer> codeBlock = md.getmBlock();
 		StringBuilder sb = new StringBuilder();
 		codeBlock.forEach(sb::appendCodePoint);
-		String code = sb.toString();
+		String macro = sb.toString();
 		if(labelID!=-1){
 			CharSequence arg = "$" + symbolTable.getLabel(labelID);
-			code = code.replace(arg,lexer.getSval());
+			macro = macro.replace(arg,lexer.getSval());
 		}
 		int index = 0;
 		token = lexer.nextToken();
 		for (int i : md.getArgIDs()) {
 			CharSequence arg = "$" + symbolTable.getLabel(i);
-			code = code.replace(arg,lexer.getSval());
+			macro = macro.replace(arg,lexer.getSval());
 			token = lexer.nextToken();
 			if(token == Casl2Symbol.COMMA){
 				token = lexer.nextToken();
@@ -200,7 +200,7 @@ public class MacroAssembler {
 			return false;
 		}
 		if(token == Casl2Symbol.EOL) {
-			byte[] codeBytes = code.getBytes();
+			byte[] codeBytes = macro.getBytes();
 			List<Integer> c = new ArrayList<>();
 			for (byte codeByte : codeBytes) {
 				c.add(0x00FFFF & codeByte);

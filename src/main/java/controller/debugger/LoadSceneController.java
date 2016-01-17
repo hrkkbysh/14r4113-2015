@@ -19,7 +19,6 @@ import static controller.GraphicCreator.*;
  */
 public class LoadSceneController implements Initializable{
 
-
 	@FXML
 	private ResourceBundle resources;
 
@@ -79,7 +78,8 @@ public class LoadSceneController implements Initializable{
 		memBox.setContentDisplay(ContentDisplay.LEFT);
 	}
 
-	void setSimMode(MachineObserver b){
+	void initState(MachineObserver b){
 
 	}
+
 }

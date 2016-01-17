@@ -8,54 +8,66 @@ import java.util.List;
 public class Casl2MacroLexer extends Casl2Lexer {
 	private boolean macroSave = false;
 	private boolean mainSave = false;
-	private boolean useMacro = false;
-	List<Iterator<Integer>> insMacroCodes = new ArrayList<>();
-	List<Integer> savMacroCode = new ArrayList<>();
+	private boolean macro = false;
+	List<Iterator<Integer>> writeMacro = new ArrayList<>();
+	List<Integer> saveMacro = new ArrayList<>();
 	List<Integer> unUseMacro = new ArrayList<>();
+	StringBuilder output;
 	int mIndex;
 	int mSize=0;
-	private StringBuilder output;
 	private int macroPeekC;
 
-	public Casl2MacroLexer(Path path,String charset, SymbolTable symbolTable, ErrorTable errorTable) {
-		super(path,charset, symbolTable, errorTable);
+	public Casl2MacroLexer(Path path,String charset, ErrorTable errorTable) {
+		super(path,charset,errorTable);
 	}
-	public Casl2MacroLexer(String r, SymbolTable symbolTable, ErrorTable errorTable) {
-		super(r, symbolTable, errorTable);
+	public Casl2MacroLexer(String r, ErrorTable errorTable) {
+		super(r, errorTable);
 	}
 	@Override
 	int read(){
 		int c;
-		if(!useMacro) {
-			c = super.read();
-		}else{
-			Iterator<Integer> iterator = insMacroCodes.get(mSize);
+		if(macro){
+			Iterator<Integer> iterator = writeMacro.get(mSize);
 			if(iterator.hasNext()){
 				c = iterator.next();
 			}else{
-				insMacroCodes.remove(insMacroCodes.size()-1);
+				writeMacro.remove(writeMacro.size()-1);
 				unUseMacro.remove(unUseMacro.size()-1);
 				mSize--;
-				if(insMacroCodes.isEmpty()){
-					useMacro = false;
+				if(writeMacro.isEmpty()){
+					macro = false;
 				}
 				return this.read();
 			}
+		}else{
+			c = super.read();
 		}
 		if(macroSave){
-			savMacroCode.add(mIndex, c);
+			saveMacro.add(mIndex, c);
 			mIndex++;
 		}
 		if(mainSave){ write(c);}
 		macroPeekC = c;
 		return  c;
 	}
-
-	void write(int c){
-		if(c !=-1)
-		output.appendCodePoint(c);
+	@Override
+	protected LexerState OTHER(int c) {
+		switch(c){
+			case '.':peekc = super.read(); return STATE = LexerState.DOT;
+			case '$':peekc = super.read(); return STATE = LexerState.DOLL;
+			default:
+				return ERROR(c);
+		}
 	}
 
+	void write(int c){
+		if(c !=-1) {
+			output.append((char) c);
+		}
+	}
+	public void delete(int start,int end){
+		output.delete(start,end);
+	}
 
 	void readMacroStart(){
 		macroSave = true;
@@ -64,32 +76,32 @@ public class Casl2MacroLexer extends Casl2Lexer {
 	void stopRead(){
 		macroSave = false;
 		mIndex = 0;
-		savMacroCode = new ArrayList<>();
+		saveMacro = new ArrayList<>();
 	}
-	List<Integer> getCodeBlock(){return savMacroCode;}
+	List<Integer> getCodeBlock(){return saveMacro;}
 
 	public boolean insertMacro(List<Integer> mBlock,int mid){
 		if(unUseMacro.contains(mid)){
 			return false;
 		}else {
 			Iterator<Integer> iterator = mBlock.iterator();
-			insMacroCodes.add(iterator);
+			writeMacro.add(iterator);
 			unUseMacro.add(mid);
-			mSize = insMacroCodes.size() - 1;
-			useMacro = true;
+			mSize = writeMacro.size() - 1;
+			macro = true;
 			return true;
 		}
 	}
+	public int getNest(){
+		return writeMacro.size();
+	}
 
-	public void saveCode(StringBuilder w){
-		this.output = w;
-		output.append(super.sval);
-		output.appendCodePoint(macroPeekC);
+	public void saveCode(){
+		this.output =new StringBuilder(super.getSval());
+		output.append((char)macroPeekC);
 		mainSave = true;
 	}
-	public StringBuilder getOutput(){
-		return output;
-	}
+	public StringBuilder getOutput(){return output;}
 	public void stopSaveMainCode(){
 		mainSave = false;
 	}

@@ -2,28 +2,26 @@ package comet2casl2;
 
 import java.io.BufferedReader;
 import java.nio.file.Path;
-import java.util.List;
 
 public class Casl2Parser {
 	private Casl2Lexer lexer;
 	private Comet2BG bg;
 	private ErrorTable errorTable;
 	private SymbolTable symbolTable;
-	private Casl2Symbol token;
 	boolean er;
 
-	public Casl2Parser(Path path,String charset,AsmMode asmMode) {;
+	public Casl2Parser(Path path,String charset,AsmMode asmMode) {
 		init(asmMode);
-		lexer = new Casl2Lexer(path,charset,symbolTable,errorTable);
+		lexer = new Casl2Lexer(path,charset,errorTable);
 	}
 	public Casl2Parser(String input,AsmMode asmMode) {
 		init(asmMode);
-		lexer = new Casl2Lexer(input,symbolTable,errorTable);
+		lexer = new Casl2Lexer(input,errorTable);
 	}
 	//for simulator
 	public Casl2Parser(MachineObserver machineObserver){
 		symbolTable = MachineObserver.symTbl;
-		bg = new Comet2BG();
+		bg = new Comet2BG(machineObserver);
 	}
 
 	public void init(AsmMode asmMode){
@@ -43,239 +41,327 @@ public class Casl2Parser {
 		symbolTable.setSymbolTable(parseMode);
 	}
 
-	public void enter(Path output,String charset) {
+	public boolean decode(Path path) {
 		errorTable.clear();
-		for (token = lexer.nextToken(); token != Casl2Symbol.EOF; setNextLine()) {
-			if (token == Casl2Symbol.LABEL) {
-				bg.setProgramName(lexer.sval);
-				token = lexer.nextToken();
-				if (token == Casl2Symbol.START) {
-					token = lexer.nextToken();
-					if (token == Casl2Symbol.LABEL) {
-						bg.setStartAdr(lexer.nval);
-						token = lexer.nextToken();
-					}
-					if (token == Casl2Symbol.EOL) {
-						bg.setStartAdr();
-						content();
-						bg.genFile(output);
+		Casl2Symbol symbol;
+		lexer.nextToken();
+		for (byte ps = 0; Casl2Lexer.STATE != LexerState.EOF; ) {
+			switch (ps) {
+				case 0:
+					if (Casl2Lexer.STATE == LexerState.KEYWORD) {
+						symbol = symbolTable.searchSymbol(lexer.getSval());
+						if (symbol != Casl2Symbol.REGISTER) {
+							bg.setProgramName(lexer.getSval());
+							lexer.nextToken();
+							ps = 1;
+						}
 					} else {
-						errorTable.printError(lexer.getLine(), 4, lexer.sval); // "START命令のシンタックスエラー"
+						symbol = symbolTable.searchSymbol(lexer.getSval());
+						if (symbol == Casl2Symbol.START) {
+							errorTable.printError(lexer.getLine(), 6, lexer.getSval());// "START命令のシンタックスエラー(最初のラベルがない)"
+						} else {
+							errorTable.printError(lexer.getLine(), 4, lexer.getSval()); // "START命令のシンタックスエラー"
+						}
+						return false;
 					}
-				} else {
-					errorTable.printError(lexer.getLine(), 5, lexer.sval);//   "最初にSTART命令を記述してください"
-					//label inst....
-				}
-			} else if (token == Casl2Symbol.START){
-				errorTable.printError(lexer.getLine(), 6, lexer.sval);// "START命令のシンタックスエラー(最初のラベルがない)"
-			} else {
-				errorTable.printError(lexer.getLine(), 4, lexer.sval); // "START命令のシンタックスエラー"
+					break;
+				case 1:
+					if (Casl2Lexer.STATE == LexerState.KEYWORD) {
+						symbol = symbolTable.searchSymbol(lexer.getSval());
+						if (symbol == Casl2Symbol.START) {
+							lexer.nextToken();
+							ps = 2;
+						} else {
+							errorTable.printError(lexer.getLine(), 5, lexer.getSval());//   "最初にSTART命令を記述してください"
+							ps = 4;
+						}
+					} else {
+						errorTable.printError(lexer.getLine(), 5, lexer.getSval());//   "最初にSTART命令を記述してください"
+						ps = 4;
+					}
+					break;
+				case 2:
+					switch (Casl2Lexer.STATE) {
+						case KEYWORD:
+							symbol = symbolTable.searchSymbol(lexer.getSval());
+							if (symbol == Casl2Symbol.LABEL) {
+								bg.setStartAdr(symbolTable.getLabelID());
+								lexer.nextToken();
+							}
+						case EOL:
+							ps = decodeContent();
+							break;
+						default:
+							errorTable.printError(lexer.getLine(), 4, lexer.getSval()); // "START命令のシンタックスエラー"
+					}
+					break;
+				case 3://parsing content is complete
+					bg.genFile(path);
+					break;
+				case 4://failed
+					break;
 			}
-			if(token == Casl2Symbol.EOF) break;
 		}
+		return false;
 	}
 
-	private void content() {
-		for(token = lexer.nextToken(),er = false ;token!= Casl2Symbol.EOF; setNextLine()){
-			switch(token) {
-				case END:
-					bg.setEndAdr();
-					token = lexer.nextToken();
+	byte decodeContent() {
+		Casl2Symbol symbol,mnemonic = Casl2Symbol.LABEL;
+		RegMember r1 = RegMember.GR0;
+		for(byte ps = 2;Casl2Lexer.STATE != LexerState.EOF;) {
+			switch (ps) {
+				case -1://error
+					nextLine();
+					ps = 2;
+					break;
+				case 0://correct(check eol)
 					checkEOL();
-					return;
-				case LABEL:
-					if (!bg.defineLabel(lexer.nval,lexer.getLine())) {
-						errorTable.printError(lexer.getLine(), 8, lexer.sval);//"二重定義"
-					}
-					token = lexer.nextToken();
-			}
-			Casl2Symbol mnemonic;
-			boolean equal = false;
-			int nval;
-			String sval;
-			switch(token){
-				case DC:
-					do {
-						token = lexer.nextToken();
-						switch (token) {
-							case NUM_CONST:
-								bg.genAdrCode(lexer.nval);
-								break;
-							case STR_CONST:
-								bg.genAdrCode(lexer.sval);
-								break;
-							case LABEL:
-								bg.genAdrCode(lexer.nval, lexer.getLine());
-								break;
-							default:
-								er = true;
-								errorTable.printError(lexer.getLine(), 9, token.toString());//no constant
-								break;
-						}
-						if(er) break;
-						token = lexer.nextToken();
-					}while(token == Casl2Symbol.COMMA);
+					ps = 2;
 					break;
-				case DS:
-					token = lexer.nextToken();
-					if(token == Casl2Symbol.NUM_CONST){
-						if(lexer.nval>=0)
-						bg.genDSArea(lexer.nval);
-						token = lexer.nextToken();
-					}else{
-						er = true;
-						errorTable.printError(lexer.getLine(), 10, token.toString());//DSシンタックスエラー．
-					}
-					break;
-				case START:
-					errorTable.printError(lexer.getLine(), 11);//START命令の位置が不適切です。
-					er = true;
-					break;
-				case ADDA: case ADDL: case AND:
-				case CPA: case CPL: case LD:
-				case OR: case SUBA: case SUBL:
-					mnemonic = token;
-					if(lexer.nextToken()== Casl2Symbol.GR){
-						RegMember r1 = RegMember.valueOf(lexer.sval);
-						token = lexer.nextToken();
-						if(token == Casl2Symbol.COMMA){
-							token = lexer.nextToken();
-							if(token == Casl2Symbol.GR){
-								RegMember r2 = RegMember.valueOf(lexer.sval);
-								bg.genSingleWordCode(mnemonic, r1, r2, 4);
-								token = lexer.nextToken();
-							}else{
-								adr_x(mnemonic,r1);
+				case 2:
+					lexer.nextToken();
+					mnemonic = symbolTable.searchSymbol(lexer.getSval());
+					switch (mnemonic) {
+						case END:
+							bg.setEndAdr();
+							lexer.nextToken();
+							checkEOL();
+							return 3;
+						case LABEL:
+							if (!bg.defineLabel(symbolTable.getLabelID(), lexer.getLine())) {
+								errorTable.printError(lexer.getLine(), 8, lexer.getSval());//"二重定義"
 							}
+							lexer.nextToken();
+							mnemonic = symbolTable.searchSymbol(lexer.getSval());
+					}
+					switch (mnemonic) {
+						case DC:
+							ps = 3;
+							lexer.nextToken();
+							break;
+						case DS:
+							ps = 5;
+							lexer.nextToken();
+							break;
+						case START:
+						case END:
+							errorTable.printError(lexer.getLine(), 11, lexer.getSval());//START命令の位置が不適切です。
+							ps = -1;
+							break;
+						case ADDA: case ADDL: case AND:
+						case CPA: case CPL: case LD:
+						case OR: case SUBA: case SUBL:
+							lexer.nextToken();
+							ps = 6;
+							break;
+						case LAD: case SLA: case SLL:
+						case SRA: case SRL: case ST:
+							lexer.nextToken();
+							ps = 8;
+							break;
+						case CALL: case JMI: case JNZ:
+						case JOV: case JPL: case JUMP:
+						case JZE: case PUSH: case SVC:
+							lexer.nextToken();
+							ps = adr_x(mnemonic, RegMember.GR0);
+							break;
+						case POP:
+							symbol = symbolTable.searchSymbol(lexer.getSval());
+							if (symbol == Casl2Symbol.REGISTER) {
+								RegMember r = RegMember.valueOf(lexer.getSval());
+								bg.genRegStackCode(mnemonic, r);
+								lexer.nextToken();
+								ps = 0;
+							} else {
+								errorTable.printError(lexer.getLine(), 12);
+								ps = -1;
+							}
+							break;
+						case RET: case NOP:
+							bg.genNoOpCode(mnemonic);
+							lexer.nextToken();
+							ps = 0;
+							break;
+						case RPOP: case RPUSH:
+							bg.genMacroBlock(mnemonic);
+							lexer.nextToken();
+							ps = 0;
+							break;
+						case IN: case OUT:
+							lexer.nextToken();
+							ps = 9;
+							break;
+						default:
+							errorTable.printError(lexer.getLine(), -999, lexer.getSval());
+							ps = -1;
+					}
+					break;
+				case 3://DC
+					switch (Casl2Lexer.STATE) {
+						case NUMBER:
+							bg.genAdrCode(lexer.getNval());
+							ps = 4;
+							break;
+						case STRING:
+							bg.genAdrCode(lexer.getSval());
+							ps = 4;
+							break;
+						case KEYWORD:
+							symbol = symbolTable.searchSymbol(lexer.getSval());
+							if (symbol != Casl2Symbol.REGISTER)
+								bg.genAdrCode(lexer.getNval(), lexer.getLine());
+							ps = 4;
+							break;
+						default:
+							er = true;
+							errorTable.printError(lexer.getLine(), 9, lexer.getSval());//no constant
+							ps = -1;
+							break;
+					}
+					break;
+				case 4:
+					if (Casl2Lexer.STATE == LexerState.COMMA) {
+						ps = 3;
+					} else {
+						ps = 0;
+					}
+				case 5://DS
+					if (Casl2Lexer.STATE == LexerState.NUMBER) {
+						if (lexer.getNval() >= 0)
+							bg.genDSArea(lexer.getNval());
+					} else {
+						errorTable.printError(lexer.getLine(), 10, lexer.getSval());//DSシンタックスエラー．
+					}
+					break;
+				case 6:
+				/*case ADDA: case ADDL: case AND:
+				case CPA: case CPL: case LD:
+				case OR:case SUBA: case SUBL:*/
+					symbol = symbolTable.searchSymbol(lexer.getSval());
+					if (symbol == Casl2Symbol.REGISTER) {
+						r1 = RegMember.valueOf(lexer.getSval());
+						lexer.nextToken();
+						if (Casl2Lexer.STATE == LexerState.COMMA) {
+							lexer.nextToken();
+							ps = 7;
 						} else {
 							errorTable.printError(lexer.getLine(), 15);//カンマが不足しています。
-							er = true;
+							ps = -1;
 						}
 					} else {
-						errorTable.printError(lexer.getLine(), 16, mnemonic.toString()); //第一オペランドがレジスタではありません。
-						er = true;
+						errorTable.printError(lexer.getLine(), 16, lexer.getSval()); //第一オペランドがレジスタではありません。
+						ps = -1;
 					}
 					break;
-				case LAD:case SLA:case SLL:
-				case SRA:case SRL:case ST:
-					mnemonic = token;
-					if(lexer.nextToken()== Casl2Symbol.GR){
-						RegMember r1 = RegMember.valueOf(lexer.sval);
-						if(lexer.nextToken()== Casl2Symbol.COMMA){
-							token = lexer.nextToken();
-							adr_x(mnemonic,r1);
+				case 7:
+					symbol = symbolTable.searchSymbol(lexer.getSval());
+					if (symbol == Casl2Symbol.REGISTER) {
+						bg.genSingleWordCode(symbol, r1, RegMember.valueOf(lexer.getSval()), 4);
+						ps = 0;
+						lexer.nextToken();
+					} else {
+						ps = adr_x(mnemonic, r1);
+					}
+					break;
+				case 8:
+/*				case LAD: case SLA: case SLL:
+				case SRA: case SRL: case ST:*/
+					symbol = symbolTable.searchSymbol(lexer.getSval());
+					if (symbol == Casl2Symbol.REGISTER) {
+						r1 = RegMember.valueOf(lexer.getSval());
+						lexer.nextToken();
+						if (Casl2Lexer.STATE == LexerState.COMMA) {
+							lexer.nextToken();
+							ps = adr_x(mnemonic, r1);
+						} else {
+							errorTable.printError(lexer.getLine(), 15);//カンマが不足しています。
+							ps = -1;
+						}
+					} else {
+						errorTable.printError(lexer.getLine(), 16, lexer.getSval()); //第一オペランドがレジスタではありません。
+						ps = -1;
+					}
+					break;
+				case 9:
+	/*				case IN:
+					case OUT:*/
+					symbol = symbolTable.searchSymbol(lexer.getSval());
+					if (symbol == Casl2Symbol.LABEL) {
+						int buf = symbolTable.getLabelID();
+						if (lexer.nextToken() == LexerState.COMMA) {
+							lexer.nextToken();
+							symbol = symbolTable.searchSymbol(lexer.getSval());
+							if (symbol == Casl2Symbol.LABEL) {
+								int len =symbolTable.getLabelID();
+								bg.genMacroBlock(mnemonic, buf, len, lexer.getLine());
+								lexer.nextToken();
+							} else {
+								errorTable.printError(lexer.getLine(), 17, 2);
+								ps = -1;
+							}
 						} else {
 							errorTable.printError(lexer.getLine(), 15);
-							er = true;
+							ps = -1;
 						}
 					} else {
-						errorTable.printError(lexer.getLine(), 16, mnemonic.toString());
-						er = true;
-					}
-					break;
-				case CALL:case JMI:case JNZ:
-				case JOV:case JPL: case JUMP:
-				case JZE: case PUSH:case SVC:
-					mnemonic = token;
-					RegMember r1 = RegMember.GR0;
-					token = lexer.nextToken();
-					adr_x(mnemonic,r1);
-					break;
-				case POP:
-					token = lexer.nextToken();
-					if(token== Casl2Symbol.GR){
-						RegMember r = RegMember.valueOf(lexer.sval);
-						bg.genRegStackCode(Casl2Symbol.POP, r);
-						token = lexer.nextToken();
-					}else{
-						errorTable.printError(lexer.getLine(), 12);
-						er = true;
-					}
-					break;
-				case RET:case NOP:
-					bg.genNoOpCode(token);
-					token = lexer.nextToken();
-					break;
-				case RPOP:
-				case RPUSH:
-					bg.genMacroBlock(token);
-					token = lexer.nextToken();
-					break;
-				case IN:
-				case OUT:
-					mnemonic = token;
-					token = lexer.nextToken();
-					if(token== Casl2Symbol.LABEL){
-						int bufLabel = lexer.nval;
-						if(lexer.nextToken()== Casl2Symbol.COMMA){
-							token = lexer.nextToken();
-							if(token== Casl2Symbol.LABEL){
-								int lenLabel =lexer.nval;
-								bg.genMacroBlock(mnemonic, bufLabel, lenLabel, lexer.getLine());
-								token = lexer.nextToken();
-							}else{
-								errorTable.printError(lexer.getLine(), 17, 2);
-								er = true;
-							}
-						}else{
-							errorTable.printError(lexer.getLine(), 15);
-							er = true;
-						}
-					}else{
 						errorTable.printError(lexer.getLine(), 17, 1);
-						er = true;
+						ps = -1;
 					}
 					break;
 				default:
-					er = true;
+					return 3;
 			}
-			checkEOL();
 		}
+		return 3;
+	}
+
+	void nextLine() {
+		while (Casl2Lexer.STATE != LexerState.EOL){
+			lexer.nextToken();
+		}
+		lexer.nextToken();
 	}
 
 	private void checkEOL() {
-		if(er) return;
-		if(!(token== Casl2Symbol.EOL)){
+		lexer.nextToken();
+		if(Casl2Lexer.STATE != LexerState.EOL){
 			errorTable.printError(lexer.getLine(), 18);
 		}
 	}
-	private void setNextLine() {
-		while (token!= Casl2Symbol.EOL){
-			token = lexer.nextToken();
-		}
-		er = false;
-		token = lexer.nextToken();
-	}
-
-	private void adr_x(Casl2Symbol mnemonic, RegMember r1){
-		if(token == Casl2Symbol.EQUAL){
-			token = lexer.nextToken();
-			adr_x(mnemonic, r1,true);
-		}else {adr_x(mnemonic,r1,false);}
-	}
-	private void adr_x(Casl2Symbol mnemonic, RegMember r1,boolean equal){
-		switch(token){
-			case LABEL:
-				label(mnemonic,r1,lexer.nval,equal);
-				break;
-			case NUM_CONST:
-				num(mnemonic, r1, lexer.nval, equal);
-				break;
-			case STR_CONST:
-				str(mnemonic, r1, lexer.sval, equal);
-				break;
+	byte adr_x(Casl2Symbol mnemonic, RegMember r1){
+		switch(Casl2Lexer.STATE){
+			case EQUAL:
+				return adr_x(mnemonic,r1,true);
+			case KEYWORD:
+			case NUMBER:
+			case STRING:
+				return adr_x(mnemonic,r1,false);
 			default:
-				errorTable.printError(lexer.getLine(), 14, mnemonic.toString(), 2, token.toString());//illegal address;
-				er = true;
+				return -1;
+		}
+	}
+	byte adr_x(Casl2Symbol mnemonic, RegMember r1,boolean equal){
+		Casl2Symbol symbol = symbolTable.searchSymbol(lexer.getSval());
+		switch(Casl2Lexer.STATE){
+			case KEYWORD:
+				return address(mnemonic, r1, symbolTable.getLabelID(), equal);
+			case NUMBER:
+				return num(mnemonic, r1, lexer.getNval(), equal);
+			case STRING:
+				return STRING(mnemonic, r1, lexer.getSval(), equal);
+			default:
+				errorTable.printError(lexer.getLine(), 14, symbol.toString(), 2, lexer.getSval());//illegal address;
+				return -1;
 		}
 	}
 
 
-	private void label(Casl2Symbol mnemonic, RegMember r1,int nval,boolean equal){
-		token = lexer.nextToken();
-		if (token == Casl2Symbol.COMMA) {
-			if(lexer.nextToken() == Casl2Symbol.GR) {
-				RegMember x = RegMember.valueOf(lexer.sval);
+	byte address(Casl2Symbol mnemonic, RegMember r1, int nval, boolean equal){
+		lexer.nextToken();
+		if (Casl2Lexer.STATE == LexerState.COMMA) {
+			Casl2Symbol symbol = symbolTable.searchSymbol(lexer.getSval());
+			if(symbol == Casl2Symbol.REGISTER) {
+				RegMember x = RegMember.valueOf(lexer.getSval());
 				if (x.getCode() != 0) {
 					bg.genSingleWordCode(mnemonic, r1, x, 0);
 					if(equal) {
@@ -284,14 +370,15 @@ public class Casl2Parser {
 					}else {
 						bg.genAdrCode(nval, lexer.getLine());
 					}
-					token = lexer.nextToken();
+					lexer.nextToken();
+					return 0;
 				} else {
 					errorTable.printError(lexer.getLine(), 12);
-					er = true;
+					return  -1;
 				}
 			} else {
 				errorTable.printError(lexer.getLine(), 13, 1);
-				er = true;
+				return  -1;
 			}
 		} else {
 			bg.genSingleWordCode(mnemonic, r1, RegMember.GR0, 0);
@@ -301,13 +388,15 @@ public class Casl2Parser {
 			}else {
 				bg.genAdrCode(nval, lexer.getLine());
 			}
+			return 0;
 		}
 	}
-	private void num(Casl2Symbol mnemonic, RegMember r1,int nval,boolean equal){
-		token = lexer.nextToken();
-		if (token == Casl2Symbol.COMMA) {
-			if (lexer.nextToken() == Casl2Symbol.GR) {
-				RegMember x = RegMember.valueOf(lexer.sval);
+	byte num(Casl2Symbol mnemonic, RegMember r1,int nval,boolean equal){
+		lexer.nextToken();
+		if (Casl2Lexer.STATE == LexerState.COMMA) {
+			Casl2Symbol symbol = symbolTable.searchSymbol(lexer.getSval());
+			if (symbol == Casl2Symbol.REGISTER) {
+				RegMember x = RegMember.valueOf(lexer.getSval());
 				if (x.getCode() != 0) {
 					bg.genSingleWordCode(mnemonic, r1, x, 0);
 					if(equal) {
@@ -315,14 +404,15 @@ public class Casl2Parser {
 					}else {
 						bg.genAdrCode(nval);
 					}
-					token = lexer.nextToken();
+					lexer.nextToken();
+					return 0;
 				} else {
 					errorTable.printError(lexer.getLine(), 12);
-					er = true;
+					return -1;
 				}
 			} else {
 				errorTable.printError(lexer.getLine(), 13, 2);
-				er = true;
+				return -1;
 			}
 		} else {
 			bg.genSingleWordCode(mnemonic, r1, RegMember.GR0, 0);
@@ -331,24 +421,28 @@ public class Casl2Parser {
 			}else {
 				bg.genAdrCode(nval);
 			}
+			return 0;
 		}
 	}
-	private void str(Casl2Symbol mnemonic, RegMember r1,String sval,boolean equal){
-		token = lexer.nextToken();
-		if (token == Casl2Symbol.COMMA) {
-			if (lexer.nextToken() == Casl2Symbol.GR) {
-				RegMember x = RegMember.valueOf(lexer.sval);
+	byte STRING(Casl2Symbol mnemonic, RegMember r1, String sval, boolean equal){
+		lexer.nextToken();
+		if (Casl2Lexer.STATE == LexerState.COMMA) {
+			lexer.nextToken();
+			Casl2Symbol symbol = symbolTable.searchSymbol(lexer.getSval());
+			if (symbol == Casl2Symbol.REGISTER) {
+				RegMember x = RegMember.valueOf(lexer.getSval());
 				if (x.getCode() != 0) {
 					bg.genSingleWordCode(mnemonic, r1, x,0);
 					bg.genAdrCode(sval);
-					token = lexer.nextToken();
+					lexer.nextToken();
+					return 0;
 				} else {
 					errorTable.printError(lexer.getLine(), 12);
-					er = true;
+					return -1;
 				}
 			} else {
 				errorTable.printError(lexer.getLine(), 13, 3);
-				er = true;
+				return -1;
 			}
 		} else {
 			bg.genSingleWordCode(mnemonic, r1, RegMember.GR0, 0);
@@ -357,15 +451,7 @@ public class Casl2Parser {
 			}else {
 				bg.genAdrCode(sval);
 			}
+			return 0;
 		}
-	}
-	public boolean hasError(){
-		return errorTable.hasError();
-	}
-	public boolean hasWarning(){
-		return errorTable.hasWarning();
-	}
-	public List<String> getMessages() {
-		return errorTable.getMessages();
 	}
 }

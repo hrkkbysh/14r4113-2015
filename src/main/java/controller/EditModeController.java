@@ -11,6 +11,8 @@ import java.util.concurrent.ExecutorService;
 
 import casl2.AsmMode;
 import casl2.Casl2Parser;
+import com.sun.javafx.robot.FXRobot;
+import com.sun.javafx.robot.FXRobotFactory;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
@@ -224,7 +226,7 @@ public class EditModeController extends BorderPane implements Initializable, Con
 			System.out.println(activeEditor.getCodeArea().getText());
 			MacroAssembler assembler = new MacroAssembler(reader);
 			path = Files.createTempFile("tmp", ".tmp");
-			assembler.checkMacro(path);
+			assembler.parse(path);
 			if (assembler.hasError()) {
 				return;
 			}else{
@@ -255,8 +257,6 @@ public class EditModeController extends BorderPane implements Initializable, Con
 
 	@FXML
 	void gotoHomeAction(ActionEvent event) {
-		sc.unbindS();
-		sc.setPrefSize(400.0,200.0);
 		sc.setScreen(EditModeScene.ROOT);
 	}
 
@@ -490,7 +490,6 @@ public class EditModeController extends BorderPane implements Initializable, Con
 						});
 					}
 				});
-		initShortCut();
 
 		statusBar = new StatusBar();
 		root.setBottom(statusBar);
@@ -514,7 +513,19 @@ public class EditModeController extends BorderPane implements Initializable, Con
 	private void initStatusBar(){
 	}
 	private void initShortCut() {
-		setEditorMenuItem.setOnAction(e->webEngine.executeScript("showSetMenu()"));
+		/*robot.keyRelease(KeyEvent.CTRL_DOWN_MASK);
+		,robot.keyRelease(KeyEvent.VK_COMMA);*//*
+
+		//if(stage.getScene().impl_processKeyEvent();
+		robot = FXRobotFactory.createRobot(stage.getScene());
+
+		setEditorMenuItem.setOnAction(e->{
+			robot.keyPress(KeyCode.CONTROL);
+			robot.keyPress(KeyCode.COMMA);
+
+			robot.keyRelease(KeyCode.CONTROL);
+			robot.keyRelease(KeyCode.COMMA);
+		});*/
 	}
 
 
@@ -524,7 +535,8 @@ public class EditModeController extends BorderPane implements Initializable, Con
 
 	private ObservableList<String> editorCodes;
 	private Path currentPath;
-	private SimpleStringProperty curcsName = new SimpleStringProperty("SHIFT-JIS");
+	private SimpleStringProperty curcsName = new SimpleStringProperty("");
+	private FXRobot robot;
 	private WebView webView;
 	private WebEngine webEngine;
 	//PopOverCreator popOverCreator;
@@ -554,6 +566,7 @@ public class EditModeController extends BorderPane implements Initializable, Con
 
 	public void setCOEC(DebugModeController COEC) {
 		this.coec = COEC;
+		initShortCut();
 	}
 
 }

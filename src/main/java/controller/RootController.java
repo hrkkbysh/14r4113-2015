@@ -29,7 +29,7 @@ public class RootController implements Initializable, Controllable<EditModeScene
 		assert objButton != null : "fx:id=\"objButton\" was not injected: check your FXML file 'RootScene.fxml'.";
 		assert asmButton != null : "fx:id=\"asmButton\" was not injected: check your FXML file 'RootScene.fxml'.";
 
-		asmButton.setText("アセンブリプログラミング");
+		asmButton.setText("アセンブリ言語プログラミング");
 		objButton.setText("機械語プログラミング");
 
 		asmButton.setGraphic(createEffectIcon(FontAwesome.Glyph.FILE_TEXT_ALT).size(150.0));
@@ -58,13 +58,11 @@ public class RootController implements Initializable, Controllable<EditModeScene
 	}
 
 	void gotoCasl2EditMode() {
-		stage.setResizable(true);
 		screenPage.setScreen(EditModeScene.CASL2_EDIT);
 	}
 
 	void gotoComet2EditMode() {
 		coec.setEditMode();
-		stage.setResizable(true);
 		screenPage.setScreen(EditModeScene.DEBUG);
 	}
 }

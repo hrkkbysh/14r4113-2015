@@ -131,7 +131,7 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 	private Button showCL2SButton;
 
 	@FXML
-	private Menu settingMenu;
+	private Menu windowMenu;
 
 	@FXML
 	private Button evExButton;
@@ -187,7 +187,7 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 		assert showBPButton != null : "fx:id=\"showBPButton\" was not injected: check your FXML file 'DebuggerScene.fxml'.";
 		assert showCL1SButton != null : "fx:id=\"showCL1SButton\" was not injected: check your FXML file 'DebuggerScene.fxml'.";
 		assert showCL2SButton != null : "fx:id=\"showCL2SButton\" was not injected: check your FXML file 'DebuggerScene.fxml'.";
-		assert settingMenu != null : "fx:id=\"settingMenu\" was not injected: check your FXML file 'DebuggerScene.fxml'.";
+		assert windowMenu != null : "fx:id=\"windowMenu\" was not injected: check your FXML file 'DebuggerScene.fxml'.";
 		assert evExButton != null : "fx:id=\"evExButton\" was not injected: check your FXML file 'DebuggerScene.fxml'.";
 		aryMenuButton.getItems().addAll("2進数", "8進数", "符号無10進数","10進数","16進数","文字(JIS X 0201)");
 		aryMenuButton.getSelectionModel().selectFirst();
@@ -323,8 +323,6 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 
 	}
 	void gotoHomeAction() {
-		scEMC.unbindS();
-		scEMC.setPrefSize(400.0,200.0);
 		scEMC.setScreen(EditModeScene.ROOT);
 	}
 }

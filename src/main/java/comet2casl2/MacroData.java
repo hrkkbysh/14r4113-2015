@@ -1,5 +1,6 @@
 package comet2casl2;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,10 +12,15 @@ public class MacroData {
 	private final int lblID;
 	private List<Integer> mBlock;
 
+	private List<Integer> proLc;
+	private List<Integer> nestLc;
+
 	public MacroData(int lblID,int instID, List<Integer> argIDs) {
 		this.lblID = lblID;
 		this.instID = instID;
 		this.argIDs = argIDs;
+		proLc = new ArrayList<>();
+		nestLc = new ArrayList<>();
 	}
 
 	public void setMBlock(List<Integer> mBlock) {
@@ -35,5 +41,17 @@ public class MacroData {
 
 	public List<Integer> getmBlock() {
 		return mBlock;
+	}
+
+	public void setProLc(int proLc,int nestLc) {
+		this.proLc.add(proLc);
+		this.nestLc.add(nestLc);
+	}
+	public List<Integer> getProLc() {
+		return proLc;
+	}
+
+	public List<Integer> getNestLc() {
+		return nestLc;
 	}
 }

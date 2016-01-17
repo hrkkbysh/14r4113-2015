@@ -6,7 +6,6 @@ package controller.debugger;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import casl2.Casl2Lexer;
 import com.jfoenix.controls.JFXComboBox;
 import comet2casl2.MachineObserver;
 import controller.DebugModeController;
@@ -18,6 +17,8 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import org.controlsfx.control.spreadsheet.GridBase;
@@ -28,7 +29,6 @@ import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.glyphfont.Glyph;
 import org.controlsfx.glyphfont.GlyphFont;
 import org.controlsfx.glyphfont.GlyphFontRegistry;
-import javafx.scene.paint.Color;
 
 public class VisL1SceneController implements Initializable{
 
@@ -66,10 +66,42 @@ public class VisL1SceneController implements Initializable{
 	private SpreadsheetView frSheet;
 
 	@FXML
-	private AnchorPane watchSheet;
+	private AnchorPane watchPane;
 
 	@FXML
 	private HBox memHeader;
+
+	@FXML
+	private Tab inTb;
+
+	@FXML
+	private TextArea inTa;
+
+	@FXML
+	private Tab outTb;
+
+	@FXML
+	private AnchorPane outPn;
+
+	@FXML
+	private Tab watchTb;
+
+	@FXML
+	private AnchorPane watchPn;
+
+	@FXML
+	private Tab traceTb;
+
+	@FXML
+	private AnchorPane tPn;
+
+	@FXML
+	private Tab lblTb;
+
+	@FXML
+	private AnchorPane lblPn;
+
+
 
 	private GlyphFont fontAwesome = GlyphFontRegistry.font("FontAwesome");
 
@@ -83,7 +115,19 @@ public class VisL1SceneController implements Initializable{
 		assert regSheet != null : "fx:id=\"regSheet\" was not injected: check your FXML file 'VisL1Scene.fxml'.";
 		assert frSheet != null : "fx:id=\"frSheet\" was not injected: check your FXML file 'VisL1Scene.fxml'.";
 		assert memSheet!= null : "fx:id=\"memSheet\" was not injected: check your FXML file 'VisL1Scene.fxml'.";
-		assert watchSheet!= null : "fx:id=\"watchSheet\" was not injected: check your FXML file 'VisL1Scene.fxml'.";
+		assert watchPane != null : "fx:id=\"watchPane\" was not injected: check your FXML file 'VisL1Scene.fxml'.";
+		assert inTb != null : "fx:id=\"inTb\" was not injected: check your FXML file 'test.fxml'.";
+		assert inTa != null : "fx:id=\"inTa\" was not injected: check your FXML file 'test.fxml'.";
+		assert outTb != null : "fx:id=\"outTb\" was not injected: check your FXML file 'test.fxml'.";
+		assert outPn != null : "fx:id=\"outPn\" was not injected: check your FXML file 'test.fxml'.";
+		assert watchTb != null : "fx:id=\"watchTb\" was not injected: check your FXML file 'test.fxml'.";
+		assert watchPn != null : "fx:id=\"watchPn\" was not injected: check your FXML file 'test.fxml'.";
+		assert traceTb != null : "fx:id=\"traceTb\" was not injected: check your FXML file 'test.fxml'.";
+		assert tPn != null : "fx:id=\"tPn\" was not injected: check your FXML file 'test.fxml'.";
+		assert lblTb != null : "fx:id=\"lblTb\" was not injected: check your FXML file 'test.fxml'.";
+		assert lblPn != null : "fx:id=\"lblPn\" was not injected: check your FXML file 'test.fxml'.";
+
+
 		Label l1 = new Label("Memory");
 		l1.setPadding(new Insets(2.5,10.0,0.0,10.0));
 
@@ -102,7 +146,7 @@ public class VisL1SceneController implements Initializable{
 
 		HBox hBox2 = new HBox();
 		hBox2.getChildren().add(fontAwesome.create(FontAwesome.Glyph.TABLE).size(16.0));
-		Label l2 = new Label("Register");
+		Label l2 = new Label("Register , I/O.");
 		l2.setPadding(new Insets(0.0,10.0,0.0,10.0));
 		hBox2.getChildren().add(l2);
 		regHeader.add(hBox2, 0, 0);
@@ -126,9 +170,9 @@ public class VisL1SceneController implements Initializable{
 		grid.setRows(rows);
 		memSheet.setGrid(grid);
 		memSheet.setRowHeaderWidth(60);
-		memSheet.getColumns().get(0).setPrefWidth(memSheet.getWidth()-70.0);
+		memSheet.getColumns().get(0).setPrefWidth(memSheet.getWidth()-75.0);
 		memSheet.widthProperty().addListener(e->{
-			memSheet.getColumns().get(0).setPrefWidth(memSheet.getWidth()-70.0);
+			memSheet.getColumns().get(0).setPrefWidth(memSheet.getWidth()-75.0);
 		});
 
 		jfxCombo.getC3DEditor().setOnKeyTyped(new EventHandler<KeyEvent>() {
@@ -202,18 +246,19 @@ public class VisL1SceneController implements Initializable{
 		grid3.setRows(rows3);
 		frSheet.setRowHeaderWidth(60);
 		for(int i=0;i<3;i++){
-			frSheet.getColumns().get(i).setPrefWidth((frSheet.getWidth()-62.0)/3);
+			frSheet.getColumns().get(i).setPrefWidth((frSheet.getWidth()-65.0)/3);
 		}
 		frSheet.widthProperty().addListener(e->{
-			frSheet.getColumns().get(0).setPrefWidth((frSheet.getWidth()-62.0)/3);
+			frSheet.getColumns().get(0).setPrefWidth((frSheet.getWidth()-65.0)/3);
 		});
 		frSheet.widthProperty().addListener(e->{
-			frSheet.getColumns().get(1).setPrefWidth((frSheet.getWidth()-62.0)/3);
+			frSheet.getColumns().get(1).setPrefWidth((frSheet.getWidth()-65.0)/3);
 		});
 		frSheet.widthProperty().addListener(e->{
 			frSheet.getColumns().get(2).setPrefWidth((frSheet.getWidth()-62.0)/3);
 		});
 		frSheet.setGrid(grid3);
+		watchPane.setCursor(Cursor.CLOSED_HAND);
 	}
 
 	private final String[] regName = {"PR","SP","GR0","GR1","GR2","GR3","GR4","GR5","GR6","GR7",};

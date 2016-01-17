@@ -45,7 +45,7 @@ public class Comet2InstructionTable {
 		initInstruction( RET , 0x81);
 		initInstruction( SVC , 0xF0);
 
-		initInstruction(ERROR, 0);
+		initInstruction(LABEL, 0);
 
 
 		Integer[] IN_BLOCK={28673,0,
@@ -79,8 +79,7 @@ public class Comet2InstructionTable {
 		macroInstMap.put(OUT, OUT_BLOCK);
 		macroInstMap.put(RPOP, RPOP_BLOCK);
 		macroInstMap.put(RPUSH, RPUSH_BLOCK);
-		macroInstMap.put(ERROR, ERROR_BLOCK);
-
+		macroInstMap.put(LABEL, ERROR_BLOCK);
 	}
 
 	/*命令表のsize*/
@@ -188,7 +187,7 @@ public class Comet2InstructionTable {
 			default:
 				break;
 		}
-		return ERROR;
+		return LABEL;
 	}
 
 	public int word(){ return word;}
@@ -199,6 +198,6 @@ public class Comet2InstructionTable {
 	private static final Map<Casl2Symbol,Integer[]> macroInstMap =
 			new EnumMap<>(Casl2Symbol.class);
 	public Integer[] findFromMacroInst(Casl2Symbol macro){
-		return macroInstMap.getOrDefault(macro, macroInstMap.get(ERROR));
+		return macroInstMap.getOrDefault(macro, macroInstMap.get(LABEL));
 	}
 }

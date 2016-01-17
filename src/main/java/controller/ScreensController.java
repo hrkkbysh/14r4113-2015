@@ -55,7 +55,6 @@ public class ScreensController<T extends Enum<T> & SceneType>  extends StackPane
 			Controllable<T> myScreenController = myLoader.getController();
 			myScreenController.setScreenParent(this);
 			myScreenController.setStage(stage);
-
 			addScreen(sceneType, loadScreen);
 			addLoader(sceneType, myLoader);
 			System.out.println(sceneType.toString());
@@ -69,63 +68,20 @@ public class ScreensController<T extends Enum<T> & SceneType>  extends StackPane
 	public boolean setScreen(T sceneType) {
 		Node node = screens.get(sceneType);
 		//stage.setResizable(true);
-
 		if (node != null) {   //screen loaded
 			final DoubleProperty opacity = opacityProperty();
 			if (!getChildren().isEmpty()) {    //if there is more than one screen
 				Timeline fade = new Timeline(
 						new KeyFrame(Duration.ZERO, new KeyValue(opacity, 1.0)),
 						new KeyFrame(new Duration(1000), t -> {
+							unbindS();
+							setPrefSize(400.0,200.0);
 							getChildren().remove(0);
 							stage.setTitle(sceneType.toString());
 							getChildren().add(0, node);     //add the screen
 							stage.sizeToScene();
 							prefHeightProperty().bind(stage.getScene().heightProperty());
 							prefWidthProperty().bind(stage.getScene().widthProperty());
-							Timeline fadeIn = new Timeline(
-									new KeyFrame(Duration.ZERO, new KeyValue(opacity, 0.0)),
-									new KeyFrame(new Duration(800), new KeyValue(opacity, 1.0)));
-							fadeIn.play();
-						}, new KeyValue(opacity, 0.0)));
-				fade.play();
-
-			} else {
-				setOpacity(0.0);
-				getChildren().add(node);       //no one else been displayed, then just show
-
-				Timeline fadeIn = new Timeline(
-						new KeyFrame(Duration.ZERO, new KeyValue(opacity, 0.0)),
-						new KeyFrame(new Duration(2500), new KeyValue(opacity, 1.0)));
-				fadeIn.play();
-			}
-			return true;
-		} else {
-			System.out.println("screen hasn't been loaded!!! \n");
-			return false;
-		}
-	}
-
-
-
-	public boolean setNewWindow(T sceneType) {
-		Node node = screens.get(sceneType);
-		//stage.setResizable(true);
-
-		if (node != null) {   //screen loaded
-			final DoubleProperty opacity = opacityProperty();
-			if (!getChildren().isEmpty()) {    //if there is more than one screen
-				Timeline fade = new Timeline(
-						new KeyFrame(Duration.ZERO, new KeyValue(opacity, 1.0)),
-						new KeyFrame(new Duration(1000), t -> {
-							getChildren().remove(0);
-							stage.setTitle(sceneType.toString());
-							getChildren().add(0, node);     //add the screen
-
-							stage.sizeToScene();
-							//stage.setResizable(false);
-							//getRoot().prefHeightProperty().bind(stage.heightProperty());
-							//getRoot().prefWidthProperty().bind(stage.widthProperty());
-
 							Timeline fadeIn = new Timeline(
 									new KeyFrame(Duration.ZERO, new KeyValue(opacity, 0.0)),
 									new KeyFrame(new Duration(800), new KeyValue(opacity, 1.0)));
@@ -173,15 +129,17 @@ public class ScreensController<T extends Enum<T> & SceneType>  extends StackPane
 			return true;
 		}
 	}
-	public void unbindS(){
-		prefHeightProperty().unbind();
-		prefWidthProperty().unbind();}
 
 	public Map<T,FXMLLoader> getFxmlLoaders() {
 		return fxmlLoaders;
 	}
 	public Stage getStage(){
 		return stage;
+	}
+
+	public void unbindS() {
+		prefHeightProperty().unbind();
+		prefWidthProperty().unbind();
 	}
 }
 
