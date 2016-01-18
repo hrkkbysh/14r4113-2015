@@ -4,6 +4,7 @@ package controller.debugger;
  * @author 14r4113 on 2016/01/08.
  */
 import java.net.URL;
+import java.util.BitSet;
 import java.util.ResourceBundle;
 
 import com.jfoenix.controls.JFXComboBox;
@@ -11,7 +12,10 @@ import comet2casl2.MachineObserver;
 import controller.DebugModeController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
+import javafx.event.EventDispatchChain;
 import javafx.event.EventHandler;
+import javafx.event.EventTarget;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -22,10 +26,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
-import org.controlsfx.control.spreadsheet.GridBase;
-import org.controlsfx.control.spreadsheet.SpreadsheetCell;
-import org.controlsfx.control.spreadsheet.SpreadsheetCellType;
-import org.controlsfx.control.spreadsheet.SpreadsheetView;
+import org.controlsfx.control.spreadsheet.*;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.glyphfont.Glyph;
 import org.controlsfx.glyphfont.GlyphFont;
@@ -216,6 +217,7 @@ public class VisL1SceneController implements Initializable{
 		regSheet.widthProperty().addListener(e->{
 			regSheet.getColumns().get(0).setPrefWidth(regSheet.getWidth()-62.0);
 		});
+		grid2.setResizableRows(new BitSet(10));
 		regSheet.setGrid(grid2);
 
 		rowCount = 1;
@@ -229,21 +231,30 @@ public class VisL1SceneController implements Initializable{
 			grid3.getRowHeaders().add("FR");
 			final ObservableList<SpreadsheetCell> list = FXCollections.observableArrayList();
 			for (int column = 0; column < grid3.getColumnCount(); ++column) {
-				//SpreadsheetCell c = SpreadsheetCellType.STRING.createCell(row, column, 1, 1, "?");
+				SpreadsheetCell c = SpreadsheetCellType.STRING.createCell(row, column, 1, 1, "?");
 				//mo.bindModel(row, c.itemProperty(), MachineObserver.Comp.REG);
 				//mo.bindRegister(row, c.itemProperty());
+
 				list.add(SpreadsheetCellType.STRING.createCell(row, column, 1, 1,""));
+				//SpreadsheetCellType.STRING.acceptDrop();
 			}
 			rows3.add(list);
 		}
+		//grid3.setLocked(true);
 		grid3.setRows(rows3);
 		frSheet.setRowHeaderWidth(60);
 		for(int i=0;i<3;i++){
 			frSheet.getColumns().get(i).setPrefWidth((frSheet.getWidth()-65.0)/3);
 		}
-		frSheet.widthProperty().addListener(e->{
+
+		frSheet.getColumns().get(0).setResizable(false);
+		frSheet.getColumns().get(1).setResizable(false);
+		frSheet.getColumns().get(2).setResizable(false);
+		grid3.setResizableRows(new BitSet(1));
+		grid3.setLocked(true);
+		/*frSheet.widthProperty().addListener(e->{
 			frSheet.getColumns().get(0).setPrefWidth((frSheet.getWidth()-65.0)/3);
-		});
+		});*/
 		frSheet.widthProperty().addListener(e->{
 			frSheet.getColumns().get(1).setPrefWidth((frSheet.getWidth()-65.0)/3);
 		});

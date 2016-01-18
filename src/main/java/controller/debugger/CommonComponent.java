@@ -1,6 +1,7 @@
 package controller.debugger;
 
 import com.jfoenix.controls.JFXComboBox;
+import comet2casl2.MachineObserver;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -18,8 +19,11 @@ import org.controlsfx.control.spreadsheet.SpreadsheetView;
 public class CommonComponent {
     private static SpreadsheetView memSheet,regSheet,frSheet,loadSheet,traceSheet,profileSheet,traceTarget,labelSheet;
     private static JFXComboBox<String> locSelecter,loadLocSelecter;
+    private static final String[] regName = {"PR","SP","GR0","GR1","GR2","GR3","GR4","GR5","GR6","GR7",};
+    private static final String[] frName = {"OF","SF","ZF"};
     private Menu windowMenu;
     private TabPane watchPane;
+    private static MachineObserver mo;
     static{
         int rowCount = 65536;
         int columnCount = 1;
@@ -47,28 +51,35 @@ public class CommonComponent {
         locSelecter.getC3DEditor().setOnKeyTyped(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-				/*String text = "Key Typed: " + ke.getCharacter();
-				if (ke.isAltDown()) {
-					text += " , alt down";
-				}
-				if (ke.isControlDown()) {
-					text += " , ctrl down";
-				}
-				if (ke.isMetaDown()) {
-					text += " , meta down";
-				}
-				if (ke.isShiftDown()) {
-					text += " , shift down";
-				}
-				if(ke.getCode().isWhitespaceKey()){
-					text +=", enter down";
-				}
-				System.out.println(text);*/
                 if(event.getCharacter().equals("\r")){
                     //grid.getRows().get(Integer.parseInt(locSelecter.getC3DEditor().getText()));
                     memSheet.scrollToRow(Integer.parseInt(locSelecter.getC3DEditor().getText()));
                 }
             }
         });
+        GridBase rg = genGrid(10,2,MachineObserver.Comp.REG);
+        regSheet.setGrid(rg);
+        regSheet.setRowHeaderWidth(60);
+        regSheet.getColumns().get(0).setPrefWidth(regSheet.getWidth()-62.0);
+        regSheet.widthProperty().addListener(e->{
+            regSheet.getColumns().get(0).setPrefWidth(regSheet.getWidth()-62.0);
+        });
+    }
+
+    private static GridBase genGrid(int rowCount,int columnCount,MachineObserver.Comp bindType){
+        GridBase grid = new GridBase(rowCount, columnCount);
+        ObservableList<ObservableList<SpreadsheetCell>> rows2 = FXCollections.observableArrayList();
+        for (int row = 0; row < grid.getRowCount(); ++row) {
+            final ObservableList<SpreadsheetCell> list = FXCollections.observableArrayList();
+            grid.getRowHeaders().add(regName[row]);
+            for (int column = 0; column < grid.getColumnCount(); ++column) {
+                SpreadsheetCell c = SpreadsheetCellType.STRING.createCell(row, column, 1, 1, "");
+                mo.bindModel(row, c.itemProperty(), bindType);
+                list.add(c);
+            }
+            rows2.add(list);
+        }
+        grid.setRows(rows2);
+        return grid;
     }
 }
