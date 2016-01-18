@@ -18,6 +18,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
@@ -66,7 +67,7 @@ public class VisL1SceneController implements Initializable{
 	private SpreadsheetView frSheet;
 
 	@FXML
-	private AnchorPane watchPane;
+	private TabPane watchPane;
 
 	@FXML
 	private HBox memHeader;
@@ -82,12 +83,6 @@ public class VisL1SceneController implements Initializable{
 
 	@FXML
 	private AnchorPane outPn;
-
-	@FXML
-	private Tab watchTb;
-
-	@FXML
-	private AnchorPane watchPn;
 
 	@FXML
 	private Tab traceTb;
@@ -120,8 +115,6 @@ public class VisL1SceneController implements Initializable{
 		assert inTa != null : "fx:id=\"inTa\" was not injected: check your FXML file 'test.fxml'.";
 		assert outTb != null : "fx:id=\"outTb\" was not injected: check your FXML file 'test.fxml'.";
 		assert outPn != null : "fx:id=\"outPn\" was not injected: check your FXML file 'test.fxml'.";
-		assert watchTb != null : "fx:id=\"watchTb\" was not injected: check your FXML file 'test.fxml'.";
-		assert watchPn != null : "fx:id=\"watchPn\" was not injected: check your FXML file 'test.fxml'.";
 		assert traceTb != null : "fx:id=\"traceTb\" was not injected: check your FXML file 'test.fxml'.";
 		assert tPn != null : "fx:id=\"tPn\" was not injected: check your FXML file 'test.fxml'.";
 		assert lblTb != null : "fx:id=\"lblTb\" was not injected: check your FXML file 'test.fxml'.";

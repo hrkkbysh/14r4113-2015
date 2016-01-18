@@ -9,17 +9,24 @@ import java.util.concurrent.ExecutorService;
 
 import controller.debugger.VisL1SceneController;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.controlsfx.control.StatusBar;
+import org.controlsfx.control.spreadsheet.GridBase;
+import org.controlsfx.control.spreadsheet.SpreadsheetCell;
+import org.controlsfx.control.spreadsheet.SpreadsheetCellType;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.validation.ValidationSupport;
 import uicomponent.SideNode;
@@ -244,7 +251,7 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 		});
 		showCL1SButton.setGraphic(createEffectIcon(FontAwesome.Glyph.COLUMNS));
 		showCL2SButton.setGraphic(createEffectIcon(FontAwesome.Glyph.LAPTOP));
-		showDISButton.setGraphic(createEffectIcon(FontAwesome.Glyph.COG).color(Color.BLUE));
+		showDISButton.setGraphic(createEffectIcon(FontAwesome.Glyph.LIST_ALT));
 		showLogSButton.setGraphic(createEffectIcon(FontAwesome.Glyph.HISTORY));
 		showLoadSButton.setGraphic(createEffectIcon(FontAwesome.Glyph.HDD_ALT));
 		goToHomeButton.setGraphic(createEffectIcon(FontAwesome.Glyph.HOME));
@@ -259,7 +266,7 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 		runtoCurButton.setGraphic(createEffectIcon(FontAwesome.Glyph.FAST_FORWARD));
 
 		showBPButton.setGraphic(createEffectIcon(FontAwesome.Glyph.CIRCLE).color(Color.RED));
-		evExButton.setGraphic(createEffectIcon(FontAwesome.Glyph.CALENDAR).color(Color.BLUE));
+		evExButton.setGraphic(createEffectIcon(FontAwesome.Glyph.LIST_ALT));
 
 		stopMI.setGraphic(createEffectIcon(FontAwesome.Glyph.STOP));
 		pauseMI.setGraphic(createEffectIcon(FontAwesome.Glyph.PAUSE));
@@ -274,8 +281,8 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 		breakSubMI.setGraphic(createEffectIcon(FontAwesome.Glyph.FLAG_ALT));
 
 		varWindowMI.setGraphic(createEffectIcon(FontAwesome.Glyph.CALENDAR_ALT).color(Color.BLUE));
-		traceVarWindowMI.setGraphic(createEffectIcon(FontAwesome.Glyph.CALENDAR_ALT).color(Color.BLUEVIOLET));
-		watchWindowMI.setGraphic(createEffectIcon(FontAwesome.Glyph.EYEDROPPER));
+		traceVarWindowMI.setGraphic(createEffectIcon(FontAwesome.Glyph.CALENDAR_ALT).color(Color.RED));
+		watchWindowMI.setGraphic(createEffectIcon(FontAwesome.Glyph.EYEDROPPER).color(Color.YELLOW));
 
 		showCL1SButton.setOnAction(e->scDMC.setScreen(DebugModeScene.VL1));
 		showCL2SButton.setOnAction(e->scDMC.setScreen(DebugModeScene.VL2));

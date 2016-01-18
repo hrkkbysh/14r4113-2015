@@ -33,7 +33,7 @@
                         <items>
                             <MenuItem fx:id="varWindowMI" mnemonicParsing="false" text="ラベル" />
                         <MenuItem fx:id="traceVarWindowMI" mnemonicParsing="false" text="トレース変数" />
-                        <MenuItem fx:id="watchWindowMI" mnemonicParsing="false" text="ウォッチ" />
+                        <MenuItem fx:id="watchWindowMI" mnemonicParsing="false" text="ウォッチウィンドウの作成" />
                         </items>
                      </Menu>
                  </menus>

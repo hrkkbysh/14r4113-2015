@@ -3,13 +3,13 @@
 <?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
+<?import org.controlsfx.control.spreadsheet.SpreadsheetView?>
 <AnchorPane prefHeight="515.0" prefWidth="856.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.debugger.LoadSceneController">
    <children>
-      <GridPane hgap="10.0" prefHeight="515.0" prefWidth="856.0" vgap="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <GridPane gridLinesVisible="true" hgap="10.0" prefHeight="515.0" prefWidth="856.0" vgap="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <VBox>
                <children>
@@ -38,25 +38,17 @@
                   </Label>
                </children>
             </VBox>
-            <TableView fx:id="relocTable" fixedCellSize="25.0" GridPane.rowIndex="1">
-               <columnResizePolicy>
-                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-               </columnResizePolicy>
-               <columns>
-                  <TableColumn fx:id="relocAddressColumn" editable="false" prefWidth="75.0" sortable="false" text="仮想番地" />
-                  <TableColumn fx:id="relocContentColumn" editable="false" prefWidth="75.0" sortable="false" text="格納する内容" />
-               </columns>
-            </TableView>
-            <TableView fx:id="memTable" fixedCellSize="25.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
-               <columnResizePolicy>
-                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-               </columnResizePolicy>
-               <columns>
-                  <TableColumn fx:id="memAdressColumn" editable="false" prefWidth="75.0" sortable="false" text="番地" />
-                  <TableColumn fx:id="memContentColumn" editable="false" prefWidth="75.0" sortable="false" text="主記憶" />
-               </columns>
-            </TableView>
-            <VBox GridPane.columnIndex="1">
+            <SpreadsheetView fx:id="loadSheet" editable="false" showColumnHeader="false" showRowHeader="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.rowIndex="1">
+               <padding>
+                  <Insets top="10.0" bottom="10.0" right="10.0" left="10.0"/>
+               </padding>
+            </SpreadsheetView>
+            <SpreadsheetView fx:id="memSheet" prefHeight="242.0" editable="false" showColumnHeader="false" showRowHeader="true"   AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.rowIndex="1" GridPane.columnIndex="2">
+               <padding>
+                  <Insets top="10.0" bottom="10.0" right="10.0" left="10.0"/>
+               </padding>
+            </SpreadsheetView>
+            <VBox fx:id="medBox" GridPane.columnIndex="2">
                <children>
                   <Label fx:id="memBox" alignment="TOP_LEFT" text="主記憶">
                      <font>
@@ -68,13 +60,19 @@
                   </Label>
                </children>
             </VBox>
+            <VBox alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <children>
+                  <Button fx:id="loadBut" mnemonicParsing="false" text="Load" />
+               </children>
+            </VBox>
          </children>
          <columnConstraints>
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="50.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="50.0" />
+            <ColumnConstraints hgrow="SOMETIMES" percentWidth="45.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" percentWidth="45.0" />
          </columnConstraints>
          <rowConstraints>
-            <RowConstraints minHeight="10.0" percentHeight="20.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints percentHeight="20.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" percentHeight="80.0" vgrow="SOMETIMES" />
          </rowConstraints>
       </GridPane>
