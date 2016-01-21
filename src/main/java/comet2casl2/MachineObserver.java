@@ -20,7 +20,7 @@ public class MachineObserver {
 		symTbl = new SymbolTable();
 		reg.setSp(spAdr);
 	}
-	public boolean bindModel(int loc, ObjectProperty<Object> item, Bind comp){
+	public static boolean bindModel(int loc, ObjectProperty<Object> item, Bind comp){
 		return comp.bindData(loc,item);
 	}
 

@@ -58,8 +58,8 @@ public class CommonComponent {
                 }
             }
         });
-        GridBase rg = genGrid(10,2,mo.Bind.REG);
-        regSheet.setGrid(rg);
+       // GridBase rg = genGrid(10,2,MachineObserver.Bind);
+       // regSheet.setGrid(rg);
         regSheet.setRowHeaderWidth(60);
         regSheet.getColumns().get(0).setPrefWidth(regSheet.getWidth()-62.0);
         regSheet.widthProperty().addListener(e->{
@@ -67,7 +67,7 @@ public class CommonComponent {
         });
     }
 
-    private static GridBase genGrid(int rowCount,int columnCount,MachineObserver.Comp bindType){
+    private static GridBase genGrid(int rowCount,int columnCount,MachineObserver.Bind bindType){
         GridBase grid = new GridBase(rowCount, columnCount);
         ObservableList<ObservableList<SpreadsheetCell>> rows2 = FXCollections.observableArrayList();
         for (int row = 0; row < grid.getRowCount(); ++row) {
@@ -75,7 +75,7 @@ public class CommonComponent {
             grid.getRowHeaders().add(regName[row]);
             for (int column = 0; column < grid.getColumnCount(); ++column) {
                 SpreadsheetCell c = SpreadsheetCellType.STRING.createCell(row, column, 1, 1, "");
-                mo.bindModel(row, c.itemProperty(), bindType);
+                MachineObserver.bindModel(row, c.itemProperty(), bindType);
                 list.add(c);
             }
             rows2.add(list);
