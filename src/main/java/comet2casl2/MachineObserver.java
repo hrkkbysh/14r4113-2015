@@ -8,45 +8,45 @@ import javafx.beans.property.SimpleStringProperty;
  */
 public class MachineObserver {
 
-	static AddressSpace as;
-	static Register reg;
-	static SymbolTable symTbl;
-	public static ErrorTable errorTable;
-	public static Comet2InstructionTable instTable;
+	AddressSpace as;
+	Register reg;
+	SymbolTable symTbl;
+	ErrorTable errorTable;
+	Comet2InstructionTable instTable;
 
-	MachineObserver(int loadAdr,int spAdr){
+	public MachineObserver(int loadAdr,int spAdr){
 		as = new AddressSpace(loadAdr,spAdr);
 		reg = new Register();
 		symTbl = new SymbolTable();
 		reg.setSp(spAdr);
 	}
-	public boolean bindModel(int loc, ObjectProperty<Object> item, Comp comp){
+	public boolean bindModel(int loc, ObjectProperty<Object> item, Bind comp){
 		return comp.bindData(loc,item);
 	}
-	public boolean bindLoadModel(int loc, SimpleStringProperty item){
-		return false;
-	}
 
-	public enum Comp{
-		MEM(){
+	public abstract class Bind{
+		public final Bind MEM = new Bind(){
 			@Override
 			boolean bindData(int loc, ObjectProperty<Object> item) {
 				item.bind(as.readA(loc).contentProperty());
 				return false;
 			}
-		},REG{
+		};
+		public final Bind REG = new Bind(){
 			@Override
 			boolean bindData(int id, ObjectProperty<Object> item) {
 				item.bind(reg.getRegister(id).contentProperty());
 				return false;
 			}
-		},LOAD{//FIXME
+		};
+		public final Bind LOAD = new Bind(){//FIXME
 			@Override
 			boolean bindData(int loc, ObjectProperty<Object> item) {
 				item.bind(as.readA(loc).contentProperty());
 				return false;
 			}
-		},FR{//FIXME
+		};
+		public final Bind FR = new Bind(){//FIXME
 			@Override
 			boolean bindData(int id, ObjectProperty<Object> item) {
 				item.bind(reg.getRegister(id).contentProperty());

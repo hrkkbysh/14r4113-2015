@@ -23,8 +23,9 @@ public class CommonComponent {
     private static final String[] frName = {"OF","SF","ZF"};
     private Menu windowMenu;
     private TabPane watchPane;
-    private static MachineObserver mo;
-    static{
+    private MachineObserver mo;
+    {
+        mo = new MachineObserver(0x1000,0xCCCC);
         int rowCount = 65536;
         int columnCount = 1;
         GridBase grid = new GridBase(rowCount, columnCount);
@@ -57,7 +58,7 @@ public class CommonComponent {
                 }
             }
         });
-        GridBase rg = genGrid(10,2,MachineObserver.Comp.REG);
+        GridBase rg = genGrid(10,2,mo.Bind.REG);
         regSheet.setGrid(rg);
         regSheet.setRowHeaderWidth(60);
         regSheet.getColumns().get(0).setPrefWidth(regSheet.getWidth()-62.0);
