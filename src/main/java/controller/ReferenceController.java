@@ -9,7 +9,8 @@ public class ReferenceController {
 	public static void setReference(ScreensController<EditModeScene> sc,ExecutorService service){
 
 		Map<EditModeScene, FXMLLoader> FXMLMap = sc.getFxmlLoaders();
-		/*参照関係定義*/
+
+		/*参照関係*/
 		FXMLLoader froot = FXMLMap.get(EditModeScene.ROOT);
 		RootController rootC = froot.getController();
 		

@@ -2,6 +2,7 @@ package controller.debugger;
 
 import com.jfoenix.controls.JFXComboBox;
 import comet2casl2.MachineObserver;
+import javafx.beans.property.BooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Menu;
@@ -21,7 +22,7 @@ public class CommonViewModel {
 	private TabPane watchPane;
 	private TextArea inTa,outTa;
 	private MachineObserver mo;
-
+	private BooleanProperty traceVar,varWindow,breakSub,breakLabel;
 	public void stopAction(){}
 	public void pauseAction(){}
 	public void runAction(){}
@@ -32,10 +33,6 @@ public class CommonViewModel {
 	public void runtoCurAction(){}
 	public void showBPAction(){}
 	public void evExAction(){}
-	public void breakLabelAction(){}
-	public void breakSubAction(){}
-	public void varWindonAction(){}
-	public void traceVarAction(){}
 	public void watchWindowAction(){}
 
 	private GridBase genGrid(int rowCount,int columnCount,MachineObserver.Bind bindType){
@@ -55,7 +52,21 @@ public class CommonViewModel {
 		return grid;
 	}
 
+	public void bindTraceVar(BooleanProperty traceVar) {
+		//this.traceVar.bind(traceVar);
+	}
 
+	public void bindVarWindow(BooleanProperty varWindow) {
+		//this.varWindow.bind(varWindow);
+	}
+
+	public void bindBreakSub(BooleanProperty breakSub) {
+		//this.breakSub.bind(breakSub);
+	}
+
+	public void bindBreakLabel(BooleanProperty breakLabel) {
+		//this.breakLabel.bind(breakLabel);
+	}
 
 	public void setMemSheet(SpreadsheetView memSheet) {
 		this.memSheet = memSheet;
@@ -119,5 +130,12 @@ public class CommonViewModel {
 
 	public void setMo(MachineObserver mo) {
 		this.mo = mo;
+	}
+
+	public void setSimulateMode() {
+	}
+
+	public void setEditMode() {
+
 	}
 }

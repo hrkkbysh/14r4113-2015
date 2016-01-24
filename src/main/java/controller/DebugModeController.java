@@ -223,12 +223,13 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 	private NodeController<DebugModeScene> scDMC;
 	private EditModeController caec;
 	private ExecutorService service;
+	private CommonViewModel cvm;
 	private StatusBar statusBar;
 	//FIXME
 	@Override
 	public void setExecutorService(ExecutorService service) {
 		this.service = service;
-		CommonViewModel cvm = new CommonViewModel();
+		cvm = new CommonViewModel();
 		scDMC = new NodeController<>(DebugModeScene.class);
 		for(DebugModeScene d:DebugModeScene.values()){
 			DebugControllable myScreenController = scDMC.loadScreen(d).getController();
@@ -267,6 +268,28 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 		goToHomeButton.setOnAction(e->gotoHomeAction());
 
 		stopButton.setOnAction(e-> cvm.stopAction());
+		stopMI.setOnAction(e->cvm.stopAction());
+		pauseButton.setOnAction(e->cvm.pauseAction());
+		pauseMI.setOnAction(e->cvm.pauseAction());
+		runButton.setOnAction(e->cvm.runAction());
+		runMI.setOnAction(e->cvm.runAction());
+		backButton.setOnAction(e->cvm.backAction());
+		backMI.setOnAction(e->cvm.backAction());
+		stepOverButton.setOnAction(e->cvm.stepOverAction());
+		stepOverMI.setOnAction(e->cvm.stepOverAction());
+		stepInButton.setOnAction(e->cvm.stepInAction());
+		stepInMI.setOnAction(e->cvm.stepInAction());
+		stepOutButton.setOnAction(e->cvm.stepOutAction());
+		runtoCurButton.setOnAction(e->cvm.runtoCurAction());
+		runtoCurMI.setOnAction(e->cvm.runtoCurAction());
+		showBPButton.setOnAction(e->cvm.showBPAction());
+		evExButton.setOnAction(e->cvm.evExAction());
+
+		cvm.bindTraceVar(traceVarWindowMI.selectedProperty());
+		cvm.bindVarWindow(varWindowMI.selectedProperty());
+		cvm.bindBreakSub(breakSubMI.selectedProperty());
+		cvm.bindBreakLabel(breakLabelMI.selectedProperty());
+		watchWindowMI.setOnAction(e -> cvm.watchWindowAction());
 	}
 
 	public void setDisableButs(boolean value){
@@ -291,9 +314,11 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 	public void setEditMode() {
 		scDMC.setScreen(DebugModeScene.VL1);
 		setDisableButs(false);
+		cvm.setEditMode();
 		statusBar.textProperty().set("機械語直接投入モード画面");
 	}
 	public void setSimulateMode(){
+		cvm.setSimulateMode();
 		statusBar.textProperty().set("デバッグ画面");
 	}
 	void gotoHomeAction() {
