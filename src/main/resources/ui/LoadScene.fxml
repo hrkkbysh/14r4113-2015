@@ -60,10 +60,7 @@
                   </Label>
                </children>
             </VBox>
-            <VBox alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="1">
-               <children>
-                  <Button fx:id="loadBut" mnemonicParsing="false" text="Load" />
-               </children>
+            <VBox fx:id="loadSelBox" alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="1">
             </VBox>
          </children>
          <columnConstraints>

@@ -4,6 +4,7 @@ package controller.debugger;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import com.jfoenix.controls.JFXComboBox;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -25,7 +26,7 @@ public class LoadSceneController implements Initializable,DebugControllable{
 	@FXML
 	public VBox medBox;
 	@FXML
-	public Button loadBut;
+	public VBox loadSelBox;
 
 	@FXML
 	private Label startAdrLbl;
@@ -106,6 +107,17 @@ public class LoadSceneController implements Initializable,DebugControllable{
 			loadSheet.getColumns().get(0).setPrefWidth(loadSheet.getWidth()-122.0);
 		});
 
+		JFXComboBox<Label> jfxCombo = new JFXComboBox<>();
+		jfxCombo.getItems().addAll(new Label("#1000"),new Label("#3000"),new Label("#5000"),
+				new Label("#7000"),new Label("#9000"),new Label("#B000"),
+				new Label("#D000"),new Label("#F000"));
+
+		jfxCombo.setEditable(true);
+		jfxCombo.setPromptText("Select Label or Location");
+		jfxCombo.setPrefWidth(180.0);
+		Button loadBut = new Button("Load");
+
+		loadSelBox.getChildren().addAll(loadBut,jfxCombo);
 	}
 
 	@Override

@@ -90,7 +90,7 @@ public class CommonViewModel {
 		this.aryMenuButton = aryMenuButton;
 		ObservableList<String> items = aryMenuButton.getItems();
 		for(Ary a: Ary.values()){
-			items.add(a.toString());
+			items.add(a.getText());
 		}
 		aryMenuButton.getSelectionModel().selectFirst();
 		aryMenuButton.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {System.out.println(Ary.toAry(newValue));});
