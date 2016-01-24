@@ -1,45 +1,26 @@
 package controller;
 
 import java.net.URL;
-import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 
-import controller.debugger.VisL1SceneController;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
+import controller.debugger.CommonViewModel;
+import controller.debugger.DebugControllable;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.controlsfx.control.StatusBar;
-import org.controlsfx.control.spreadsheet.GridBase;
-import org.controlsfx.control.spreadsheet.SpreadsheetCell;
-import org.controlsfx.control.spreadsheet.SpreadsheetCellType;
 import org.controlsfx.glyphfont.FontAwesome;
-import org.controlsfx.validation.ValidationSupport;
-import uicomponent.SideNode;
 
 import static controller.GraphicCreator.*;
 
-public class DebugModeController extends BorderPane implements Initializable,Threadable, Controllable<EditModeScene> {
-
-	@FXML
-	private ResourceBundle resources;
-
-	@FXML
-	private URL location;
+public class DebugModeController extends BorderPane implements Initializable,Threadable, Controllable<EditModeScene>{
 
 	@FXML
 	private Button showDISButton;
@@ -48,13 +29,13 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 	private MenuItem backMI;
 
 	@FXML
-	private MenuItem breakLabelMI;
+	private CheckMenuItem breakLabelMI;
 
 	@FXML
 	private Button goToHomeButton;
 
 	@FXML
-	private MenuItem varWindowMI;
+	private CheckMenuItem varWindowMI;
 
 	@FXML
 	private ChoiceBox<String> aryMenuButton;
@@ -78,7 +59,7 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 	private MenuItem stepOverMI;
 
 	@FXML
-	private MenuItem breakSubMI;
+	private CheckMenuItem breakSubMI;
 
 	@FXML
 	private MenuItem runtoCurMI;
@@ -87,7 +68,7 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 	private BorderPane root;
 
 	@FXML
-	private MenuItem traceVarWindowMI;
+	private CheckMenuItem traceVarWindowMI;
 
 	@FXML
 	private Button backButton;
@@ -196,59 +177,7 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 		assert showCL2SButton != null : "fx:id=\"showCL2SButton\" was not injected: check your FXML file 'DebuggerScene.fxml'.";
 		assert windowMenu != null : "fx:id=\"windowMenu\" was not injected: check your FXML file 'DebuggerScene.fxml'.";
 		assert evExButton != null : "fx:id=\"evExButton\" was not injected: check your FXML file 'DebuggerScene.fxml'.";
-		aryMenuButton.getItems().addAll("2進数", "8進数", "符号無10進数","10進数","16進数","文字(JIS X 0201)");
-		aryMenuButton.getSelectionModel().selectFirst();
-		aryMenuButton.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {showAryView(Ary.toAry(newValue));});
 
-		statusBar = new StatusBar();
-		root.setBottom(statusBar);
-		Button rightB2 = new Button("", createEffectIcon(FontAwesome.Glyph.INFO));
-		statusBar.getRightItems().addAll(new Separator(Orientation.VERTICAL),rightB2);
-		/*errView = new SideNode(" Information View",editorPane);
-		rightB2.setOnAction(e -> {
-					if (editorPane.isShowDetailNode()) {
-						editorPane.setShowDetailNode(false);
-					} else {
-						editorPane.setShowDetailNode(true);
-					}
-				}
-		);*/
-		statusBar.textProperty().set("機械語直接投入モード画面");
-		root.setBottom(statusBar);
-	}
-
-	private void showAryView(Ary ary) {
-		System.out.println(ary.getText());
-	}
-
-	private ScreensController<EditModeScene> scEMC;
-	private NodeController<DebugModeScene> scDMC;
-	private EditModeController caec;
-	private ExecutorService service;
-	private Map<DebugModeScene, FXMLLoader> fxmlLoaders = new EnumMap<>(DebugModeScene.class);
-	private StatusBar statusBar;
-	ValidationSupport validationSupport = new ValidationSupport();
-	//FIXME
-	@Override
-	public void setExecutorService(ExecutorService service) {
-		this.service = service;
-		scDMC = new NodeController<>(DebugModeScene.class);
-		for(DebugModeScene d:DebugModeScene.values()){
-			fxmlLoaders.put(d, scDMC.loadScreen(d));
-		}
-		scDMC.setScreen(DebugModeScene.VL1);
-		debugSceneContainer.getChildren().addAll(scDMC);
-
-		stage.heightProperty().addListener(e -> {
-			scDMC.prefHeightProperty().unbind();
-			autosize();
-			scDMC.prefHeightProperty().bind(stage.heightProperty());
-		});
-		stage.widthProperty().addListener(e -> {
-			scDMC.prefWidthProperty().unbind();
-			autosize();
-			scDMC.prefWidthProperty().bind(stage.widthProperty());
-		});
 		showCL1SButton.setGraphic(createEffectIcon(FontAwesome.Glyph.COLUMNS));
 		showCL2SButton.setGraphic(createEffectIcon(FontAwesome.Glyph.LAPTOP));
 		showDISButton.setGraphic(createEffectIcon(FontAwesome.Glyph.LIST_ALT));
@@ -265,7 +194,7 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 		stepOutButton.setGraphic(createEffectIcon(FontAwesome.Glyph.SIGN_OUT));
 		runtoCurButton.setGraphic(createEffectIcon(FontAwesome.Glyph.FAST_FORWARD));
 
-		showBPButton.setGraphic(createEffectIcon(FontAwesome.Glyph.CIRCLE).color(Color.RED));
+		showBPButton.setGraphic(createEffectIcon(FontAwesome.Glyph.CIRCLE).color(Color.DARKBLUE));
 		evExButton.setGraphic(createEffectIcon(FontAwesome.Glyph.LIST_ALT));
 
 		stopMI.setGraphic(createEffectIcon(FontAwesome.Glyph.STOP));
@@ -283,6 +212,52 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 		varWindowMI.setGraphic(createEffectIcon(FontAwesome.Glyph.CALENDAR_ALT).color(Color.BLUE));
 		traceVarWindowMI.setGraphic(createEffectIcon(FontAwesome.Glyph.CALENDAR_ALT).color(Color.RED));
 		watchWindowMI.setGraphic(createEffectIcon(FontAwesome.Glyph.EYEDROPPER).color(Color.YELLOW));
+	}
+
+	private void showAryView(Ary ary) {
+		System.out.println(ary.getText());
+	}
+
+	private Stage stage;
+	private ScreensController<EditModeScene> scEMC;
+	private NodeController<DebugModeScene> scDMC;
+	private EditModeController caec;
+	private ExecutorService service;
+	private StatusBar statusBar;
+	//FIXME
+	@Override
+	public void setExecutorService(ExecutorService service) {
+		this.service = service;
+		CommonViewModel cvm = new CommonViewModel();
+		scDMC = new NodeController<>(DebugModeScene.class);
+		for(DebugModeScene d:DebugModeScene.values()){
+			DebugControllable myScreenController = scDMC.loadScreen(d).getController();
+			myScreenController.setViewModel(cvm);
+		}
+		scDMC.setScreen(DebugModeScene.VL1);
+		debugSceneContainer.getChildren().addAll(scDMC);
+
+		stage.heightProperty().addListener(e -> {
+			scDMC.prefHeightProperty().unbind();
+			autosize();
+			scDMC.prefHeightProperty().bind(stage.heightProperty());
+		});
+		stage.widthProperty().addListener(e -> {
+			scDMC.prefWidthProperty().unbind();
+			autosize();
+			scDMC.prefWidthProperty().bind(stage.widthProperty());
+		});
+
+		aryMenuButton.getItems().addAll("2進数", "8進数", "符号無10進数","10進数","16進数","文字(JIS X 0201)");
+		aryMenuButton.getSelectionModel().selectFirst();
+		aryMenuButton.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {showAryView(Ary.toAry(newValue));});
+
+		statusBar = new StatusBar();
+		root.setBottom(statusBar);
+		Button rightB2 = new Button("", createEffectIcon(FontAwesome.Glyph.INFO));
+		statusBar.getRightItems().addAll(new Separator(Orientation.VERTICAL),rightB2);
+		statusBar.textProperty().set("機械語直接投入モード画面");
+		root.setBottom(statusBar);
 
 		showCL1SButton.setOnAction(e->scDMC.setScreen(DebugModeScene.VL1));
 		showCL2SButton.setOnAction(e->scDMC.setScreen(DebugModeScene.VL2));
@@ -291,12 +266,9 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 		showLoadSButton.setOnAction(e->scDMC.setScreen(DebugModeScene.LOAD));
 		goToHomeButton.setOnAction(e->gotoHomeAction());
 
-		stopButton.setOnAction(e->{
-			VisL1SceneController c = fxmlLoaders.get(DebugModeScene.VL1).getController();
-			System.out.println("stop button clicked!");
-		});
+		stopButton.setOnAction(e-> cvm.stopAction());
 	}
-	int i = 0;
+
 	public void setDisableButs(boolean value){
 		showCL2SButton.setDisable(value);
 		showDISButton.setDisable(value);
@@ -307,7 +279,6 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 	public void setScreenParent(ScreensController<EditModeScene> sc) {
 		this.scEMC = sc;
 	}
-	Stage stage;
 	@Override
 	public void setStage(Stage stage) {
 		this.stage = stage;
@@ -320,14 +291,10 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 	public void setEditMode() {
 		scDMC.setScreen(DebugModeScene.VL1);
 		setDisableButs(false);
-		VisL1SceneController c = fxmlLoaders.get(DebugModeScene.VL1).getController();
-		c.setRootAndInit(this);
-		//c.setEditMode();
 		statusBar.textProperty().set("機械語直接投入モード画面");
 	}
 	public void setSimulateMode(){
 		statusBar.textProperty().set("デバッグ画面");
-
 	}
 	void gotoHomeAction() {
 		scEMC.setScreen(EditModeScene.ROOT);

@@ -5,10 +5,8 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.beans.property.DoubleProperty;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 
@@ -38,6 +36,7 @@ public class NodeController<T extends Enum<T> & SceneType>  extends StackPane {
 		try {
 			myLoader = new FXMLLoader(getClass().getResource(sceneType.getResource()));
 			Parent loadScreen = myLoader.load();
+
 			addScreen(sceneType, loadScreen);
 			System.out.println(sceneType.toString());
 		} catch (Exception e) {

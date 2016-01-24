@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import org.controlsfx.control.spreadsheet.*?>
-<?import java.lang.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import org.controlsfx.control.spreadsheet.* ?>
-<?import javafx.scene.text.Font?>
 
 <SplitPane dividerPositions="0.4" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.debugger.VisL1SceneController">
     <items>
@@ -112,12 +110,19 @@
                                            <tabs>
                                                <Tab fx:id="traceTb" text="トレース変数">
                                                    <content>
-                                                       <AnchorPane fx:id="tPn" style="-fx-background-color: cadetblue;" />
+                                                       <AnchorPane fx:id="tPn" style="-fx-background-color: cadetblue;">
+                                                           <SpreadsheetView fx:id="traceTargetSheet" editable="true" showColumnHeader="true"  AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                               <padding>
+                                                                   <Insets bottom="10.0" />
+                                                               </padding>
+                                                           </SpreadsheetView>
+                                                       </AnchorPane>
                                                    </content>
                                                </Tab>
                                                <Tab fx:id="lblTb" text="ラベル">
                                                    <content>
-                                                       <AnchorPane fx:id="lblPn" style="-fx-background-color: yellow;" />
+                                                       <AnchorPane fx:id="lblPn" style="-fx-background-color: yellow;">
+                                                       </AnchorPane>
                                                    </content>
                                                </Tab>
                                            </tabs>

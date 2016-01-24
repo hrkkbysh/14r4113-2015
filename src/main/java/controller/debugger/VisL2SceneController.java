@@ -9,16 +9,14 @@ import java.util.ResourceBundle;
 /**
  * @author 14r4113 on 2016/01/08.
  */
-public class VisL2SceneController implements Initializable {
-
-	@FXML
-	private ResourceBundle resources;
-
-	@FXML
-	private URL location;
+public class VisL2SceneController implements Initializable,DebugControllable{
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+
+	}
+	@Override
+	public void setViewModel(CommonViewModel cvm) {
 
 	}
 }

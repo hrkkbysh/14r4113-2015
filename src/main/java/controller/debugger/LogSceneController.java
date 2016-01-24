@@ -18,17 +18,12 @@ import org.controlsfx.control.spreadsheet.SpreadsheetView;
 /**
  * @author 14r4113 on 2016/01/08.
  */
-public class LogSceneController implements Initializable{
+public class LogSceneController implements Initializable,DebugControllable{
 
 /*	@FXML
 	public SpreadsheetView profileSheet;
 	@FXML
 	public SpreadsheetView traceSheet;*/
-	@FXML
-	private ResourceBundle resources;
-
-	@FXML
-	private URL location;
 
 	@FXML
 	private TabPane logPane;
@@ -69,6 +64,11 @@ public class LogSceneController implements Initializable{
 		grid1.setRows(rows1);
 		traceSheet.setGrid(grid1);
 	*//*	traceSheet.resizeRowsToFitContent();*/
+	}
+
+	@Override
+	public void setViewModel(CommonViewModel cvm) {
+
 	}
 }
 

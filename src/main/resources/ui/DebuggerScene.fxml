@@ -1,140 +1,146 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
 <BorderPane fx:id="root" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="600.0" minWidth="900.0" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DebugModeController">
    <top>
        <VBox>
-          <children>
-              <MenuBar maxHeight="25.0" maxWidth="1.7976931348623157E308" minHeight="25.0" minWidth="900.0" prefHeight="25.0" prefWidth="900.0" BorderPane.alignment="CENTER" VBox.vgrow="SOMETIMES">
-                 <menus>
-                     <Menu mnemonicParsing="false" text="実行(R)">
-                        <items>
-                            <MenuItem fx:id="runMI" mnemonicParsing="false" text="最後まで実行" />
-                        <SeparatorMenuItem mnemonicParsing="false" />
-                            <MenuItem fx:id="stepOverMI" mnemonicParsing="false" text="ステップ オーバー" />
-                            <MenuItem fx:id="stepInMI" mnemonicParsing="false" text="ステップ イン" />
-                        <MenuItem fx:id="stepOutMI" mnemonicParsing="false" text="ステップ アウト" />
-                        <MenuItem fx:id="runtoCurMI" mnemonicParsing="false" text="カーソル行まで実行" />
-                        <MenuItem fx:id="pauseMI" mnemonicParsing="false" text="プログラムを一時停止する" />
-                        <MenuItem fx:id="resumeMI" mnemonicParsing="false" text="プログラムを再開する" />
-                        <MenuItem fx:id="stopMI" mnemonicParsing="false" text="プログラムを中断する" />
-                        <MenuItem fx:id="backMI" mnemonicParsing="false" text="前の状態へ戻す" />
-                        <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem fx:id="breakLabelMI" mnemonicParsing="false" text="ラベルの定義位置でブレーク" />
-                        <MenuItem fx:id="breakSubMI" mnemonicParsing="false" text="サブルーチンの入口でブレーク" />
-                        </items>
-                     </Menu>
-                     <Menu fx:id="windowMenu" mnemonicParsing="false" text="ウィンドウ">
-                        <items>
-                            <MenuItem fx:id="varWindowMI" mnemonicParsing="false" text="ラベル" />
-                        <MenuItem fx:id="traceVarWindowMI" mnemonicParsing="false" text="トレース変数" />
-                        <MenuItem fx:id="watchWindowMI" mnemonicParsing="false" text="ウォッチウィンドウの作成" />
-                        </items>
-                     </Menu>
-                 </menus>
-              </MenuBar>
-              <ToolBar maxHeight="40.0" maxWidth="1.7976931348623157E308" minHeight="40.0" prefHeight="40.0" prefWidth="900.0" VBox.vgrow="SOMETIMES">
-                 <items>
-                  <Pane layoutX="825.0" layoutY="10.0" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="30.0" prefWidth="35.0" />
-                     <Button fx:id="stopButton" layoutX="20.0" layoutY="17.0" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
-                         <tooltip>
-                             <Tooltip text="プログラムを中断します。" />
-                         </tooltip>
-                     </Button>
-                     <Button fx:id="pauseButton" layoutX="86.0" layoutY="7.0" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
-                         <tooltip>
-                             <Tooltip text="プログラムを一時中断します。" />
-                         </tooltip>
-                     </Button>
-                     <Button fx:id="runButton" layoutX="792.0" layoutY="7.0" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
-                         <tooltip>
-                             <Tooltip text="プログラムを実行します" />
-                         </tooltip>
-                     </Button>
-                  <Separator layoutX="200.0" layoutY="10.0" orientation="VERTICAL" prefHeight="30.0" prefWidth="15.0" />
-                     <Button fx:id="backButton" layoutX="30.0" layoutY="27.0" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
-                         <tooltip>
-                             <Tooltip text="一ステップ前の実行状態へ戻します。" />
-                         </tooltip>
-                     </Button>
-                     <Button fx:id="stepOverButton" layoutX="716.0" layoutY="7.0" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
-                         <tooltip>
-                             <Tooltip text="ステップオーバー" />
-                         </tooltip>
-                     </Button>
-                  <Button fx:id="stepInButton" layoutX="172.0" layoutY="8.0" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
-                     <tooltip>
-                        <Tooltip text="ステップイン" />
-                     </tooltip>
-                  </Button>
-                  <Button fx:id="stepOutButton" layoutX="210.0" layoutY="8.0" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
-                     <tooltip>
-                        <Tooltip text="ステップアウト" />
-                     </tooltip>
-                  </Button>
-                  <Button fx:id="runtoCurButton" layoutX="823.0" layoutY="8.0" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
-                     <tooltip>
-                        <Tooltip text="カーソル行まで実行" />
-                     </tooltip>
-                  </Button>
-                     <Separator orientation="VERTICAL" prefHeight="30.0" prefWidth="15.0" />
-                     <Button fx:id="showBPButton" layoutX="248.0" layoutY="7.0" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
-                         <tooltip>
-                             <Tooltip text="全てのブレークポイントを表示します。" />
-                         </tooltip>
-                     </Button>
-                     <Button fx:id="evExButton" layoutX="124.0" layoutY="7.0" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
-                         <tooltip>
-                             <Tooltip text="プログラム全体に対して停止条件文を設定します。" />
-                         </tooltip>
-                     </Button>
-                     <Separator orientation="VERTICAL" prefHeight="30.0" prefWidth="15.0" />
-                     <Label text="表示形式(位取り記数or文字)  :  " />
-                  <ChoiceBox fx:id="aryMenuButton" prefWidth="150.0" />
-                 </items>
-              </ToolBar>
-          </children>
+           <MenuBar maxHeight="25.0" maxWidth="1.7976931348623157E308" minHeight="25.0" minWidth="900.0"
+                    prefHeight="25.0" prefWidth="900.0" BorderPane.alignment="CENTER" VBox.vgrow="SOMETIMES">
+               <Menu mnemonicParsing="false" text="実行(R)">
+                   <MenuItem fx:id="runMI" mnemonicParsing="false" text="最後まで実行"/>
+                   <SeparatorMenuItem mnemonicParsing="false"/>
+                   <MenuItem fx:id="stepOverMI" mnemonicParsing="false" text="ステップ オーバー"/>
+                   <MenuItem fx:id="stepInMI" mnemonicParsing="false" text="ステップ イン"/>
+                   <MenuItem fx:id="stepOutMI" mnemonicParsing="false" text="ステップ アウト"/>
+                   <MenuItem fx:id="runtoCurMI" mnemonicParsing="false" text="カーソル行まで実行"/>
+                   <MenuItem fx:id="pauseMI" mnemonicParsing="false" text="プログラムを一時停止する"/>
+                   <MenuItem fx:id="resumeMI" mnemonicParsing="false" text="プログラムを再開する"/>
+                   <MenuItem fx:id="stopMI" mnemonicParsing="false" text="プログラムを中断する"/>
+                   <MenuItem fx:id="backMI" mnemonicParsing="false" text="前の状態へ戻す"/>
+                   <SeparatorMenuItem mnemonicParsing="false"/>
+                   <CheckMenuItem fx:id="breakLabelMI" mnemonicParsing="false" text="ラベルの定義位置でブレーク"/>
+                   <CheckMenuItem fx:id="breakSubMI" mnemonicParsing="false" text="サブルーチンの入口でブレーク"/>
+               </Menu>
+               <Menu fx:id="windowMenu" mnemonicParsing="false" text="ウィンドウ">
+                   <items>
+                       <CheckMenuItem fx:id="varWindowMI" mnemonicParsing="false" text="ラベル"/>
+                       <CheckMenuItem fx:id="traceVarWindowMI" mnemonicParsing="false" text="トレース変数"/>
+                       <MenuItem fx:id="watchWindowMI" mnemonicParsing="false" text="ウォッチウィンドウの作成"/>
+                   </items>
+               </Menu>
+           </MenuBar>
+           <ToolBar maxHeight="40.0" maxWidth="1.7976931348623157E308" minHeight="40.0" prefHeight="40.0"
+                    prefWidth="900.0" VBox.vgrow="SOMETIMES">
+               <Pane layoutX="825.0" layoutY="10.0" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="30.0"
+                     prefWidth="35.0"/>
+               <Button fx:id="stopButton" layoutX="20.0" layoutY="17.0" maxHeight="35.0" maxWidth="34.0"
+                       minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
+                   <tooltip>
+                       <Tooltip text="プログラムを中断します。"/>
+                   </tooltip>
+               </Button>
+               <Button fx:id="pauseButton" layoutX="86.0" layoutY="7.0" maxHeight="35.0" maxWidth="34.0"
+                       minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
+                   <tooltip>
+                       <Tooltip text="プログラムを一時中断します。"/>
+                   </tooltip>
+               </Button>
+               <Button fx:id="runButton" layoutX="792.0" layoutY="7.0" maxHeight="35.0" maxWidth="34.0"
+                       minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
+                   <tooltip>
+                       <Tooltip text="プログラムを実行します"/>
+                   </tooltip>
+               </Button>
+               <Separator layoutX="200.0" layoutY="10.0" orientation="VERTICAL" prefHeight="30.0" prefWidth="15.0"/>
+               <Button fx:id="backButton" layoutX="30.0" layoutY="27.0" maxHeight="35.0" maxWidth="34.0"
+                       minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
+                   <tooltip>
+                       <Tooltip text="一ステップ前の実行状態へ戻します。"/>
+                   </tooltip>
+               </Button>
+               <Button fx:id="stepOverButton" layoutX="716.0" layoutY="7.0" maxHeight="35.0" maxWidth="34.0"
+                       minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
+                   <tooltip>
+                       <Tooltip text="ステップオーバー"/>
+                   </tooltip>
+               </Button>
+               <Button fx:id="stepInButton" layoutX="172.0" layoutY="8.0" maxHeight="35.0" maxWidth="34.0"
+                       minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
+                   <tooltip>
+                       <Tooltip text="ステップイン"/>
+                   </tooltip>
+               </Button>
+               <Button fx:id="stepOutButton" layoutX="210.0" layoutY="8.0" maxHeight="35.0" maxWidth="34.0"
+                       minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
+                   <tooltip>
+                       <Tooltip text="ステップアウト"/>
+                   </tooltip>
+               </Button>
+               <Button fx:id="runtoCurButton" layoutX="823.0" layoutY="8.0" maxHeight="35.0" maxWidth="34.0"
+                       minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
+                   <tooltip>
+                       <Tooltip text="カーソル行まで実行"/>
+                   </tooltip>
+               </Button>
+               <Separator orientation="VERTICAL" prefHeight="30.0" prefWidth="15.0"/>
+               <Button fx:id="showBPButton" layoutX="248.0" layoutY="7.0" maxHeight="35.0" maxWidth="34.0"
+                       minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
+                   <tooltip>
+                       <Tooltip text="全てのブレークポイントを表示します。"/>
+                   </tooltip>
+               </Button>
+               <Button fx:id="evExButton" layoutX="124.0" layoutY="7.0" maxHeight="35.0" maxWidth="34.0"
+                       minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
+                   <tooltip>
+                       <Tooltip text="プログラム全体に対して停止条件文を設定します。"/>
+                   </tooltip>
+               </Button>
+               <Separator orientation="VERTICAL" prefHeight="30.0" prefWidth="15.0"/>
+               <Label text="表示形式(位取り記数or文字)  :  "/>
+               <ChoiceBox fx:id="aryMenuButton" prefWidth="150.0"/>
+           </ToolBar>
        </VBox>
    </top>
    <left>
        <ToolBar orientation="VERTICAL" BorderPane.alignment="CENTER">
-          <items>
-              <Button fx:id="showCL1SButton" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
-                  <tooltip>
-                      <Tooltip text="通常画面" />
-                  </tooltip>
-              </Button>
-              <Button fx:id="showCL2SButton" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
-                  <tooltip>
-                      <Tooltip text="マシンサイクル可視化画面" />
-                  </tooltip>
-              </Button>
-              <Button fx:id="showLogSButton" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
-                  <tooltip>
-                      <Tooltip text="実行履歴(トレース表、命令プロファイル)" />
-                  </tooltip>
-              </Button>
-              <Button fx:id="showLoadSButton" layoutX="10.0" layoutY="127.0" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
-                  <tooltip>
-                      <Tooltip text="中間データ(オブジェクトプログラム、ロードモジュール)可視化画面" />
-                  </tooltip>
-              </Button>
-              <Button fx:id="showDISButton" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
-                  <tooltip>
-                      <Tooltip text="シミュレーション条件設定画面" />
-                  </tooltip>
-              </Button>
-              <Button fx:id="goToHomeButton" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
-                 <tooltip>
-                     <Tooltip text="モード選択画面へ遷移します。" />
-                 </tooltip>
-              </Button>
-          </items>
+           <Button fx:id="showCL1SButton" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0"
+                   mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
+               <tooltip>
+                   <Tooltip text="通常画面"/>
+               </tooltip>
+           </Button>
+           <Button fx:id="showCL2SButton" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0"
+                   mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
+               <tooltip>
+                   <Tooltip text="マシンサイクル可視化画面"/>
+               </tooltip>
+           </Button>
+           <Button fx:id="showLogSButton" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0"
+                   mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
+               <tooltip>
+                   <Tooltip text="実行履歴(トレース表、命令プロファイル)"/>
+               </tooltip>
+           </Button>
+           <Button fx:id="showLoadSButton" layoutX="10.0" layoutY="127.0" maxHeight="35.0" maxWidth="34.0"
+                   minHeight="35.0" minWidth="34.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
+               <tooltip>
+                   <Tooltip text="中間データ(オブジェクトプログラム、ロードモジュール)可視化画面"/>
+               </tooltip>
+           </Button>
+           <Button fx:id="showDISButton" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0"
+                   mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
+               <tooltip>
+                   <Tooltip text="シミュレーション条件設定画面"/>
+               </tooltip>
+           </Button>
+           <Button fx:id="goToHomeButton" maxHeight="35.0" maxWidth="34.0" minHeight="35.0" minWidth="34.0"
+                   mnemonicParsing="false" prefHeight="35.0" prefWidth="34.0">
+               <tooltip>
+                   <Tooltip text="モード選択画面へ遷移します。"/>
+               </tooltip>
+           </Button>
        </ToolBar>
    </left>
    <center>

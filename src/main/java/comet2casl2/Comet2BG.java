@@ -29,16 +29,12 @@ public class Comet2BG {
 		init();
 	}
 
-	public Comet2BG() {
-		addressSpace = MachineObserver.as;
-		this.insttable = MachineObserver.instTable;
-		this.symbolTable = MachineObserver.symTbl;
-		this.errorTable = MachineObserver.errorTable;
+	public Comet2BG(MachineObserver mo) {
+		addressSpace = mo.as;
+		this.insttable = mo.instTable;
+		this.symbolTable = mo.symTbl;
+		this.errorTable = mo.errorTable;
 		init();
-	}
-
-	public Comet2BG(MachineObserver machineObserver) {
-
 	}
 
 	public void init(){

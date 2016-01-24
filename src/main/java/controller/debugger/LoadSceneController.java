@@ -4,7 +4,6 @@ package controller.debugger;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import comet2casl2.MachineObserver;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -21,30 +20,15 @@ import static controller.GraphicCreator.*;
 /**
  * @author 14r4113 on 2016/01/08.
  */
-public class LoadSceneController implements Initializable{
+public class LoadSceneController implements Initializable,DebugControllable{
 
 	@FXML
 	public VBox medBox;
 	@FXML
 	public Button loadBut;
-	@FXML
-	private ResourceBundle resources;
-
-	@FXML
-	private URL location;
-
-	@FXML
-	private TableColumn<?, ?> relocContentColumn;
 
 	@FXML
 	private Label startAdrLbl;
-
-	@FXML
-	private TableView<?> relocTable;
-
-	@FXML
-	private TableColumn<?, ?> memAdressColumn;
-
 	@FXML
 	private Label fileLbl;
 
@@ -58,15 +42,6 @@ public class LoadSceneController implements Initializable{
 	private Label sizeLbl;
 
 	@FXML
-	private TableColumn<?, ?> relocAddressColumn;
-
-	@FXML
-	private TableView<?> memTable;
-
-	@FXML
-	private TableColumn<?, ?> memContentColumn;
-
-	@FXML
 	private SpreadsheetView loadSheet;
 
 	@FXML
@@ -74,23 +49,16 @@ public class LoadSceneController implements Initializable{
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		assert relocContentColumn != null : "fx:id=\"relocContentColumn\" was not injected: check your FXML file 'LoadScene.fxml'.";
 		assert startAdrLbl != null : "fx:id=\"startAdrLbl\" was not injected: check your FXML file 'LoadScene.fxml'.";
-		assert relocTable != null : "fx:id=\"relocTable\" was not injected: check your FXML file 'LoadScene.fxml'.";
-		assert memAdressColumn != null : "fx:id=\"memAdressColumn\" was not injected: check your FXML file 'LoadScene.fxml'.";
 		assert fileLbl != null : "fx:id=\"fileLbl\" was not injected: check your FXML file 'LoadScene.fxml'.";
 		assert memBox != null : "fx:id=\"memBox\" was not injected: check your FXML file 'LoadScene.fxml'.";
 		assert loadBox != null : "fx:id=\"loadBox\" was not injected: check your FXML file 'LoadScene.fxml'.";
 		assert sizeLbl != null : "fx:id=\"sizeLbl\" was not injected: check your FXML file 'LoadScene.fxml'.";
-		assert relocAddressColumn != null : "fx:id=\"relocAddressColumn\" was not injected: check your FXML file 'LoadScene.fxml'.";
-		assert memTable != null : "fx:id=\"memTable\" was not injected: check your FXML file 'LoadScene.fxml'.";
-		assert memContentColumn != null : "fx:id=\"memContentColumn\" was not injected: check your FXML file 'LoadScene.fxml'.";
-
 		loadBox.setGraphic(createEffectIcon(FontAwesome.Glyph.FILE).size(24.0));
 		memBox.setGraphic(createEffectIcon(FontAwesome.Glyph.TABLE).size(24.0));
 		loadBox.setContentDisplay(ContentDisplay.LEFT);
 		memBox.setContentDisplay(ContentDisplay.LEFT);
-		int rowCount = 65536;
+		int rowCount = 1;
 		int columnCount = 1;
 		GridBase grid = new GridBase(rowCount, columnCount);
 		//grid.getColumnHeaders().add("Memory");
@@ -109,10 +77,9 @@ public class LoadSceneController implements Initializable{
 		grid.setRows(rows);
 		memSheet.setGrid(grid);
 
-		rowCount = 2;
+		rowCount = 1;
 		columnCount = 1;
 		GridBase grid1 = new GridBase(rowCount, columnCount);
-		//grid1.getColumnHeaders().add("");
 		ObservableList<ObservableList<SpreadsheetCell>> rows1 = FXCollections.observableArrayList();
 		for (int row = 0; row < grid1.getRowCount(); ++row) {
 			final ObservableList<SpreadsheetCell> list = FXCollections.observableArrayList();
@@ -141,8 +108,8 @@ public class LoadSceneController implements Initializable{
 
 	}
 
-	void initState(MachineObserver b){
+	@Override
+	public void setViewModel(CommonViewModel cvm) {
 
 	}
-
 }

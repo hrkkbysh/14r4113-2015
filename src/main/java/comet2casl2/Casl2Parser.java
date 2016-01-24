@@ -19,9 +19,9 @@ public class Casl2Parser {
 		lexer = new Casl2Lexer(input,errorTable);
 	}
 	//for simulator
-	public Casl2Parser(MachineObserver machineObserver){
-		symbolTable = MachineObserver.symTbl;
-		bg = new Comet2BG(machineObserver);
+	public Casl2Parser(MachineObserver mo){
+		symbolTable = mo.symTbl;
+		bg = new Comet2BG(mo);
 	}
 
 	public void init(AsmMode asmMode){
