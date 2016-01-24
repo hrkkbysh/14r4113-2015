@@ -5,13 +5,13 @@ import comet2casl2.MachineObserver;
 import javafx.beans.property.BooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Menu;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import org.controlsfx.control.spreadsheet.GridBase;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 import org.controlsfx.control.spreadsheet.SpreadsheetCellType;
 import org.controlsfx.control.spreadsheet.SpreadsheetView;
+
+import java.util.HashMap;
 
 public class CommonViewModel {
 	private SpreadsheetView memSheet,regSheet,frSheet,loadSheet,loadMemSheet,traceSheet,profileSheet,traceTarget,labelSheet;
@@ -23,6 +23,24 @@ public class CommonViewModel {
 	private TextArea inTa,outTa;
 	private MachineObserver mo;
 	private BooleanProperty traceVar,varWindow,breakSub,breakLabel;
+	private ChoiceBox<String> aryMenuButton;
+	enum Ary{
+		BIN("2進数"),OCT("8進数"),SIGN_DEC("符号無10進数"),NO_SIGN_DEC("10進数"),HEX("16進数"),CHAR("文字(JIS X 0201)");
+		private final String text;
+		private static HashMap<String,Ary> map = new HashMap<>();
+		Ary(String text){
+			this.text = text;
+		}
+		public String getText(){return text;}
+		public static Ary toAry(String text){
+			return map.get(text);
+		}
+		static{
+			for(Ary a: Ary.values())
+				map.put(a.text,a);
+		}
+	}
+
 	public void stopAction(){}
 	public void pauseAction(){}
 	public void runAction(){}
@@ -66,6 +84,16 @@ public class CommonViewModel {
 
 	public void bindBreakLabel(BooleanProperty breakLabel) {
 		//this.breakLabel.bind(breakLabel);
+	}
+
+	public void bindAry(ChoiceBox<String> aryMenuButton) {
+		this.aryMenuButton = aryMenuButton;
+		ObservableList<String> items = aryMenuButton.getItems();
+		for(Ary a: Ary.values()){
+			items.add(a.toString());
+		}
+		aryMenuButton.getSelectionModel().selectFirst();
+		aryMenuButton.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {System.out.println(Ary.toAry(newValue));});
 	}
 
 	public void setMemSheet(SpreadsheetView memSheet) {

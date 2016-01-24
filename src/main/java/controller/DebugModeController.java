@@ -124,23 +124,6 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 	@FXML
 	private Button evExButton;
 
-	enum Ary{
-		BIN("2進数"),OCT("8進数"),SIGN_DEC("符号無10進数"),NO_SIGN_DEC("10進数"),HEX("16進数"),CHAR("文字(JIS X 0201)");
-		private final String text;
-		private static HashMap<String,Ary> map = new HashMap<>();
-		Ary(String text){
-			this.text = text;
-		}
-		public String getText(){return text;}
-		public static Ary toAry(String text){
-			return map.get(text);
-		}
-		static{
-			for(Ary a: Ary.values())
-				map.put(a.text,a);
-		}
-	}
-
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		assert showDISButton != null : "fx:id=\"showDISButton\" was not injected: check your FXML file 'DebuggerScene.fxml'.";
@@ -214,10 +197,6 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 		watchWindowMI.setGraphic(createEffectIcon(FontAwesome.Glyph.EYEDROPPER).color(Color.YELLOW));
 	}
 
-	private void showAryView(Ary ary) {
-		System.out.println(ary.getText());
-	}
-
 	private Stage stage;
 	private ScreensController<EditModeScene> scEMC;
 	private NodeController<DebugModeScene> scDMC;
@@ -248,11 +227,6 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 			autosize();
 			scDMC.prefWidthProperty().bind(stage.widthProperty());
 		});
-
-		aryMenuButton.getItems().addAll("2進数", "8進数", "符号無10進数","10進数","16進数","文字(JIS X 0201)");
-		aryMenuButton.getSelectionModel().selectFirst();
-		aryMenuButton.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {showAryView(Ary.toAry(newValue));});
-
 		statusBar = new StatusBar();
 		root.setBottom(statusBar);
 		Button rightB2 = new Button("", createEffectIcon(FontAwesome.Glyph.INFO));
@@ -290,6 +264,7 @@ public class DebugModeController extends BorderPane implements Initializable,Thr
 		cvm.bindBreakSub(breakSubMI.selectedProperty());
 		cvm.bindBreakLabel(breakLabelMI.selectedProperty());
 		watchWindowMI.setOnAction(e -> cvm.watchWindowAction());
+		cvm.bindAry(aryMenuButton);
 	}
 
 	public void setDisableButs(boolean value){
