@@ -9,7 +9,7 @@ import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import org.controlsfx.glyphfont.FontAwesome;
 
-import static controller.GraphicCreator.*;
+import static uicomponent.GraphicCreator.*;
 
 public class RootController implements Initializable, Controllable<EditModeScene> {
 	@FXML

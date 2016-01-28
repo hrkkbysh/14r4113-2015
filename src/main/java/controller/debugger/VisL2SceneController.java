@@ -20,4 +20,3 @@ public class VisL2SceneController implements Initializable,DebugControllable{
 
 	}
 }
-

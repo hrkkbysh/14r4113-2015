@@ -1,4 +1,4 @@
-package controller;
+package uicomponent;
 
 import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.glyphfont.Glyph;

@@ -22,7 +22,7 @@ import org.controlsfx.control.spreadsheet.*;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.glyphfont.Glyph;
 
-import static controller.GraphicCreator.createEffectIcon;
+import static uicomponent.GraphicCreator.createEffectIcon;
 
 public class VisL1SceneController implements Initializable,DebugControllable{
 

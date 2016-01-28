@@ -12,7 +12,6 @@ import java.util.concurrent.ExecutorService;
 import casl2.AsmMode;
 import casl2.Casl2Parser;
 import com.sun.javafx.robot.FXRobot;
-import com.sun.javafx.robot.FXRobotFactory;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
@@ -39,7 +38,7 @@ import org.controlsfx.glyphfont.FontAwesome;
 import uicomponent.SideNode;
 import util.DetectUtils;
 import netscape.javascript.JSObject;
-import static controller.GraphicCreator.*;
+import static uicomponent.GraphicCreator.*;
 
 public class EditModeController extends BorderPane implements Initializable, Controllable<EditModeScene>,Threadable{
 

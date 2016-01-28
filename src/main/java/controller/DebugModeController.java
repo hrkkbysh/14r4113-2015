@@ -1,7 +1,6 @@
 package controller;
 
 import java.net.URL;
-import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 
@@ -18,7 +17,7 @@ import javafx.stage.Stage;
 import org.controlsfx.control.StatusBar;
 import org.controlsfx.glyphfont.FontAwesome;
 
-import static controller.GraphicCreator.*;
+import static uicomponent.GraphicCreator.*;
 
 public class DebugModeController extends BorderPane implements Initializable,Threadable, Controllable<EditModeScene>{
 

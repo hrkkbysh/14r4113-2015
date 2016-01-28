@@ -17,7 +17,7 @@ import org.controlsfx.control.spreadsheet.SpreadsheetCellType;
 import org.controlsfx.control.spreadsheet.SpreadsheetView;
 import org.controlsfx.glyphfont.FontAwesome;
 
-import static controller.GraphicCreator.*;
+import static uicomponent.GraphicCreator.*;
 /**
  * @author 14r4113 on 2016/01/08.
  */
