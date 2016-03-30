@@ -3,15 +3,17 @@ package controller;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 
-import casl2.AsmMode;
-import casl2.Casl2Parser;
 import com.sun.javafx.robot.FXRobot;
+import comet2casl2.AsmMode;
+import comet2casl2.Casl2Parser;
+import comet2casl2.MachineObserver;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
@@ -29,12 +31,14 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.controlsfx.control.MasterDetailPane;
 import org.controlsfx.control.StatusBar;
 import org.controlsfx.glyphfont.FontAwesome;
+//import uicomponent.FileTreeV.FilePathTreeItem;
 import uicomponent.SideNode;
 import util.DetectUtils;
 import netscape.javascript.JSObject;
@@ -190,11 +194,15 @@ public class EditModeController extends BorderPane implements Initializable, Con
 		errView.getErrorLog().clear();
 		try {
 			System.out.println(currentPath);
+			String code = (String)webEngine.executeScript("editor.getValue()");
+			code = code.replaceAll("\n",System.lineSeparator());
+
 			BufferedReader reader = Files.newBufferedReader(currentPath, Charset.forName(curcsName.get()));
-			Casl2Parser parser = new Casl2Parser(reader, AsmMode.NORMAL);
-			parser.enter(currentPath.toString());
+			Casl2Parser parser = new Casl2Parser(code, AsmMode.NORMAL);
+			parser.decode(currentPath);
+
 			System.out.println("コンパイル完了");
-			if(parser.hasError()||parser.hasWarning()) {
+			if(parser.hasError() || parser.hasWarning()) {
 				List<String> ems = parser.getMessages();
 				for(String s: ems){
 					errView.getErrorLog().appendText(s);
@@ -466,6 +474,26 @@ public class EditModeController extends BorderPane implements Initializable, Con
 		masterDetailPane.setShowDetailNode(false);
 		masterDetailPane.setMasterNode(editorPane);
 
+		masterDetailPane.getDetailNode().setOnMouseClicked(e->{
+			System.out.println("clicked!!");
+			final DirectoryChooser chooser = new DirectoryChooser();
+			chooser.setTitle("select Directory");
+			chooser.setTitle("Select Root Directory");
+			File target = chooser.showDialog(stage);
+			if(target!=null) {
+				TreeItem<String> rootNode = new TreeItem<>(target.getAbsolutePath());
+				rootNode.setGraphic(createEffectIcon(FontAwesome.Glyph.FOLDER));
+				TreeView<String> treeView = new TreeView<>(rootNode);
+				Iterable<Path> rootDirectories = FileSystems.getFileSystem(target.toURI()).getRootDirectories();
+				for (Path name : rootDirectories) {
+					//FilePathTreeItem treeNode = new FilePathTreeItem(name);
+					//rootNode.getChildren().add(treeNode);
+				}
+				rootNode.setExpanded(true);
+				masterDetailPane.setDetailNode(treeView);
+			}
+		});
+
 		centerPane.getChildren().add(masterDetailPane);
 
 		webView.setVisible(false);
@@ -545,6 +573,7 @@ public class EditModeController extends BorderPane implements Initializable, Con
 	private StatusBar statusBar;
 	private String modestr = "CASL2プログラミング画面";
 	private String initCode = "TEST	START"+System.lineSeparator()+"	RET"+System.lineSeparator()+"	END";
+	private MachineObserver mo;
 
 	@Override
 	public void setExecutorService(ExecutorService service) {

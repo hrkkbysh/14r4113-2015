@@ -108,14 +108,27 @@ public class LoadSceneController implements Initializable,DebugControllable{
 		});
 
 		JFXComboBox<Label> jfxCombo = new JFXComboBox<>();
-		jfxCombo.getItems().addAll(new Label("#1000"),new Label("#3000"),new Label("#5000"),
+		Label fl = new Label("#1000");
+		jfxCombo.getItems().addAll(fl,new Label("#3000"),new Label("#5000"),
 				new Label("#7000"),new Label("#9000"),new Label("#B000"),
 				new Label("#D000"),new Label("#F000"));
-
+		jfxCombo.getC3DEditor().setText(fl.getText());
+		jfxCombo.c3dEditorProperty().addListener((observable, oldValue, newValue) -> {
+			if(newValue.getText().charAt(0)=='#'){
+				int loadadr = 0;
+				for (int i = 0,j = newValue.getText().length(); i<j;i++){
+					int c = newValue.getText().charAt(j);
+					loadadr = loadadr * 16 + ( c - '0');
+				}
+				jfxCombo.setUserData(loadadr);
+			} else if(isNumber(newValue.getText())) {
+				jfxCombo.setUserData(newValue);
+			}
+		});
+		jfxCombo.setValue(fl);
 		jfxCombo.setEditable(true);
-		jfxCombo.setPromptText("Select Label or Location");
 		jfxCombo.setPrefWidth(180.0);
-		Button loadBut = new Button("Load");
+		Button loadBut = new Button("リロード");
 
 		loadSelBox.getChildren().addAll(loadBut,jfxCombo);
 	}
@@ -123,5 +136,14 @@ public class LoadSceneController implements Initializable,DebugControllable{
 	@Override
 	public void setViewModel(CommonViewModel cvm) {
 
+	}
+
+	public boolean isNumber(String val) {
+		try {
+			Integer.parseInt(val);
+			return true;
+		} catch (NumberFormatException nfex) {
+			return false;
+		}
 	}
 }

@@ -2,6 +2,7 @@ package comet2casl2;
 
 import java.io.BufferedReader;
 import java.nio.file.Path;
+import java.util.List;
 
 public class Casl2Parser {
 	private Casl2Lexer lexer;
@@ -453,5 +454,17 @@ public class Casl2Parser {
 			}
 			return 0;
 		}
+	}
+
+	public boolean hasError() {
+		return errorTable.hasError();
+	}
+
+	public boolean hasWarning() {
+		return errorTable.hasWarning();
+	}
+
+	public List<String> getMessages() {
+		return errorTable.getMessages();
 	}
 }
