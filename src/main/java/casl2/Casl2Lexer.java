@@ -7,13 +7,13 @@ import java.util.regex.Pattern;
 
 public class Casl2Lexer {
 
-	private ErrorTable errorTable;
-	private SymbolTable symbolTable;
-	private String sval;
-	private int nval;
-	private int line = 1;
-	private BufferedReader input;
-	private int peekc;
+	private ErrorTable errorTable;//エラー出力用
+	private SymbolTable symbolTable;//シンボルテーブル
+	private String sval;//切り出したトークン(文字列)を格納する変数
+	private int nval;//切り出したトークン(数字)を格納する変数
+	private int line = 1;//現在読み込んでいるトークンの位置(行)
+	private BufferedReader input;//入力ストリーム。ここからプログラムをトークンに切り出していく
+	private int peekc;//現在検査している文字
 
 	/*Unicode専用.
 * @param 入力ストリーム*/
@@ -22,13 +22,16 @@ public class Casl2Lexer {
 		this.errorTable = errorTable;
 		init(r);
 	}
+
+	/*入力ストリームを閉じる*/
 	public void reset(){
 		try {
 			input.reset();
 		} catch (IOException e) {
-			e.printStackTrace();
+			errorTable.printError(line, -1, "I/O EXCEPTION occurred.");//例外
 		}
 	}
+	/*入力ストリームから最初の文字を読み込む*/
 	public void init(BufferedReader r){
 		if(r == null){
 			throw new NullPointerException();
@@ -46,14 +49,7 @@ public class Casl2Lexer {
 			return -1;
 		}
 	}
-	void closeReader(){
-		try {
-			input.close();
-		} catch (IOException e) {
-			errorTable.printError(line, -1, "I/O EXCEPTION occurred.");//例外
-		}
-	}
-
+/*トークンの切り出しを行う。切り出したトークンはnvalかsvalに格納される*/
 	public Casl2Symbol nextToken(){
 		boolean neg = false;
 		boolean arg = false;
@@ -79,7 +75,7 @@ public class Casl2Lexer {
 				return ERROR(c);
 		}
 	}
-
+	/*以下、文字の種類を判定するメソッド群*/
 	boolean isNUMBER(int c) {return '0'<=c && c<='9';}
 	boolean isHEX(int c){return (c>='A' && c<='F');}
 	boolean isUPPER_CASE_LETTER(int c){return (c>='A'&&c<='Z');}
@@ -92,7 +88,7 @@ public class Casl2Lexer {
 	boolean isLETTERorNUMBER(int c){
 		return isNUMBER(c)||isUPPER_CASE_LETTER(c)||isLOWER_CASE_LETTER(c);
 	}
-
+/*16進数*/
 	Casl2Symbol HEX(){
 		int v = 0;
 		int c = read();
@@ -113,7 +109,7 @@ public class Casl2Lexer {
 		return Casl2Symbol.NUM_CONST;
 	}
 
-	/* XXX */
+	/* 文字列 */
 	Casl2Symbol STR_CONST() {
 		int c = read();
 		StringBuilder buf = new StringBuilder();
@@ -127,6 +123,8 @@ public class Casl2Lexer {
 				c = read();
 			}
 			c = read();
+
+			//エスケープ文字(')の検査
 			if (c != '\'') break;
 			else {
 				buf.append((char) c);
@@ -144,7 +142,7 @@ public class Casl2Lexer {
 			return Casl2Symbol.ERROR;
 		}
 	}
-
+/*数字*/
 	Casl2Symbol NUM(int c,boolean neg) {
 		int v = 0;
 		while(true){
@@ -163,7 +161,7 @@ public class Casl2Lexer {
 		}
 		return Casl2Symbol.NUM_CONST;
 	}
-
+/*命令やラベル*/
 	Casl2Symbol KEYWORD(int c,boolean arg) {
 		StringBuilder buf = new StringBuilder();
 		buf.append((char)c);
@@ -192,14 +190,17 @@ public class Casl2Lexer {
 		return arg ? Casl2Symbol.MACRO_ARG:symbol;
 	}
 
+	/*以下、getter*/
 	public int getLine() {return line;}
 	public int getNval() {return nval;}
 	public String getSval(){return sval;}
 
+	/*改行まで読み飛ばし*/
 	void skipToEOL(){
 		while(peekc!='\n' && peekc != -1)
 			peekc = read();
 	}
+	/*エラー*/
 	Casl2Symbol ERROR(int ...c){
 		StringBuilder buf = new StringBuilder();
 		for(int index = 0; index < c.length; index++){

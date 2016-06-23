@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 
+import casl2.AsmMode;
+import casl2.Casl2Parser;
+import casl2.MacroAssembler;
 import com.sun.javafx.robot.FXRobot;
-import comet2casl2.AsmMode;
-import comet2casl2.Casl2Parser;
-import comet2casl2.MachineObserver;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
@@ -198,10 +198,11 @@ public class EditModeController extends BorderPane implements Initializable, Con
 			code = code.replaceAll("\n",System.lineSeparator());
 
 			BufferedReader reader = Files.newBufferedReader(currentPath, Charset.forName(curcsName.get()));
-			Casl2Parser parser = new Casl2Parser(code, AsmMode.NORMAL);
-			parser.decode(currentPath);
+			Casl2Parser parser = new Casl2Parser(reader, AsmMode.NORMAL);
+			parser.enter(currentPath.toString());
 
 			System.out.println("コンパイル完了");
+			errView.getErrorLog().clear();
 			if(parser.hasError() || parser.hasWarning()) {
 				List<String> ems = parser.getMessages();
 				for(String s: ems){
@@ -226,14 +227,12 @@ public class EditModeController extends BorderPane implements Initializable, Con
 
 	@FXML
 	void exAssembleAction(ActionEvent event) {
-		/*try {
-			System.out.println(activeEditor.getPath());
-			BufferedReader reader = Files.newBufferedReader(Paths.get(activeEditor.getPath()), activeEditor.getCharset());
+		try {
+			BufferedReader reader = Files.newBufferedReader(currentPath, Charset.forName(curcsName.get()));
 			Path path;
-			System.out.println(activeEditor.getCodeArea().getText());
 			MacroAssembler assembler = new MacroAssembler(reader);
 			path = Files.createTempFile("tmp", ".tmp");
-			assembler.parse(path);
+			assembler.checkMacro(path);
 			if (assembler.hasError()) {
 				return;
 			}else{
@@ -241,18 +240,27 @@ public class EditModeController extends BorderPane implements Initializable, Con
 			}
 
 			Casl2Parser parser = new Casl2Parser(reader,AsmMode.EXTEND);
-			parser.enter(activeEditor.getPath());*//*
-			emView.getItems().clear();
-			if (parser.hasError() || parser.hasWarning()) {
-				emView.getItems().addAll(parser.getErrorMessages());
-				emView.getItems().addAll(parser.getWarningMessages());
-			}*//*
-			path.toFile().deleteOnExit();
-			System.out.println("コンパイル完了");
+			parser.enter(currentPath.toString());
+			errView.getErrorLog().clear();
+			if(parser.hasError() || parser.hasWarning()) {
+				List<String> ems = parser.getMessages();
+				for(String s: ems){
+					errView.getErrorLog().appendText(s);
+					errView.getErrorLog().appendText(System.lineSeparator());
+				}
+				if (editorPane.isShowDetailNode()) {
+					editorPane.setShowDetailNode(true);
+				}
+			}
+			if(!parser.hasError()){
+				errView.getErrorLog().appendText("コンパイル完了");
+				sc.setScreen(EditModeScene.DEBUG);
+				coec.setSimulateMode();
+			}
 
 		} catch (IOException e) {
 			e.printStackTrace();
-		}*/
+		}
 		coec.setSimulateMode();
 		sc.setScreen(EditModeScene.DEBUG);
 	}
@@ -573,7 +581,6 @@ public class EditModeController extends BorderPane implements Initializable, Con
 	private StatusBar statusBar;
 	private String modestr = "CASL2プログラミング画面";
 	private String initCode = "TEST	START"+System.lineSeparator()+"	RET"+System.lineSeparator()+"	END";
-	private MachineObserver mo;
 
 	@Override
 	public void setExecutorService(ExecutorService service) {

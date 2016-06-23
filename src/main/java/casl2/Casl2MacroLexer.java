@@ -6,9 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 
 public class Casl2MacroLexer extends Casl2Lexer{
-	private boolean macroSave = false;
-	private boolean mainSave = false;
-	private boolean useMacro = false;
+	private boolean macroSave = false;//マクロ命令ブロック保存用
+	private boolean mainSave = false;//メインプログラム保存用
+	private boolean useMacro = false;//trueの時
 	List<Iterator<Integer>> insMacroCodes = new ArrayList<>();
 	List<Integer> savMacroCode = new ArrayList<>();
 	List<Integer> unUseMacro = new ArrayList<>();
